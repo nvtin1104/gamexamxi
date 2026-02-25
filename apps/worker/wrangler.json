@@ -8,7 +8,8 @@
     "enabled": true
   },
   "vars": {
-    "APP_ENV": "production"
+    "APP_ENV": "production",
+    "ADMIN_EMAILS": ""
   },
   "d1_databases": [
     {
@@ -95,7 +96,8 @@
   "env": {
     "dev": {
       "vars": {
-        "APP_ENV": "development"
+        "APP_ENV": "development",
+        "ADMIN_EMAILS": "admin@gamexamxi.com"
       },
       "d1_databases": [
         {

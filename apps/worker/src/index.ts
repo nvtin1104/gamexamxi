@@ -8,7 +8,9 @@ import { groupsRouter } from './routes/groups'
 import { shopRouter } from './routes/shop'
 import { usersRouter } from './routes/users'
 import { questsRouter } from './routes/quests'
+import { adminRouter } from './routes/admin'
 import { authMiddleware } from './middleware/auth'
+import { adminAuthMiddleware } from './middleware/adminAuth'
 import { rateLimitMiddleware } from './middleware/ratelimit'
 import { handlePointsBatch } from './queue-handlers/points'
 import { handleAchievementBatch } from './queue-handlers/achievements'
@@ -32,6 +34,7 @@ app.use(
       const allowed = [
         'https://gamexamxi.pages.dev',
         'http://localhost:3000',
+        'http://localhost:3001',
         'http://localhost:8788',
       ]
       return allowed.includes(origin) ? origin : allowed[0]
@@ -60,6 +63,11 @@ app.route('/api/games', gamesRouter)
 app.route('/api/groups', groupsRouter)
 app.route('/api/shop', shopRouter)
 app.route('/api/quests', questsRouter)
+
+// ─── Admin Routes (require auth + admin check) ────────────────
+
+app.use('/api/admin/*', adminAuthMiddleware)
+app.route('/api/admin', adminRouter)
 
 // ─── WebSocket Upgrade → Durable Objects ──────────────────────
 

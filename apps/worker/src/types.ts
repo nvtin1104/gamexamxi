@@ -26,6 +26,7 @@ export type Env = {
   RESEND_API_KEY: string
   // Vars
   APP_ENV: string
+  ADMIN_EMAILS?: string
 }
 
 export type Variables = {

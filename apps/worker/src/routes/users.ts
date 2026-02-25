@@ -27,8 +27,10 @@ usersRouter.patch(
   zValidator(
     'json',
     z.object({
+      username: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/).optional(),
+      name: z.string().max(50).optional(),
       bio: z.string().max(200).optional(),
-      avatarUrl: z.string().url().optional(),
+      avatar: z.string().url().optional(),
     })
   ),
   async (c) => {
@@ -108,7 +110,7 @@ usersRouter.get('/leaderboard/global', async (c) => {
     board.map(async (entry) => {
       const user = await db.query.users.findFirst({
         where: eq(users.id, entry.userId),
-        columns: { id: true, username: true, avatarUrl: true },
+        columns: { id: true, username: true, avatar: true },
       })
       return { ...entry, user }
     })
