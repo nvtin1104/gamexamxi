@@ -8,6 +8,7 @@ import type {
   ShopItem,
   UserItem,
   PointTransaction,
+  LeaderboardEntry,
   ApiResponse,
   CreateEventBody,
   CreateGroupBody,
@@ -189,7 +190,7 @@ export const usersApi = {
     request<ApiResponse<PointTransaction[]>>('/api/users/me/transactions', {}, token),
 
   getLeaderboard: (token: string) =>
-    request<ApiResponse<User[]>>('/api/users/leaderboard/global', {}, token),
+    request<ApiResponse<LeaderboardEntry[]>>('/api/users/leaderboard/global', {}, token),
 }
 
 export { ApiError }

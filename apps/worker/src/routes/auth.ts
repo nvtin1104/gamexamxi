@@ -33,10 +33,10 @@ authRouter.post('/register', zValidator('json', registerSchema), async (c) => {
     return c.json({ error: 'Username or email already exists', ok: false }, 409)
   }
 
-  const passwordHash = await hashPassword(password)
+  const hashedPassword = await hashPassword(password)
   const [user] = await db
     .insert(users)
-    .values({ username, email, passwordHash })
+    .values({ username, email, password: hashedPassword })
     .returning()
 
   if (!user) {
@@ -71,11 +71,11 @@ authRouter.post(
     const db = createDb(c.env.DB)
 
     const user = await db.query.users.findFirst({ where: eq(users.email, email) })
-    if (!user || !user.passwordHash) {
+    if (!user || !user.password) {
       return c.json({ error: 'Invalid email or password', ok: false }, 401)
     }
 
-    const valid = await verifyPassword(password, user.passwordHash)
+    const valid = await verifyPassword(password, user.password)
     if (!valid) {
       return c.json({ error: 'Invalid email or password', ok: false }, 401)
     }

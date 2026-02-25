@@ -6,17 +6,7 @@ import { usersApi } from '@/lib/api'
 import { Card } from '@/components/ui/Card'
 import { formatPoints } from '@/lib/utils'
 import Link from 'next/link'
-
-type LeaderboardEntry = {
-  userId: string
-  score: number
-  rank: number
-  user?: {
-    id: string
-    username: string
-    avatarUrl: string | null
-  } | null
-}
+import type { LeaderboardEntry } from '@gamexamxi/shared'
 
 export default function LeaderboardPage() {
   const { token } = useAuthStore()
@@ -27,7 +17,7 @@ export default function LeaderboardPage() {
     enabled: !!token,
   })
 
-  const entries = (data?.data ?? []) as LeaderboardEntry[]
+  const entries = data?.data ?? []
   const medals = ['🥇', '🥈', '🥉']
 
   return (

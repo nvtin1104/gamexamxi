@@ -41,7 +41,20 @@ export async function handlePointsBatch(
   // Insert transaction log
   for (const msg of messages) {
     const { userId, amount, type, referenceId, note } = msg.body
-    await db.insert(pointTransactions).values({ userId, amount, type, referenceId, note })
+    // Get current balance for balanceAfter
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, userId),
+      columns: { points: true },
+    })
+    const balanceAfter = (user?.points ?? 0)
+    await db.insert(pointTransactions).values({
+      userId,
+      amount,
+      type,
+      referenceId: referenceId ?? null,
+      description: note ?? null,
+      balanceAfter,
+    })
     msg.ack()
   }
 

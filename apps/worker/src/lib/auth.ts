@@ -51,16 +51,27 @@ export async function verifyPassword(password: string, stored: string): Promise<
 export function sanitizeUser(user: {
   id: string
   username: string
+  name: string | null
   email: string
-  passwordHash: string | null
-  avatarUrl: string | null
+  password: string | null
+  avatar: string | null
+  ggId: string | null
   bio: string | null
+  role: string
+  accoutType: string
+  status: string
+  supendType: string | null
+  supendUntil: string | null
+  supendReason: string | null
+  supendAt: string | null
+  experience: number
+  level: number
   points: number
   totalPointsEarned: number
   loginStreak: number
   lastLoginAt: string | null
   createdAt: string | null
 }) {
-  const { passwordHash: _, ...safe } = user
+  const { password: _, ...safe } = user
   return safe
 }

@@ -4,9 +4,13 @@ import { persist } from 'zustand/middleware'
 type User = {
   id: string
   username: string
+  name: string | null
   email: string
-  avatarUrl: string | null
+  avatar: string | null
   bio: string | null
+  role: string
+  level: number
+  experience: number
   points: number
   totalPointsEarned: number
   loginStreak: number
