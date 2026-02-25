@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/store/auth'
 import { authApi, ApiError } from '@/lib/api'
+import { toast } from 'sonner'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -22,14 +23,20 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     try {
-      const res = await authApi.login({ email, password })
+      const trimmedEmail = email.trim()
+      const trimmedPassword = password.trim()
+      const res = await authApi.login({ email: trimmedEmail, password: trimmedPassword })
       setAuth(res.token, res.user)
+      toast.success('Đăng nhập thành công')
       router.push('/overview')
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message)
+        const errorMsg = err.status === 403 ? 'Tài khoản không có quyền truy cập admin panel' : err.message
+        setError(errorMsg)
+        toast.error(errorMsg)
       } else {
         setError('Đăng nhập thất bại')
+        toast.error('Đăng nhập thất bại')
       }
     } finally {
       setLoading(false)

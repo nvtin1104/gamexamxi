@@ -3,6 +3,7 @@ import type {
   Group,
   PredictionEvent,
   PointTransaction,
+  PermissionGroup,
   ApiResponse,
   PaginatedResponse,
 } from '@gamexamxi/shared'
@@ -47,8 +48,9 @@ async function request<T>(
 // ─── Auth API ──────────────────────────────────────────────────
 
 export const authApi = {
+  // Dashboard uses /admin-login — only users with admin:panel permission can login here.
   login: (body: { email: string; password: string }) =>
-    request<{ token: string; user: User; ok: boolean }>('/api/auth/login', {
+    request<{ token: string; user: User; ok: boolean }>('/api/auth/admin-login', {
       method: 'POST',
       body: JSON.stringify(body),
     }),
@@ -77,11 +79,23 @@ export const adminApi = {
   users: (token: string, params?: { limit?: number; offset?: number; search?: string }) =>
     request<ApiResponse<PaginatedResponse<User>>>(
       '/api/admin/users?' + new URLSearchParams(
-        Object.entries(params ?? {}).map(([k, v]) => [k, String(v)])
+        Object.entries(params ?? {}).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])
       ).toString(),
       {},
       token
     ),
+
+  createUser: (body: Partial<User> & { password?: string }, token: string) =>
+    request<ApiResponse<User>>('/api/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }, token),
+
+  updateUser: (id: string, body: Partial<User>, token: string) =>
+    request<ApiResponse<User>>(`/api/admin/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    }, token),
 
   getUser: (id: string, token: string) =>
     request<ApiResponse<User & { transactions: PointTransaction[] }>>(`/api/admin/users/${id}`, {}, token),
@@ -90,6 +104,25 @@ export const adminApi = {
     request<ApiResponse<User>>(`/api/admin/users/${id}/points`, {
       method: 'POST',
       body: JSON.stringify(body),
+    }, token),
+
+  getUserPermissions: (id: string, token: string) =>
+    request<ApiResponse<{
+      userId: string
+      role: string
+      rolePermissions: string[]
+      customPermissions: string[]
+      effectivePermissions: string[]
+    }>>(`/api/admin/users/${id}/permissions`, {}, token),
+
+  updateUserPermissions: (id: string, customPermissions: string[], token: string) =>
+    request<ApiResponse<{
+      userId: string
+      customPermissions: string[]
+      effectivePermissions: string[]
+    }>>(`/api/admin/users/${id}/permissions`, {
+      method: 'PUT',
+      body: JSON.stringify({ customPermissions }),
     }, token),
 
   // Events
@@ -109,7 +142,7 @@ export const adminApi = {
   groups: (token: string, params?: { limit?: number; offset?: number }) =>
     request<ApiResponse<PaginatedResponse<Group>>>(
       '/api/admin/groups?' + new URLSearchParams(
-        Object.entries(params ?? {}).map(([k, v]) => [k, String(v)])
+        Object.entries(params ?? {}).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])
       ).toString(),
       {},
       token
@@ -124,4 +157,36 @@ export const adminApi = {
       {},
       token
     ),
+
+  // Permission Groups
+  listPermissionGroups: (token: string) =>
+    request<ApiResponse<PermissionGroup[]>>('/api/admin/permission-groups', {}, token),
+
+  createPermissionGroup: (body: { name: string; description?: string; permissions: string[] }, token: string) =>
+    request<ApiResponse<PermissionGroup>>('/api/admin/permission-groups', {
+      method: 'POST', body: JSON.stringify(body),
+    }, token),
+
+  updatePermissionGroup: (id: string, body: { name?: string; description?: string | null; permissions?: string[] }, token: string) =>
+    request<ApiResponse<PermissionGroup>>(`/api/admin/permission-groups/${id}`, {
+      method: 'PUT', body: JSON.stringify(body),
+    }, token),
+
+  deletePermissionGroup: (id: string, token: string) =>
+    request<{ ok: boolean }>(`/api/admin/permission-groups/${id}`, { method: 'DELETE' }, token),
+
+  // User ↔ Permission Group
+  getUserGroups: (userId: string, token: string) =>
+    request<ApiResponse<Array<{
+      groupId: string; name: string; description: string | null
+      permissions: string[]; assignedAt: string | null
+    }>>>(`/api/admin/users/${userId}/groups`, {}, token),
+
+  assignUserGroup: (userId: string, groupId: string, token: string) =>
+    request<{ ok: boolean }>(`/api/admin/users/${userId}/groups`, {
+      method: 'POST', body: JSON.stringify({ groupId }),
+    }, token),
+
+  unassignUserGroup: (userId: string, groupId: string, token: string) =>
+    request<{ ok: boolean }>(`/api/admin/users/${userId}/groups/${groupId}`, { method: 'DELETE' }, token),
 }
