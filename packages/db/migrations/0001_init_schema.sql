@@ -9,10 +9,21 @@ DROP TABLE IF EXISTS comments;
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY NOT NULL,
   username TEXT NOT NULL UNIQUE,
+  name TEXT,
   email TEXT NOT NULL UNIQUE,
-  password_hash TEXT,
-  avatar_url TEXT,
+  password TEXT,
+  avatar TEXT,
+  gg_id TEXT UNIQUE,
   bio TEXT,
+  role TEXT NOT NULL DEFAULT 'user',
+  account_type TEXT NOT NULL DEFAULT 'standard',
+  status TEXT NOT NULL DEFAULT 'active',
+  suspend_type TEXT,
+  suspend_until TEXT,
+  suspend_reason TEXT,
+  suspend_at TEXT,
+  experience INTEGER NOT NULL DEFAULT 0,
+  level INTEGER NOT NULL DEFAULT 1,
   points INTEGER NOT NULL DEFAULT 0,
   total_points_earned INTEGER NOT NULL DEFAULT 0,
   login_streak INTEGER NOT NULL DEFAULT 0,
@@ -27,7 +38,31 @@ CREATE TABLE IF NOT EXISTS point_transactions (
   amount INTEGER NOT NULL,
   type TEXT NOT NULL,
   reference_id TEXT,
-  note TEXT,
+  reference_table TEXT,
+  balance_after INTEGER NOT NULL DEFAULT 0,
+  description TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
+-- Level Up Transactions
+CREATE TABLE IF NOT EXISTS level_up_transactions (
+  id TEXT PRIMARY KEY NOT NULL,
+  user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+  old_level INTEGER NOT NULL,
+  new_level INTEGER NOT NULL,
+  experience_gained INTEGER NOT NULL,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
+-- Experience Transactions
+CREATE TABLE IF NOT EXISTS experience_transactions (
+  id TEXT PRIMARY KEY NOT NULL,
+  user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+  amount INTEGER NOT NULL,
+  type TEXT NOT NULL,
+  reference_id TEXT,
+  reference_table TEXT,
+  balance_after INTEGER NOT NULL DEFAULT 0,
   created_at TEXT DEFAULT (datetime('now'))
 );
 
@@ -158,6 +193,8 @@ CREATE TABLE IF NOT EXISTS shop_items (
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_point_tx_user ON point_transactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_level_up_user ON level_up_transactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_exp_tx_user ON experience_transactions(user_id);
 CREATE INDEX IF NOT EXISTS idx_predictions_event ON predictions(event_id);
 CREATE INDEX IF NOT EXISTS idx_predictions_user ON predictions(user_id);
 CREATE INDEX IF NOT EXISTS idx_events_status ON prediction_events(status);
@@ -165,6 +202,8 @@ CREATE INDEX IF NOT EXISTS idx_events_group ON prediction_events(group_id);
 CREATE INDEX IF NOT EXISTS idx_group_members_user ON group_members(user_id);
 CREATE INDEX IF NOT EXISTS idx_group_members_group ON group_members(group_id);
 CREATE INDEX IF NOT EXISTS idx_quests_group ON group_quests(group_id);
+CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
 
 -- Seed achievements
 INSERT OR IGNORE INTO achievements (id, code, name, description, badge_rarity, point_reward, condition) VALUES

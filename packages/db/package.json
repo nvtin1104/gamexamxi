@@ -10,8 +10,10 @@
   },
   "scripts": {
     "generate": "drizzle-kit generate",
-    "migrate:local": "wrangler d1 migrations apply gamexamxi-db --local",
-    "migrate:remote": "wrangler d1 migrations apply gamexamxi-db --remote"
+    "migrate:local": "wrangler d1 migrations apply gamexamxi-db --local --config ../../apps/worker/wrangler.json",
+    "migrate:remote": "wrangler d1 migrations apply gamexamxi-db --remote --config ../../apps/worker/wrangler.json",
+    "seed:local": "node seed.mjs",
+    "seed:remote": "node seed.mjs --remote"
   },
   "dependencies": {
     "drizzle-orm": "^0.38.3"
