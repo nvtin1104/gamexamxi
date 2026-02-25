@@ -1,0 +1,110 @@
+{
+  "name": "gamexamxi-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-10-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "upload_source_maps": true,
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "APP_ENV": "production"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "gamexamxi-db",
+      "database_id": "78f194c2-8672-4913-862e-24cd19a4de76",
+      "migrations_dir": "../../packages/db/migrations"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV_SESSIONS",
+      "id": "REPLACE_KV_SESSIONS_ID",
+      "preview_id": "REPLACE_KV_SESSIONS_PREVIEW_ID"
+    },
+    {
+      "binding": "KV_CACHE",
+      "id": "REPLACE_KV_CACHE_ID",
+      "preview_id": "REPLACE_KV_CACHE_PREVIEW_ID"
+    },
+    {
+      "binding": "KV_LEADERBOARD",
+      "id": "REPLACE_KV_LB_ID",
+      "preview_id": "REPLACE_KV_LB_PREVIEW_ID"
+    },
+    {
+      "binding": "KV_RATELIMIT",
+      "id": "REPLACE_KV_RL_ID",
+      "preview_id": "REPLACE_KV_RL_PREVIEW_ID"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "R2_PUBLIC",
+      "bucket_name": "gamexamxi-public"
+    }
+  ],
+  "queues": {
+    "producers": [
+      { "queue": "points-queue", "binding": "POINTS_QUEUE" },
+      { "queue": "achievements-queue", "binding": "ACHIEVEMENTS_QUEUE" },
+      { "queue": "notifications-queue", "binding": "NOTIFICATIONS_QUEUE" }
+    ],
+    "consumers": [
+      {
+        "queue": "points-queue",
+        "max_batch_size": 50,
+        "max_batch_timeout": 5,
+        "max_retries": 3,
+        "dead_letter_queue": "points-dlq"
+      },
+      {
+        "queue": "achievements-queue",
+        "max_batch_size": 100,
+        "max_batch_timeout": 10,
+        "max_retries": 2
+      },
+      {
+        "queue": "notifications-queue",
+        "max_batch_size": 10,
+        "max_batch_timeout": 2
+      }
+    ]
+  },
+  "durable_objects": {
+    "bindings": [
+      { "name": "GAME_ROOM", "class_name": "GameRoom" },
+      { "name": "GROUP_ROOM", "class_name": "GroupRoom" },
+      { "name": "POINTS_LEDGER", "class_name": "PointsLedger" }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_classes": ["GameRoom", "GroupRoom", "PointsLedger"]
+    }
+  ],
+  "analytics_engine_datasets": [
+    {
+      "binding": "ANALYTICS",
+      "dataset": "gamexamxi_events"
+    }
+  ],
+  "env": {
+    "dev": {
+      "vars": {
+        "APP_ENV": "development"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "gamexamxi-db",
+          "database_id": "78f194c2-8672-4913-862e-24cd19a4de76",
+          "migrations_dir": "../../packages/db/migrations"
+        }
+      ]
+    }
+  }
+}
