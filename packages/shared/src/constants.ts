@@ -2,6 +2,81 @@
 // Shared Constants
 // ============================================================
 
+// ─── User Roles ───────────────────────────────────────────────
+export const USER_ROLES = {
+  USER: 'user',
+  MODERATOR: 'moderator',
+  ADMIN: 'admin',
+  ROOT: 'root',
+} as const
+
+export const ACCOUNT_TYPES = {
+  STANDARD: 'standard',
+  PREMIUM: 'premium',
+} as const
+
+export const USER_STATUSES = {
+  ACTIVE: 'active',
+  SUSPENDED: 'suspended',
+  BANNED: 'banned',
+  DELETED: 'deleted',
+} as const
+
+export const SUSPEND_TYPES = {
+  TEMPORARY: 'temporary',
+  PERMANENT: 'permanent',
+} as const
+
+// ─── Level & XP System ────────────────────────────────────────
+// XP required to reach each level (cumulative from level 1)
+export const LEVEL_XP_THRESHOLDS: Record<number, number> = {
+  1: 0,
+  2: 100,
+  3: 250,
+  4: 500,
+  5: 900,
+  6: 1400,
+  7: 2100,
+  8: 3000,
+  9: 4200,
+  10: 5700,
+  11: 7500,
+  12: 9800,
+  13: 12500,
+  14: 15800,
+  15: 19800,
+  20: 40000,
+  30: 120000,
+  50: 500000,
+} as const
+
+export const MAX_LEVEL = 50
+
+export function getLevelFromXP(xp: number): number {
+  const levels = Object.keys(LEVEL_XP_THRESHOLDS).map(Number).sort((a, b) => b - a)
+  for (const level of levels) {
+    if (xp >= LEVEL_XP_THRESHOLDS[level]) return level
+  }
+  return 1
+}
+
+export function getXPForNextLevel(currentLevel: number): number {
+  if (currentLevel >= MAX_LEVEL) return 0
+  const levels = Object.keys(LEVEL_XP_THRESHOLDS).map(Number).sort((a, b) => a - b)
+  const next = levels.find(l => l > currentLevel)
+  return next ? LEVEL_XP_THRESHOLDS[next] : 0
+}
+
+// XP rewards per action
+export const XP_REWARDS = {
+  PREDICTION_MADE: 10,
+  PREDICTION_WIN: 25,
+  LOGIN_STREAK: 5,
+  QUEST_COMPLETE: 50,
+  ACHIEVEMENT: 30,
+  GROUP_ACTIVITY: 5,
+} as const
+
 export const LOGIN_STREAK_BONUSES: Record<number, number> = {
   1: 10,
   2: 15,

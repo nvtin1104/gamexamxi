@@ -44,6 +44,13 @@ export type PaginatedResponse<T> = {
 
 // ─── Domain Types ─────────────────────────────────────────────
 
+// ─── User Enums ───────────────────────────────────────────────
+export type UserPlatformRole = 'user' | 'moderator' | 'admin' | 'root'
+export type UserAccountType = 'standard' | 'premium'
+export type UserStatus = 'active' | 'suspended' | 'banned' | 'deleted'
+export type SuspendType = 'temporary' | 'permanent'
+
+// Group-level roles (separate from platform role)
 export type UserRole = 'OWNER' | 'ADMIN' | 'MEMBER'
 export type GroupStyle = 'FRIENDS' | 'COUPLE' | 'FAMILY'
 export type EventStatus = 'OPEN' | 'LOCKED' | 'RESOLVED' | 'CANCELLED'
@@ -60,12 +67,31 @@ export type PointTransactionType =
   | 'ADMIN_GRANT'
   | 'ADMIN_DEDUCT'
 
+export type ExperienceTransactionType =
+  | 'PREDICTION_MADE'
+  | 'PREDICTION_WIN'
+  | 'LOGIN_STREAK'
+  | 'QUEST_COMPLETE'
+  | 'ACHIEVEMENT'
+  | 'GROUP_ACTIVITY'
+
 export type User = {
   id: string
   username: string
+  name: string | null
   email: string
-  avatarUrl: string | null
+  avatar: string | null
+  ggId: string | null
   bio: string | null
+  role: UserPlatformRole
+  accoutType: UserAccountType
+  status: UserStatus
+  supendType: SuspendType | null
+  supendUntil: string | null
+  supendReason: string | null
+  supendAt: string | null
+  experience: number
+  level: number
   points: number
   totalPointsEarned: number
   loginStreak: number
@@ -150,7 +176,7 @@ export type GroupMember = {
   role: UserRole
   nickname: string | null
   joinedAt: string | null
-  user?: Pick<User, 'id' | 'username' | 'avatarUrl' | 'points'>
+  user?: Pick<User, 'id' | 'username' | 'avatar' | 'points'>
 }
 
 export type GroupQuest = {
@@ -173,7 +199,29 @@ export type PointTransaction = {
   amount: number
   type: PointTransactionType
   referenceId: string | null
-  note: string | null
+  referenceTable: string | null
+  balanceAfter: number
+  description: string | null
+  createdAt: string | null
+}
+
+export type ExperienceTransaction = {
+  id: string
+  userId: string | null
+  amount: number
+  type: ExperienceTransactionType
+  referenceId: string | null
+  referenceTable: string | null
+  balanceAfter: number
+  createdAt: string | null
+}
+
+export type LevelUpTransaction = {
+  id: string
+  userId: string | null
+  oldLevel: number
+  newLevel: number
+  experienceGained: number
   createdAt: string | null
 }
 
@@ -219,8 +267,28 @@ export type CreateQuestBody = {
 
 export type UpdateUserBody = {
   username?: string
+  name?: string
   bio?: string
-  avatarUrl?: string
+  avatar?: string
+}
+
+// ─── Leaderboard Types ────────────────────────────────────────
+
+export type LeaderboardEntry = {
+  userId: string
+  score: number
+  rank: number
+  user?: Pick<User, 'id' | 'username' | 'avatar'> | null
+}
+
+// ─── Admin Types ──────────────────────────────────────────────
+
+export type AdminStats = {
+  totalUsers: number
+  totalEvents: number
+  totalGroups: number
+  totalTransactions: number
+  recentUsers: User[]
 }
 
 // ─── WebSocket Message Types ──────────────────────────────────
