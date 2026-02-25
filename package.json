@@ -1,31 +1,28 @@
 {
-	"name": "gamexamxi",
-	"description": "Cloudflare's native serverless SQL database.",
-	"cloudflare": {
-		"label": "Worker + D1 Database",
-		"products": [
-			"Workers",
-			"D1"
-		],
-		"categories": [
-			"storage"
-		],
-		"docs_url": "https://developers.cloudflare.com/d1/",
-		"preview_icon_url": "https://imagedelivery.net/wSMYJvS3Xw-n339CbDyDIA/6c63cca8-354a-4951-45a0-d58769ac6f00/public",
-		"preview_image_url": "https://imagedelivery.net/wSMYJvS3Xw-n339CbDyDIA/aa6158f1-7711-4485-f134-a8c802c0a800/preview",
-		"publish": true
-	},
-	"devDependencies": {
-		"typescript": "5.9.3",
-		"wrangler": "4.56.0"
-	},
-	"private": true,
-	"scripts": {
-		"cf-typegen": "wrangler types",
-		"check": "tsc && wrangler deploy --dry-run",
-		"deploy": "wrangler deploy",
-		"dev": "pnpm seedLocalD1 && wrangler dev",
-		"predeploy": "wrangler d1 migrations apply DB --remote",
-		"seedLocalD1": "wrangler d1 migrations apply DB --local"
-	}
+  "name": "gamexamxi-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "check": "turbo check",
+    "type-check": "turbo type-check",
+    "deploy": "turbo deploy",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "db:generate": "pnpm --filter @gamexamxi/db generate",
+    "db:migrate:local": "pnpm --filter @gamexamxi/db migrate:local",
+    "db:migrate:remote": "pnpm --filter @gamexamxi/db migrate:remote"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "eslint": "^10.0.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.15.2"
 }

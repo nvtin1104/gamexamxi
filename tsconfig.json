@@ -1,15 +1,8 @@
 {
-	"compilerOptions": {
-		"target": "esnext",
-		"lib": ["esnext"],
-		"module": "esnext",
-		"moduleResolution": "bundler",
-		"types": ["./worker-configuration.d.ts"],
-		"noEmit": true,
-		"isolatedModules": true,
-		"forceConsistentCasingInFileNames": true,
-		"skipLibCheck": true,
-		"strict": true
-	},
-	"include": ["src"]
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "target": "ES2022"
+  }
 }
