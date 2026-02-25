@@ -74,6 +74,15 @@ export const authApi = {
       body: JSON.stringify(body),
     }),
 
+  googleUrl: () =>
+    request<{ url: string; ok: boolean }>('/api/auth/google'),
+
+  googleCallback: (body: { code: string; state: string }) =>
+    request<{ token: string; user: User; ok: boolean }>('/api/auth/google/callback', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
   logout: (token: string) =>
     request<{ ok: boolean }>('/api/auth/logout', { method: 'POST' }, token),
 
@@ -84,15 +93,18 @@ export const authApi = {
 // ─── Games API ─────────────────────────────────────────────────
 
 export const gamesApi = {
-  list: (params: Record<string, string>, token: string) =>
+  list: (params: Record<string, string>, token?: string) =>
     request<ApiResponse<PredictionEvent[]>>(
       '/api/games?' + new URLSearchParams(params).toString(),
       {},
       token
     ),
 
-  get: (id: string, token: string) =>
+  get: (id: string, token?: string) =>
     request<ApiResponse<PredictionEvent & { myPrediction?: Prediction | null }>>(`/api/games/${id}`, {}, token),
+
+  stats: (id: string, token?: string) =>
+    request<ApiResponse<{ totalPredictions: number; distribution: Record<string, number> }>>(`/api/games/${id}/stats`, {}, token),
 
   create: (body: CreateEventBody, token: string) =>
     request<ApiResponse<PredictionEvent>>('/api/games', {
@@ -111,9 +123,6 @@ export const gamesApi = {
       method: 'POST',
       body: JSON.stringify({ correctAnswer }),
     }, token),
-
-  stats: (id: string, token: string) =>
-    request<ApiResponse<{ totalPredictions: number; distribution: Record<string, number> }>>(`/api/games/${id}/stats`, {}, token),
 }
 
 // ─── Groups API ────────────────────────────────────────────────

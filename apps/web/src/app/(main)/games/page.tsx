@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '@/store/auth'
+import { useLoginModal } from '@/store/loginModal'
 import { gamesApi } from '@/lib/api'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
@@ -14,13 +15,13 @@ import type { PredictionEvent } from '@gamexamxi/shared'
 type StatusFilter = 'OPEN' | 'LOCKED' | 'RESOLVED'
 
 export default function GamesPage() {
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
+  const { open: openLogin } = useLoginModal()
   const [status, setStatus] = useState<StatusFilter>('OPEN')
 
   const { data, isLoading } = useQuery({
     queryKey: ['games', status],
-    queryFn: () => gamesApi.list({ status, limit: '20' }, token!),
-    enabled: !!token,
+    queryFn: () => gamesApi.list({ status, limit: '20' }, token ?? undefined),
   })
 
   const events = (data?.data ?? []) as PredictionEvent[]
@@ -29,9 +30,13 @@ export default function GamesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-display-lg text-dark">GAMES</h1>
-        <Link href="/games/create">
-          <Button variant="primary">+ CREATE</Button>
-        </Link>
+        {isAuthenticated ? (
+          <Link href="/games/create">
+            <Button variant="primary">+ CREATE</Button>
+          </Link>
+        ) : (
+          <Button variant="primary" onClick={openLogin}>+ CREATE</Button>
+        )}
       </div>
 
       {/* Status Filter */}
@@ -92,6 +97,21 @@ export default function GamesPage() {
               </Card>
             </Link>
           ))}
+        </div>
+      )}
+
+      {/* Guest login nudge */}
+      {!isAuthenticated && events.length > 0 && (
+        <div className="card-brutal border-primary bg-primary/5 p-5 text-center">
+          <p className="font-mono text-sm font-bold text-dark mb-3">
+            Login to predict and earn points!
+          </p>
+          <button
+            onClick={openLogin}
+            className="btn-brutal bg-primary text-white px-6 py-2 font-mono text-xs font-bold uppercase"
+          >
+            Login with Google
+          </button>
         </div>
       )}
     </div>

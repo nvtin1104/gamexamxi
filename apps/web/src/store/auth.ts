@@ -20,9 +20,11 @@ type AuthStore = {
   token: string | null
   user: User | null
   isAuthenticated: boolean
+  _hasHydrated: boolean
   setAuth: (token: string, user: User) => void
   updateUser: (user: Partial<User>) => void
   clearAuth: () => void
+  setHasHydrated: (v: boolean) => void
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -31,17 +33,17 @@ export const useAuthStore = create<AuthStore>()(
       token: null,
       user: null,
       isAuthenticated: false,
+      _hasHydrated: false,
 
-      setAuth: (token, user) =>
-        set({ token, user, isAuthenticated: true }),
+      setAuth: (token, user) => set({ token, user, isAuthenticated: true }),
 
       updateUser: (updates) =>
         set((state) => ({
           user: state.user ? { ...state.user, ...updates } : null,
         })),
 
-      clearAuth: () =>
-        set({ token: null, user: null, isAuthenticated: false }),
+      clearAuth: () => set({ token: null, user: null, isAuthenticated: false }),
+      setHasHydrated: (v) => set({ _hasHydrated: v }),
     }),
     {
       name: 'gamexamxi-auth',
@@ -50,6 +52,9 @@ export const useAuthStore = create<AuthStore>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true)
+      },
     }
   )
 )

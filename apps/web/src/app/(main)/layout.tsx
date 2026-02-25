@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
-import { useEffect } from 'react'
+import { useLoginModal } from '@/store/loginModal'
+import { LoginModal } from '@/components/LoginModal'
 import { cn, formatPoints } from '@/lib/utils'
 
 const NAV_ITEMS = [
@@ -15,17 +16,9 @@ const NAV_ITEMS = [
 ]
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, user, token, clearAuth } = useAuthStore()
-  const router = useRouter()
+  const { isAuthenticated, user } = useAuthStore()
+  const { open: openLogin } = useLoginModal()
   const pathname = usePathname()
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login')
-    }
-  }, [isAuthenticated, router])
-
-  if (!isAuthenticated) return null
 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
@@ -54,22 +47,33 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             ))}
           </nav>
 
-          {/* User Info */}
+          {/* Right side: user info or login button */}
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2">
-              <span className="font-mono text-xs text-secondary font-bold">
-                {formatPoints(user?.points ?? 0)} PTS
-              </span>
-              <span className="font-mono text-xs text-accent">
-                🔥{user?.loginStreak ?? 0}
-              </span>
-            </div>
-            <Link
-              href={`/profile/${user?.username}`}
-              className="font-mono text-xs font-bold uppercase tracking-wider border border-white/30 px-3 py-1 hover:bg-white/10"
-            >
-              {user?.username?.slice(0, 8)}
-            </Link>
+            {isAuthenticated && user ? (
+              <>
+                <div className="hidden sm:flex items-center gap-2">
+                  <span className="font-mono text-xs text-secondary font-bold">
+                    {formatPoints(user.points ?? 0)} PTS
+                  </span>
+                  <span className="font-mono text-xs text-accent">
+                    🔥{user.loginStreak ?? 0}
+                  </span>
+                </div>
+                <Link
+                  href={`/profile/${user.username}`}
+                  className="font-mono text-xs font-bold uppercase tracking-wider border border-white/30 px-3 py-1 hover:bg-white/10"
+                >
+                  {user.username?.slice(0, 8)}
+                </Link>
+              </>
+            ) : (
+              <button
+                onClick={openLogin}
+                className="font-mono text-xs font-bold uppercase tracking-wider bg-primary text-white px-4 py-1.5 hover:bg-primary/90 transition-colors border border-primary"
+              >
+                LOGIN
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -97,6 +101,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           </Link>
         ))}
       </nav>
+
+      {/* Global Login Modal */}
+      <LoginModal />
     </div>
   )
 }
