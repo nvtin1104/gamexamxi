@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Bebas+Neue&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary:    #FF3B00;
+  --color-secondary:  #FFE500;
+  --color-accent:     #00FF88;
+  --color-bg:         #F5F0E8;
+  --color-surface:    #FFFFFF;
+  --color-dark:       #0A0A0A;
+  --color-muted:      #8A8A8A;
+
+  --font-display:     'Bebas Neue', sans-serif;
+  --font-mono:        'Space Mono', monospace;
+  --font-body:        'IBM Plex Mono', monospace;
+
+  --border:           3px solid #0A0A0A;
+  --shadow:           4px 4px 0px #0A0A0A;
+  --shadow-lg:        8px 8px 0px #0A0A0A;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    border-radius: 0 !important;
+  }
+
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-dark);
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+  }
+
+  input, textarea, select, button {
+    border-radius: 0 !important;
+    font-family: var(--font-mono);
+  }
+}
+
+@layer components {
+  /* ─── Brutal Button ─────────────────────────────────────── */
+  .btn-brutal {
+    @apply font-mono font-bold uppercase tracking-wider border-brutal border-dark;
+    box-shadow: var(--shadow);
+    transition: transform 0.08s, box-shadow 0.08s;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .btn-brutal:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #0A0A0A;
+  }
+  .btn-brutal:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px #0A0A0A;
+  }
+  .btn-brutal:disabled {
+    @apply opacity-50 cursor-not-allowed;
+    transform: none;
+    box-shadow: var(--shadow);
+  }
+
+  /* ─── Brutal Card ───────────────────────────────────────── */
+  .card-brutal {
+    @apply border-brutal border-dark bg-surface;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .card-brutal:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 11px 11px 0px #0A0A0A;
+  }
+
+  /* ─── Brutal Input ──────────────────────────────────────── */
+  .input-brutal {
+    @apply font-mono border-brutal border-dark bg-bg w-full px-3 py-2.5 text-dark;
+    outline: none;
+    transition: box-shadow 0.1s;
+  }
+  .input-brutal:focus {
+    border-color: var(--color-primary);
+    box-shadow: 3px 3px 0px var(--color-primary);
+  }
+  .input-brutal::placeholder {
+    @apply text-muted;
+    opacity: 0.6;
+  }
+
+  /* ─── Brutal Badge ──────────────────────────────────────── */
+  .badge-brutal {
+    @apply font-mono text-xs font-bold uppercase tracking-wider border-2 border-dark px-2 py-0.5;
+  }
+
+  /* ─── Brutalist Tag ─────────────────────────────────────── */
+  .tag-brutal {
+    @apply font-mono text-xs font-bold uppercase tracking-widest border border-dark px-2 py-1 bg-secondary text-dark inline-block;
+  }
+
+  /* ─── Score Bar ─────────────────────────────────────────── */
+  .score-bar {
+    @apply h-4 border-brutal border-dark;
+    background: var(--color-accent);
+    transition: width 0.5s ease;
+  }
+  .score-bar-bg {
+    @apply h-4 border-brutal border-dark bg-bg;
+  }
+}
+
+@layer utilities {
+  /* Scrollbar styling */
+  .scrollbar-brutal {
+    scrollbar-width: thin;
+    scrollbar-color: #0A0A0A transparent;
+  }
+  .scrollbar-brutal::-webkit-scrollbar {
+    width: 4px;
+  }
+  .scrollbar-brutal::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-brutal::-webkit-scrollbar-thumb {
+    background-color: #0A0A0A;
+  }
+
+  /* Marquee utility */
+  .animate-marquee-container {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}
