@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
+import { sqliteTable, text, integer, primaryKey } from 'drizzle-orm/sqlite-core'
 import { sql } from 'drizzle-orm'
 
 export const users = sqliteTable('users', {
@@ -12,8 +12,9 @@ export const users = sqliteTable('users', {
   bio: text('bio'),
   // status and role fields
   role: text('role').default('user').notNull(), // user, moderator, admin, root
-  accoutType: text('account_type').default('standard').notNull(), // standard, premium
+  account: text('account').default('standard').notNull(), // standard, premium, etc.
   status: text('status').default('active').notNull(),
+  customPermissions: text('custom_permissions'), // JSON array of extra Permission strings
   // Suspension fields block/ban users from accessing their accounts. They can be used for temporary or permanent suspensions.
   supendType: text('suspend_type'),
   supendUntil: text('suspend_until'),
@@ -77,3 +78,24 @@ export const userItems = sqliteTable('user_items', {
   purchasedAt: text('purchased_at').default(sql`(datetime('now'))`),
   equippedAt: text('equipped_at'),
 })
+
+// ─── Permission Groups ────────────────────────────────────────
+// Named sets of permissions that can be assigned to multiple users.
+// e.g. "Content Manager", "Shop Admin", "Moderator Plus"
+
+export const permissionGroups = sqliteTable('permission_groups', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  name: text('name').notNull().unique(),
+  description: text('description'),
+  permissions: text('permissions').notNull().default('[]'), // JSON array of Permission strings
+  createdAt: text('created_at').default(sql`(datetime('now'))`),
+})
+
+export const userPermissionGroups = sqliteTable('user_permission_groups', {
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  groupId: text('group_id').notNull().references(() => permissionGroups.id, { onDelete: 'cascade' }),
+  assignedAt: text('assigned_at').default(sql`(datetime('now'))`),
+  assignedBy: text('assigned_by').references(() => users.id, { onDelete: 'set null' }),
+}, (t) => ({
+  pk: primaryKey({ columns: [t.userId, t.groupId] }),
+}))

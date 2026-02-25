@@ -1,7 +1,7 @@
 -- Migration: 0002_update_users
 -- Syncs DB to the new users schema:
 --   - rename password_hash → password, avatar_url → avatar
---   - add: name, gg_id, role, account_type, status, suspend_*, experience, level
+--   - add: name, gg_id, role, account, status, suspend_*, experience, level
 --   - update point_transactions: add reference_table, balance_after, description
 --   - add level_up_transactions and experience_transactions tables
 
@@ -11,7 +11,7 @@ ALTER TABLE users ADD COLUMN password TEXT;
 ALTER TABLE users ADD COLUMN avatar TEXT;
 ALTER TABLE users ADD COLUMN gg_id TEXT;
 ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user';
-ALTER TABLE users ADD COLUMN account_type TEXT NOT NULL DEFAULT 'standard';
+ALTER TABLE users ADD COLUMN account TEXT NOT NULL DEFAULT 'standard';
 ALTER TABLE users ADD COLUMN status TEXT NOT NULL DEFAULT 'active';
 ALTER TABLE users ADD COLUMN suspend_type TEXT;
 ALTER TABLE users ADD COLUMN suspend_until TEXT;

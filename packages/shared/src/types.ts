@@ -84,8 +84,9 @@ export type User = {
   ggId: string | null
   bio: string | null
   role: UserPlatformRole
-  accoutType: UserAccountType
+  account: UserAccountType
   status: UserStatus
+  customPermissions: string[] | null  // extra permissions beyond role defaults
   supendType: SuspendType | null
   supendUntil: string | null
   supendReason: string | null
@@ -279,6 +280,24 @@ export type LeaderboardEntry = {
   score: number
   rank: number
   user?: Pick<User, 'id' | 'username' | 'avatar'> | null
+}
+
+// ─── Permission Group Types ────────────────────────────────────
+
+export type PermissionGroup = {
+  id: string
+  name: string
+  description: string | null
+  permissions: string[]       // deserialized from JSON
+  createdAt: string | null
+}
+
+export type UserPermissionGroup = {
+  userId: string
+  groupId: string
+  assignedAt: string | null
+  assignedBy: string | null
+  group?: PermissionGroup
 }
 
 // ─── Admin Types ──────────────────────────────────────────────

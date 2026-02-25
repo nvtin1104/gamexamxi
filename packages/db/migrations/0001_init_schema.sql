@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
   gg_id TEXT UNIQUE,
   bio TEXT,
   role TEXT NOT NULL DEFAULT 'user',
-  account_type TEXT NOT NULL DEFAULT 'standard',
+  account TEXT NOT NULL DEFAULT 'standard',
   status TEXT NOT NULL DEFAULT 'active',
   suspend_type TEXT,
   suspend_until TEXT,

@@ -7,6 +7,7 @@
  * Remote: pnpm db:seed:remote  (add --remote flag)
  *
  * Credentials seeded:
+ *   root@gamexamxi.com    / Root@12345   (role: root)
  *   admin@gamexamxi.com   / Admin@12345  (role: admin)
  *   mod@gamexamxi.com     / Test@12345   (role: moderator)
  *   alice@example.com     / Test@12345
@@ -77,6 +78,7 @@ function runSQL(sql, label) {
 
 const IDS = {
   // Users
+  root:     uuid(),
   admin:    uuid(),
   mod:      uuid(),
   alice:    uuid(),
@@ -128,12 +130,17 @@ DELETE FROM shop_items;
 
 // ─── Step 2: Users ────────────────────────────────────────────
 
+const rootPwd   = hashPassword('Root@12345')
 const adminPwd  = hashPassword('Admin@12345')
 const testPwd   = hashPassword('Test@12345')
 
 const usersSQL = `
-INSERT INTO users (id, username, name, email, password, bio, role, account_type, status,
+INSERT INTO users (id, username, name, email, password, bio, role, account, status,
   experience, level, points, total_points_earned, login_streak, last_login_at, created_at) VALUES
+(${sq(IDS.root)}, 'root', 'Root Admin', 'root@gamexamxi.com', ${sq(rootPwd)},
+ 'System root administrator', 'root', 'premium', 'active',
+ 99999, 99, 999999, 999999, 365, datetime('now','-1 day'), datetime('now','-365 day')),
+
 (${sq(IDS.admin)}, 'admin', 'Super Admin', 'admin@gamexamxi.com', ${sq(adminPwd)},
  'Platform administrator', 'admin', 'premium', 'active',
  9800, 12, 15000, 20000, 30, datetime('now','-1 day'), datetime('now','-60 day')),
@@ -338,7 +345,11 @@ INSERT INTO user_achievements (id, user_id, achievement_id, unlocked_at) VALUES
 (${sq(uuid())}, ${sq(IDS.charlie)}, ${sq(IDS.ach_group_creator)}, datetime('now','-15 day')),
 -- Admin
 (${sq(uuid())}, ${sq(IDS.admin)}, ${sq(IDS.ach_streak30)},   datetime('now','-5 day')),
-(${sq(uuid())}, ${sq(IDS.admin)}, ${sq(IDS.ach_ten_wins)},   datetime('now','-10 day'));
+(${sq(uuid())}, ${sq(IDS.admin)}, ${sq(IDS.ach_ten_wins)},   datetime('now','-10 day')),
+-- Root
+(${sq(uuid())}, ${sq(IDS.root)}, ${sq(IDS.ach_streak30)},    datetime('now','-300 day')),
+(${sq(uuid())}, ${sq(IDS.root)}, ${sq(IDS.ach_fifty_pred)},  datetime('now','-300 day')),
+(${sq(uuid())}, ${sq(IDS.root)}, ${sq(IDS.ach_ten_wins)},    datetime('now','-300 day'));
 `
 
 // ─── Step 10: Point Transactions ─────────────────────────────
@@ -357,7 +368,8 @@ INSERT INTO point_transactions
 (${sq(uuid())}, ${sq(IDS.charlie)}, 100,  'WELCOME_BONUS',  100,  'Welcome to GameXamXi!', datetime('now','-25 day')),
 (${sq(uuid())}, ${sq(IDS.charlie)}, 100,  'PREDICTION_WIN', 200,  NULL,                    datetime('now','-8 day')),
 
-(${sq(uuid())}, ${sq(IDS.admin)},   1000, 'ADMIN_GRANT',    1000, 'Admin seed points',     datetime('now','-60 day'));
+(${sq(uuid())}, ${sq(IDS.admin)},   1000, 'ADMIN_GRANT',    1000, 'Admin seed points',     datetime('now','-60 day')),
+(${sq(uuid())}, ${sq(IDS.root)},    9999, 'ADMIN_GRANT',    9999, 'Root seed points',      datetime('now','-365 day'));
 `
 
 // ─── Run ──────────────────────────────────────────────────────
@@ -379,6 +391,7 @@ console.log(`
 ✅ Seed complete!
 
 Accounts (password in parens):
+  root@gamexamxi.com    (Root@12345)  — role: root
   admin@gamexamxi.com   (Admin@12345) — role: admin
   mod@gamexamxi.com     (Test@12345)  — role: moderator
   alice@example.com     (Test@12345)
