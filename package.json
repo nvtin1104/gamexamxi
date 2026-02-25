@@ -4,6 +4,10 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "dev:web": "pnpm --filter @gamexamxi/web dev",
+    "dev:dashboard": "pnpm --filter @gamexamxi/dashboard dev",
+    "dev:worker": "pnpm --filter @gamexamxi/worker dev",
+    "dev:full": "turbo dev --filter=@gamexamxi/web --filter=@gamexamxi/dashboard --filter=@gamexamxi/worker",
     "check": "turbo check",
     "type-check": "turbo type-check",
     "deploy": "turbo deploy",
@@ -11,7 +15,11 @@
     "lint": "turbo lint",
     "db:generate": "pnpm --filter @gamexamxi/db generate",
     "db:migrate:local": "pnpm --filter @gamexamxi/db migrate:local",
-    "db:migrate:remote": "pnpm --filter @gamexamxi/db migrate:remote"
+    "db:migrate:remote": "pnpm --filter @gamexamxi/db migrate:remote",
+    "db:seed:local": "pnpm --filter @gamexamxi/db seed:local",
+    "db:seed:remote": "pnpm --filter @gamexamxi/db seed:remote",
+    "install:all": "pnpm install",
+    "clean": "turbo clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' + 2>/dev/null; true"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.56.1",
