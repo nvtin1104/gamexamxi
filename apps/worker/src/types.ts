@@ -1,5 +1,5 @@
 import type { AnalyticsEngineDataset, D1Database, DurableObjectNamespace, KVNamespace, Queue, R2Bucket } from '@cloudflare/workers-types'
-import type { PointsQueueMessage, AchievementQueueMessage, NotificationQueueMessage } from '@gamexamxi/shared'
+import type { PointsQueueMessage, AchievementQueueMessage, NotificationQueueMessage, Permission } from '@gamexamxi/shared'
 
 export type Env = {
   // D1 Database
@@ -24,12 +24,16 @@ export type Env = {
   // Secrets (set via wrangler secret)
   JWT_SECRET: string
   RESEND_API_KEY: string
+  GOOGLE_CLIENT_ID: string
+  GOOGLE_CLIENT_SECRET: string
   // Vars
   APP_ENV: string
   ADMIN_EMAILS?: string
+  GOOGLE_REDIRECT_URI: string
 }
 
 export type Variables = {
   userId: string
-  userEmail: string
+  userRole: string
+  userPermissions: Set<Permission>
 }

@@ -10,10 +10,11 @@ import { trackEvent } from '../lib/analytics'
 import { chunk } from '../lib/utils'
 import { CACHE_TTL_SHORT } from '@gamexamxi/shared'
 
-const gamesRouter = new Hono<{ Bindings: Env; Variables: Variables }>()
+// ─── Public (no auth) — guests can browse events ──────────────
+const publicGamesRouter = new Hono<{ Bindings: Env; Variables: Variables }>()
 
 // GET /api/games — List events
-gamesRouter.get('/', async (c) => {
+publicGamesRouter.get('/', async (c) => {
   const {
     status = 'OPEN',
     groupId,
@@ -41,7 +42,7 @@ gamesRouter.get('/', async (c) => {
 })
 
 // GET /api/games/:id — Get single event
-gamesRouter.get('/:id', async (c) => {
+publicGamesRouter.get('/:id', async (c) => {
   const eventId = c.req.param('id')
   const cacheKey = KVKeys.eventCache(eventId)
   const cached = await getCache(c.env.KV_CACHE, cacheKey)
@@ -57,6 +58,23 @@ gamesRouter.get('/:id', async (c) => {
   await setCache(c.env.KV_CACHE, cacheKey, event, CACHE_TTL_SHORT)
   return c.json({ data: event, ok: true })
 })
+
+// GET /api/games/:id/stats — Live stats (public)
+publicGamesRouter.get('/:id/stats', async (c) => {
+  const eventId = c.req.param('id')
+  try {
+    const roomId = c.env.GAME_ROOM.idFromName(eventId)
+    const room = c.env.GAME_ROOM.get(roomId)
+    const response = await room.fetch(new Request('https://do/stats'))
+    const stats = await response.json()
+    return c.json({ data: stats, ok: true })
+  } catch {
+    return c.json({ data: null, ok: false, error: 'Stats unavailable' })
+  }
+})
+
+// ─── Protected (auth required) — write operations ─────────────
+const gamesRouter = new Hono<{ Bindings: Env; Variables: Variables }>()
 
 // POST /api/games — Create event
 gamesRouter.post(
@@ -176,20 +194,6 @@ gamesRouter.post(
   }
 )
 
-// GET /api/games/:id/stats — Live stats from Durable Object
-gamesRouter.get('/:id/stats', async (c) => {
-  const eventId = c.req.param('id')
-  try {
-    const roomId = c.env.GAME_ROOM.idFromName(eventId)
-    const room = c.env.GAME_ROOM.get(roomId)
-    const response = await room.fetch(new Request('https://do/stats'))
-    const stats = await response.json()
-    return c.json({ data: stats, ok: true })
-  } catch {
-    return c.json({ data: null, ok: false, error: 'Stats unavailable' })
-  }
-})
-
 // POST /api/games/:id/resolve — Resolve event (creator/admin only)
 gamesRouter.post('/:id/resolve', async (c) => {
   const eventId = c.req.param('id')
@@ -291,4 +295,4 @@ gamesRouter.post('/:id/resolve', async (c) => {
   })
 })
 
-export { gamesRouter }
+export { publicGamesRouter, gamesRouter }

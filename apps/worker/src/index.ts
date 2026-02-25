@@ -3,7 +3,7 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import type { MessageBatch } from '@cloudflare/workers-types'
 import { authRouter } from './routes/auth'
-import { gamesRouter } from './routes/games'
+import { gamesRouter, publicGamesRouter } from './routes/games'
 import { groupsRouter } from './routes/groups'
 import { shopRouter } from './routes/shop'
 import { usersRouter } from './routes/users'
@@ -54,6 +54,9 @@ app.use('*', rateLimitMiddleware)
 app.route('/api/auth', authRouter)
 
 app.get('/api/health', (c) => c.json({ ok: true, env: c.env.APP_ENV }))
+
+// Public game read routes (no auth required — guests can browse events)
+app.route('/api/games', publicGamesRouter)
 
 // ─── Protected Routes ─────────────────────────────────────────
 

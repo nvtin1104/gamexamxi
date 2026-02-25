@@ -9,7 +9,8 @@
   },
   "vars": {
     "APP_ENV": "production",
-    "ADMIN_EMAILS": ""
+    "ADMIN_EMAILS": "",
+    "GOOGLE_REDIRECT_URI": "https://gamexamxi.com/auth/callback"
   },
   "d1_databases": [
     {
@@ -97,7 +98,8 @@
     "dev": {
       "vars": {
         "APP_ENV": "development",
-        "ADMIN_EMAILS": "admin@gamexamxi.com"
+        "ADMIN_EMAILS": "admin@gamexamxi.com",
+        "GOOGLE_REDIRECT_URI": "http://localhost:3000/auth/callback"
       },
       "d1_databases": [
         {

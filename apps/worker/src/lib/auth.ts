@@ -58,8 +58,9 @@ export function sanitizeUser(user: {
   ggId: string | null
   bio: string | null
   role: string
-  accoutType: string
+  account: string
   status: string
+  customPermissions: string | null
   supendType: string | null
   supendUntil: string | null
   supendReason: string | null
@@ -72,6 +73,12 @@ export function sanitizeUser(user: {
   lastLoginAt: string | null
   createdAt: string | null
 }) {
-  const { password: _, ...safe } = user
-  return safe
+  const { password: _pwd, ggId: _ggId, ...safe } = user
+  return {
+    ...safe,
+    // Parse JSON string → array for the API response
+    customPermissions: safe.customPermissions
+      ? (JSON.parse(safe.customPermissions) as string[])
+      : null,
+  }
 }

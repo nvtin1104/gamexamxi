@@ -26,6 +26,9 @@ export const KVKeys = {
 
   // Login streak lock (prevent double-claim)
   streakClaim: (userId: string, date: string) => `streak:${userId}:${date}`,
+
+  // Google OAuth state (CSRF protection, 10-min TTL)
+  oauthState: (state: string) => `oauth_state:${state}`,
 }
 
 // ─── Session Management ──────────────────────────────────────
