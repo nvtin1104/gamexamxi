@@ -31,6 +31,9 @@ export const PERMISSIONS = {
   QUESTS_CREATE: 'quests:create',
   QUESTS_MANAGE: 'quests:manage',    // manage any group quest
 
+  // Uploads
+  UPLOADS_MANAGE: 'uploads:manage',  // manage any upload (delete others' files, etc.)
+
   // Admin panel
   ADMIN_PANEL: 'admin:panel',        // access admin dashboard
   ADMIN_ROOT:  'admin:root',         // root-level operations (delete users, etc.)
@@ -65,6 +68,7 @@ const adminPerms: Permission[] = [
   PERMISSIONS.USERS_MANAGE,
   PERMISSIONS.SHOP_MANAGE,
   PERMISSIONS.POINTS_GRANT,
+  PERMISSIONS.UPLOADS_MANAGE,
   PERMISSIONS.ADMIN_PANEL,
 ]
 

@@ -120,3 +120,38 @@ export const SESSION_TTL_SECONDS = 86400 * 30 // 30 days
 export const CACHE_TTL_SHORT = 30 // 30 seconds
 export const CACHE_TTL_MEDIUM = 300 // 5 minutes
 export const CACHE_TTL_LONG = 3600 // 1 hour
+
+// ─── Upload Constants ─────────────────────────────────────────
+
+export const UPLOAD_CATEGORIES = {
+  AVATAR: 'avatar',
+  GROUP_AVATAR: 'group_avatar',
+  GROUP_COVER: 'group_cover',
+  SHOP_ASSET: 'shop_asset',
+  ACHIEVEMENT_ICON: 'achievement_icon',
+  GENERAL: 'general',
+} as const
+
+export type UploadCategory = typeof UPLOAD_CATEGORIES[keyof typeof UPLOAD_CATEGORIES]
+
+/** Max file size in bytes per category */
+export const UPLOAD_MAX_SIZE: Record<UploadCategory, number> = {
+  avatar: 2 * 1024 * 1024,           // 2 MB
+  group_avatar: 2 * 1024 * 1024,     // 2 MB
+  group_cover: 5 * 1024 * 1024,      // 5 MB
+  shop_asset: 5 * 1024 * 1024,       // 5 MB
+  achievement_icon: 2 * 1024 * 1024,  // 2 MB
+  general: 10 * 1024 * 1024,         // 10 MB
+}
+
+/** Allowed MIME types per category */
+export const UPLOAD_ALLOWED_TYPES: Record<UploadCategory, string[]> = {
+  avatar:           ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+  group_avatar:     ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+  group_cover:      ['image/jpeg', 'image/png', 'image/webp'],
+  shop_asset:       ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'],
+  achievement_icon: ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'],
+  general:          ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'application/pdf'],
+}
+
+export const ALL_UPLOAD_CATEGORIES = Object.values(UPLOAD_CATEGORIES)

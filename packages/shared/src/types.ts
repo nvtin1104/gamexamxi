@@ -325,3 +325,27 @@ export type WSMessage<T = unknown> = {
   type: WSMessageType
   data: T
 }
+
+// ─── Upload Types ─────────────────────────────────────────────
+
+export type Upload = {
+  id: string
+  key: string
+  url: string
+  filename: string
+  mimeType: string
+  size: number
+  category: string
+  entityId: string | null
+  uploadedBy: string
+  createdAt: string | null
+}
+
+export type UploadResponse = {
+  id: string
+  url: string
+  key: string
+  filename: string
+  mimeType: string
+  size: number
+}
