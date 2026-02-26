@@ -1,11 +1,25 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { authApi } from '@/lib/api'
 import { useAuthStore } from '@/store/auth'
 
-export default function GoogleCallbackPage() {
+const Spinner = () => (
+  <div className="min-h-screen bg-bg flex items-center justify-center">
+    <div className="card-brutal bg-white p-8 text-center border-brutal border-dark">
+      <div className="font-display text-display-md text-dark mb-3">
+        GAME<span className="text-primary">XAMXI</span>
+      </div>
+      <p className="font-mono text-sm text-muted">Signing you in with Google...</p>
+      <div className="mt-5 flex justify-center">
+        <div className="w-6 h-6 border-2 border-dark border-t-transparent rounded-full animate-spin" />
+      </div>
+    </div>
+  </div>
+)
+
+function CallbackInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const setAuth = useAuthStore((s) => s.setAuth)
@@ -34,17 +48,13 @@ export default function GoogleCallbackPage() {
       })
   }, [searchParams, router, setAuth])
 
+  return <Spinner />
+}
+
+export default function GoogleCallbackPage() {
   return (
-    <div className="min-h-screen bg-bg flex items-center justify-center">
-      <div className="card-brutal bg-white p-8 text-center border-brutal border-dark">
-        <div className="font-display text-display-md text-dark mb-3">
-          GAME<span className="text-primary">XAMXI</span>
-        </div>
-        <p className="font-mono text-sm text-muted">Signing you in with Google...</p>
-        <div className="mt-5 flex justify-center">
-          <div className="w-6 h-6 border-2 border-dark border-t-transparent rounded-full animate-spin" />
-        </div>
-      </div>
-    </div>
+    <Suspense fallback={<Spinner />}>
+      <CallbackInner />
+    </Suspense>
   )
 }

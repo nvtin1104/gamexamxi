@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS users (
   suspend_until TEXT,
   suspend_reason TEXT,
   suspend_at TEXT,
+  custom_permissions TEXT,
   experience INTEGER NOT NULL DEFAULT 0,
   level INTEGER NOT NULL DEFAULT 1,
   points INTEGER NOT NULL DEFAULT 0,
@@ -204,6 +205,43 @@ CREATE INDEX IF NOT EXISTS idx_group_members_group ON group_members(group_id);
 CREATE INDEX IF NOT EXISTS idx_quests_group ON group_quests(group_id);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
+
+-- Permission groups (merged from 0005_permission_groups.sql)
+CREATE TABLE IF NOT EXISTS permission_groups (
+  id TEXT PRIMARY KEY NOT NULL,
+  name TEXT NOT NULL UNIQUE,
+  description TEXT,
+  permissions TEXT NOT NULL DEFAULT '[]',
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS user_permission_groups (
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  group_id TEXT NOT NULL REFERENCES permission_groups(id) ON DELETE CASCADE,
+  assigned_at TEXT DEFAULT (datetime('now')),
+  assigned_by TEXT REFERENCES users(id) ON DELETE SET NULL,
+  PRIMARY KEY (user_id, group_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_upg_user  ON user_permission_groups(user_id);
+CREATE INDEX IF NOT EXISTS idx_upg_group ON user_permission_groups(group_id);
+
+-- Uploads table (merged from 0006_uploads.sql)
+CREATE TABLE IF NOT EXISTS uploads (
+  id TEXT PRIMARY KEY,
+  key TEXT NOT NULL UNIQUE,
+  filename TEXT NOT NULL,
+  mime_type TEXT NOT NULL,
+  size INTEGER NOT NULL,
+  category TEXT NOT NULL,
+  entity_id TEXT,
+  uploaded_by TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_uploads_uploaded_by ON uploads(uploaded_by);
+CREATE INDEX IF NOT EXISTS idx_uploads_category ON uploads(category);
+CREATE INDEX IF NOT EXISTS idx_uploads_entity_id ON uploads(entity_id);
 
 -- Seed achievements
 INSERT OR IGNORE INTO achievements (id, code, name, description, badge_rarity, point_reward, condition) VALUES
