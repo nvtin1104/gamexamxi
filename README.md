@@ -28,6 +28,10 @@ pnpm install
 
 ---
 
+> 📖 **Xem hướng dẫn đầy đủ tại [DEPLOY.md](./DEPLOY.md)** — bao gồm local dev, deploy production, và troubleshooting Windows.
+
+---
+
 ## 2. Chạy Local (Dev)
 
 ### Bước 2.1 — Đăng nhập Cloudflare
@@ -100,10 +104,10 @@ pnpm --filter @gamexamxi/web dev
 ```bash
 cd apps/worker
 
-pnpm exec wrangler kv:namespace create KV_SESSIONS
-pnpm exec wrangler kv:namespace create KV_CACHE
-pnpm exec wrangler kv:namespace create KV_LEADERBOARD
-pnpm exec wrangler kv:namespace create KV_RATELIMIT
+pnpm exec wrangler kv namespace create KV_SESSIONS
+pnpm exec wrangler kv namespace create KV_CACHE
+pnpm exec wrangler kv namespace create KV_LEADERBOARD
+pnpm exec wrangler kv namespace create KV_RATELIMIT
 ```
 
 Mỗi lệnh sẽ in ra ID. Ví dụ:
@@ -113,10 +117,10 @@ Mỗi lệnh sẽ in ra ID. Ví dụ:
 
 Cũng tạo preview IDs cho local dev:
 ```bash
-pnpm exec wrangler kv:namespace create KV_SESSIONS --preview
-pnpm exec wrangler kv:namespace create KV_CACHE --preview
-pnpm exec wrangler kv:namespace create KV_LEADERBOARD --preview
-pnpm exec wrangler kv:namespace create KV_RATELIMIT --preview
+pnpm exec wrangler kv namespace create KV_SESSIONS --preview
+pnpm exec wrangler kv namespace create KV_CACHE --preview
+pnpm exec wrangler kv namespace create KV_LEADERBOARD --preview
+pnpm exec wrangler kv namespace create KV_RATELIMIT --preview
 ```
 
 ### Bước 3.2 — Cập nhật `apps/worker/wrangler.json`
@@ -137,7 +141,7 @@ Thay các giá trị `REPLACE_*` bằng IDs thực:
 ### Bước 3.3 — Tạo R2 Bucket
 
 ```bash
-pnpm exec wrangler r2 bucket create gamexamxi-public
+pnpm exec wrangler r2 bucket create gamexamxi-media
 ```
 
 ### Bước 3.4 — Tạo Queues
@@ -315,7 +319,7 @@ pnpm --filter @gamexamxi/worker exec wrangler d1 execute gamexamxi-db \
 pnpm --filter @gamexamxi/worker exec wrangler tail
 
 # Liệt kê KV keys
-pnpm --filter @gamexamxi/worker exec wrangler kv:key list \
+pnpm --filter @gamexamxi/worker exec -- wrangler kv key list \
   --namespace-id=<KV_SESSIONS_ID>
 
 # Wrangler dry-run (kiểm tra build không deploy)

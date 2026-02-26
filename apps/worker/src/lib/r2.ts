@@ -31,7 +31,8 @@ export async function deleteFromR2(
  * Construct a public URL for an R2 object via custom domain
  */
 export function getR2PublicUrl(key: string, cdnDomain: string): string {
-  return `https://${cdnDomain}/${key}`
+  const domain = cdnDomain.replace(/^https?:\/\//, '').replace(/\/$/, '')
+  return `https://${domain}/${key}`
 }
 
 /**

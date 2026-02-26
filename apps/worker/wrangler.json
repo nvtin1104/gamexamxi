@@ -2,7 +2,9 @@
   "name": "gamexamxi-api",
   "main": "src/index.ts",
   "compatibility_date": "2025-10-08",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "upload_source_maps": true,
   "observability": {
     "enabled": true
@@ -23,37 +25,42 @@
   ],
   "kv_namespaces": [
     {
-      "binding": "KV_SESSIONS",
-      "id": "REPLACE_KV_SESSIONS_ID",
-      "preview_id": "REPLACE_KV_SESSIONS_PREVIEW_ID"
+      "binding": "KV_CACHE",
+      "id": "bc46e86c63a24f6fab3e846e78276c7e"
     },
     {
-      "binding": "KV_CACHE",
-      "id": "REPLACE_KV_CACHE_ID",
-      "preview_id": "REPLACE_KV_CACHE_PREVIEW_ID"
+      "binding": "KV_SESSIONS",
+      "id": "5b022925841841c98393eb9c0931e43b"
     },
     {
       "binding": "KV_LEADERBOARD",
-      "id": "REPLACE_KV_LB_ID",
-      "preview_id": "REPLACE_KV_LB_PREVIEW_ID"
+      "id": "4d35ee15882f410bb6db5fbbf8f1e1b0"
     },
     {
       "binding": "KV_RATELIMIT",
-      "id": "REPLACE_KV_RL_ID",
-      "preview_id": "REPLACE_KV_RL_PREVIEW_ID"
+      "id": "2f5cbd77e2c04d1ca1c92e4e0bf1f351"
     }
   ],
   "r2_buckets": [
     {
       "binding": "R2_PUBLIC",
-      "bucket_name": "gamexamxi-public"
+      "bucket_name": "gamexamxi-media"
     }
   ],
   "queues": {
     "producers": [
-      { "queue": "points-queue", "binding": "POINTS_QUEUE" },
-      { "queue": "achievements-queue", "binding": "ACHIEVEMENTS_QUEUE" },
-      { "queue": "notifications-queue", "binding": "NOTIFICATIONS_QUEUE" }
+      {
+        "queue": "points-queue",
+        "binding": "POINTS_QUEUE"
+      },
+      {
+        "queue": "achievements-queue",
+        "binding": "ACHIEVEMENTS_QUEUE"
+      },
+      {
+        "queue": "notifications-queue",
+        "binding": "NOTIFICATIONS_QUEUE"
+      }
     ],
     "consumers": [
       {
@@ -78,21 +85,34 @@
   },
   "durable_objects": {
     "bindings": [
-      { "name": "GAME_ROOM", "class_name": "GameRoom" },
-      { "name": "GROUP_ROOM", "class_name": "GroupRoom" },
-      { "name": "POINTS_LEDGER", "class_name": "PointsLedger" }
+      {
+        "name": "GAME_ROOM",
+        "class_name": "GameRoom"
+      },
+      {
+        "name": "GROUP_ROOM",
+        "class_name": "GroupRoom"
+      },
+      {
+        "name": "POINTS_LEDGER",
+        "class_name": "PointsLedger"
+      }
     ]
   },
   "migrations": [
     {
       "tag": "v1",
-      "new_classes": ["GameRoom", "GroupRoom", "PointsLedger"]
+      "new_sqlite_classes": [
+        "GameRoom",
+        "GroupRoom",
+        "PointsLedger"
+      ]
     }
   ],
   "analytics_engine_datasets": [
     {
-      "binding": "ANALYTICS",
-      "dataset": "gamexamxi_events"
+      "binding": "GAMEXAMXI",
+      "dataset": "gamexamxi"
     }
   ],
   "env": {
