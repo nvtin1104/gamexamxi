@@ -30,6 +30,7 @@ export type Env = {
   APP_ENV: string
   ADMIN_EMAILS?: string
   GOOGLE_REDIRECT_URI: string
+  R2_PUBLIC_DOMAIN: string
 }
 
 export type Variables = {

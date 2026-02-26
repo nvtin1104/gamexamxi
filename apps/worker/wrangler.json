@@ -10,7 +10,8 @@
   "vars": {
     "APP_ENV": "production",
     "ADMIN_EMAILS": "",
-    "GOOGLE_REDIRECT_URI": "https://gamexamxi.com/auth/callback"
+    "GOOGLE_REDIRECT_URI": "https://gamexamxi.com/auth/callback",
+    "R2_PUBLIC_DOMAIN": "https://pub-67b0f300d9294550b9d6fb51c2b0bf51.r2.dev"
   },
   "d1_databases": [
     {
@@ -99,7 +100,8 @@
       "vars": {
         "APP_ENV": "development",
         "ADMIN_EMAILS": "admin@gamexamxi.com",
-        "GOOGLE_REDIRECT_URI": "http://localhost:3000/auth/callback"
+        "GOOGLE_REDIRECT_URI": "http://localhost:3000/auth/callback",
+        "R2_PUBLIC_DOMAIN": "cdn.gamexamxi.com"
       },
       "d1_databases": [
         {

@@ -9,6 +9,7 @@ import { shopRouter } from './routes/shop'
 import { usersRouter } from './routes/users'
 import { questsRouter } from './routes/quests'
 import { adminRouter } from './routes/admin'
+import { uploadsRouter } from './routes/uploads'
 import { authMiddleware } from './middleware/auth'
 import { adminAuthMiddleware } from './middleware/adminAuth'
 import { rateLimitMiddleware } from './middleware/ratelimit'
@@ -66,6 +67,7 @@ app.route('/api/games', gamesRouter)
 app.route('/api/groups', groupsRouter)
 app.route('/api/shop', shopRouter)
 app.route('/api/quests', questsRouter)
+app.route('/api/uploads', uploadsRouter)
 
 // ─── Admin Routes (require auth + admin check) ────────────────
 
@@ -86,6 +88,23 @@ app.get('/ws/group/:groupId', async (c) => {
   const id = c.env.GROUP_ROOM.idFromName(groupId)
   const room = c.env.GROUP_ROOM.get(id)
   return room.fetch(c.req.raw)
+})
+
+// ─── CDN Proxy (serves R2 files — useful for dev & fallback) ──
+
+app.get('/cdn/*', async (c) => {
+  const key = c.req.path.replace('/cdn/', '')
+  if (!key) return c.json({ error: 'Missing key', ok: false }, 400)
+
+  const object = await c.env.R2_PUBLIC.get(key)
+  if (!object) return c.notFound()
+
+  const headers = new Headers()
+  headers.set('Content-Type', object.httpMetadata?.contentType ?? 'application/octet-stream')
+  headers.set('Cache-Control', object.httpMetadata?.cacheControl ?? 'public, max-age=31536000, immutable')
+  headers.set('ETag', object.httpEtag)
+
+  return new Response(object.body as ReadableStream, { headers })
 })
 
 // ─── 404 Handler ──────────────────────────────────────────────
