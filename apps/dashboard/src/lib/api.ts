@@ -6,6 +6,8 @@ import type {
   PermissionGroup,
   ApiResponse,
   PaginatedResponse,
+  Upload,
+  UploadResponse,
 } from '@gamexamxi/shared'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8787'
@@ -189,4 +191,56 @@ export const adminApi = {
 
   unassignUserGroup: (userId: string, groupId: string, token: string) =>
     request<{ ok: boolean }>(`/api/admin/users/${userId}/groups/${groupId}`, { method: 'DELETE' }, token),
+}
+
+// ─── Upload API ────────────────────────────────────────────────
+
+export const uploadApi = {
+  /**
+   * Upload a file to R2. Uses FormData (multipart/form-data).
+   */
+  upload: async (
+    file: File,
+    category: string,
+    token: string,
+    entityId?: string,
+  ): Promise<ApiResponse<UploadResponse>> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('category', category)
+    if (entityId) formData.append('entityId', entityId)
+
+    const res = await fetch(`${API_URL}/api/uploads`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    })
+    const data = await res.json()
+    if (!res.ok) throw new ApiError(res.status, data.error ?? 'Upload failed', data)
+    return data
+  },
+
+  /** List current user's uploads */
+  my: (token: string, params?: { category?: string; limit?: number; offset?: number }) =>
+    request<ApiResponse<PaginatedResponse<Upload>>>(
+      '/api/uploads/my?' + new URLSearchParams(
+        Object.entries(params ?? {}).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])
+      ).toString(),
+      {},
+      token,
+    ),
+
+  /** Delete an upload */
+  delete: (id: string, token: string) =>
+    request<{ ok: boolean }>(`/api/uploads/${id}`, { method: 'DELETE' }, token),
+
+  /** Admin: list all uploads */
+  all: (token: string, params?: { category?: string; limit?: number; offset?: number }) =>
+    request<ApiResponse<PaginatedResponse<Upload>>>(
+      '/api/uploads/all?' + new URLSearchParams(
+        Object.entries(params ?? {}).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])
+      ).toString(),
+      {},
+      token,
+    ),
 }

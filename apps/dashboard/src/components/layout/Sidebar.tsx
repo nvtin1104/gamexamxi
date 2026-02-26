@@ -10,6 +10,7 @@ import {
   LogOut,
   Zap,
   ShieldCheck,
+  Upload,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
@@ -23,6 +24,7 @@ const navItems = [
   { href: '/groups', label: 'Groups', icon: UsersRound },
   { href: '/transactions', label: 'Transactions', icon: Receipt },
   { href: '/permission-groups', label: 'Perm Groups', icon: ShieldCheck },
+  { href: '/uploads', label: 'Uploads', icon: Upload },
 ]
 
 export function Sidebar() {
