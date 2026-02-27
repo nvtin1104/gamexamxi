@@ -200,44 +200,70 @@ Verify hiện tại đang có:
 
 ---
 
-## 5. Deploy lên Production
+## 5. Deploy lên Production (qua Git)
 
-### 5.1 — Deploy Worker
+> ⚡ Mọi thứ tự động deploy khi push lên `main`:
+> - **Worker (API)**: GitHub Actions → `wrangler deploy`
+> - **Web + Dashboard**: Cloudflare Pages (Git integration) → tự build Next.js
 
-```bash
-pnpm --filter @gamexamxi/worker exec -- wrangler deploy
-```
+### 5.1 — Setup GitHub Actions cho Worker
 
-> Nếu warning về multiple environments, thêm `--env=""` để tường minh:
-> ```bash
-> pnpm --filter @gamexamxi/worker exec -- wrangler deploy --env=""
-> ```
+Workflow đã có sẵn tại `.github/workflows/deploy.yml`.  
+Chỉ cần thêm **secrets** trong GitHub repo:
 
-Output sẽ hiện URL worker:
-```
-https://gamexamxi-api.<subdomain>.workers.dev
-```
+1. GitHub repo → **Settings** → **Secrets and variables** → **Actions**
+2. Thêm **Repository secrets**:
+   ```
+   CF_API_TOKEN   = Cloudflare API Token (tạo ở dash.cloudflare.com → My Profile → API Tokens)
+   CF_ACCOUNT_ID  = Account ID (trang chính của Cloudflare Dashboard)
+   ```
 
-### 5.2 — Deploy Frontend (Web + Dashboard) lên Cloudflare Pages
+> **Tạo API Token:** dash.cloudflare.com → My Profile → API Tokens → Create Token  
+> Template: **Edit Cloudflare Workers** (bao gồm Workers, D1, KV, R2, Queues)
 
-Cách nhanh nhất: dùng **Cloudflare Dashboard**:
+### 5.2 — Setup Cloudflare Pages cho Web
 
 1. [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → **Pages**
-2. **Connect to Git** → chọn repo
-3. Framework: **Next.js**
-4. Build settings cho **Web**:
+2. **Connect to Git** → chọn repo `gamexamxi`
+3. **Project name**: `gamexamxi-web`
+4. **Build settings**:
+   - Framework preset: **Next.js**
    - Build command: `pnpm --filter @gamexamxi/web build`
-   - Output: `apps/web/.next`
-5. Build settings cho **Dashboard**:
-   - Build command: `pnpm --filter @gamexamxi/dashboard build`
-   - Output: `apps/dashboard/.next`
-6. Environment variables:
+   - Build output directory: `apps/web/.next`
+   - Root directory: `/` (giữ mặc định)
+5. **Environment variables** (Settings → Environment variables):
    ```
    NEXT_PUBLIC_API_URL = https://gamexamxi-api.<subdomain>.workers.dev
    NEXT_PUBLIC_WS_URL  = wss://gamexamxi-api.<subdomain>.workers.dev
-   NODE_VERSION        = 20
+   NODE_VERSION        = 22
    PNPM_VERSION        = 9
    ```
+
+### 5.3 — Setup Cloudflare Pages cho Dashboard
+
+1. [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → **Pages**
+2. **Connect to Git** → chọn **cùng repo** `gamexamxi`
+3. **Project name**: `gamexamxi-dashboard`
+4. **Build settings**:
+   - Framework preset: **Next.js**
+   - Build command: `pnpm --filter @gamexamxi/dashboard build`
+   - Build output directory: `apps/dashboard/.next`
+   - Root directory: `/` (giữ mặc định)
+5. **Environment variables**:
+   ```
+   NEXT_PUBLIC_API_URL = https://gamexamxi-api.<subdomain>.workers.dev
+   NODE_VERSION        = 22
+   PNPM_VERSION        = 9
+   ```
+
+### 5.4 — (Quan trọng) Xóa/disable project cũ bị lỗi
+
+Nếu bạn đã có 1 Cloudflare project đang chạy `npx wrangler deploy` từ root → **xóa hoặc disable nó**:
+
+1. dash.cloudflare.com → Workers & Pages → chọn project bị lỗi
+2. Settings → Delete project
+
+> Project cũ lỗi vì chạy `wrangler deploy` từ root monorepo. Worker giờ deploy qua GitHub Actions.
 
 ### 5.3 — Kiểm tra sau deploy
 
