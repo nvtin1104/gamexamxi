@@ -1,0 +1,35 @@
+name = "gamexamxi-api"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ALLOWED_ORIGINS = "http://localhost:4321"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gamexamxi-db"
+database_id = "placeholder-replace-after-creation"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "placeholder-replace-after-creation"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "placeholder-replace-after-creation"
+
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "gamexamxi-storage"
+
+[[queues.producers]]
+binding = "JOB_QUEUE"
+queue = "gamexamxi-job-queue"
+
+[[queues.consumers]]
+queue = "gamexamxi-job-queue"
+max_batch_size = 10
+
+[triggers]
+crons = ["0 * * * *"]

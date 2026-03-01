@@ -1,0 +1,17 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro'
+import { StatsCards } from '@/components/dashboard/StatsCards'
+import { RecentActivity } from '@/components/dashboard/RecentActivity'
+---
+
+<DashboardLayout title="Dashboard">
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
+      <p class="text-muted-foreground">Welcome to Gamexamxi admin panel.</p>
+    </div>
+
+    <StatsCards client:load />
+    <RecentActivity client:load />
+  </div>
+</DashboardLayout>
