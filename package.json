@@ -1,0 +1,21 @@
+{
+  "name": "gamexamxi",
+  "private": true,
+  "scripts": {
+    "dev:api": "pnpm --filter @gamexamxi/api dev",
+    "dev:dashboard": "pnpm --filter @gamexamxi/dashboard dev",
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "db:generate": "pnpm --filter @gamexamxi/api db:generate",
+    "db:migrate": "pnpm --filter @gamexamxi/api db:migrate"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "typescript": "^5.6.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20"
+  }
+}
