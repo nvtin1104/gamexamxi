@@ -35,7 +35,7 @@ export function LoginForm() {
       const res = await api.auth.login({ email: data.email!, password: data.password! })
       setTokens(res.data.accessToken, res.data.refreshToken)
       setAuthState(res.data.user, res.data.accessToken)
-      window.location.href = '/dashboard'
+      window.location.href = '/'
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
     } finally {

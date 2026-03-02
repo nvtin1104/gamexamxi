@@ -75,3 +75,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Theme ripple transition: top-right → bottom-left water drop */
+.theme-ripple {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 1;
+  background: var(--ripple-color);
+  clip-path: circle(0% at var(--ripple-x) var(--ripple-y));
+  transition:
+    clip-path 550ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 350ms ease;
+}
+
+.theme-ripple--active {
+  clip-path: circle(var(--ripple-radius) at var(--ripple-x) var(--ripple-y));
+}
+
+.theme-ripple--fade {
+  opacity: 0;
+}
