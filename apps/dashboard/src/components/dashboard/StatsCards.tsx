@@ -1,56 +1,90 @@
-import { Users, Activity, DollarSign, TrendingUp } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  DollarSign,
+  Users,
+  CreditCard,
+  Activity,
+  TrendingUp,
+  TrendingDown,
+  type LucideIcon,
+} from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-const stats = [
+interface StatCard {
+  title: string
+  value: string
+  change: string
+  trend: "up" | "down"
+  description: string
+  icon: LucideIcon
+}
+
+const stats: StatCard[] = [
   {
-    title: 'Total Users',
-    value: '2,350',
-    change: '+12.5%',
-    icon: Users,
-  },
-  {
-    title: 'Active Sessions',
-    value: '1,247',
-    change: '+4.1%',
-    icon: Activity,
-  },
-  {
-    title: 'Revenue',
-    value: '$45,231',
-    change: '+20.1%',
+    title: "Total Revenue",
+    value: "$45,231.89",
+    change: "+20.1%",
+    trend: "up",
+    description: "from last month",
     icon: DollarSign,
   },
   {
-    title: 'Growth',
-    value: '+573',
-    change: '+8.2%',
-    icon: TrendingUp,
+    title: "Subscriptions",
+    value: "+2,350",
+    change: "+180.1%",
+    trend: "up",
+    description: "from last month",
+    icon: Users,
+  },
+  {
+    title: "Sales",
+    value: "+12,234",
+    change: "+19%",
+    trend: "up",
+    description: "from last month",
+    icon: CreditCard,
+  },
+  {
+    title: "Active Now",
+    value: "+573",
+    change: "+201",
+    trend: "up",
+    description: "since last hour",
+    icon: Activity,
   },
 ]
+
+function StatCard({ stat }: { stat: StatCard }) {
+  const Icon = stat.icon
+  const TrendIcon = stat.trend === "up" ? TrendingUp : TrendingDown
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+        <Icon className="h-4 w-4 text-muted-foreground" />
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{stat.value}</div>
+        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+          <TrendIcon
+            className={`h-3 w-3 ${stat.trend === "up" ? "text-emerald-500" : "text-red-500"}`}
+          />
+          <span className={stat.trend === "up" ? "text-emerald-500" : "text-red-500"}>
+            {stat.change}
+          </span>
+          {stat.description}
+        </p>
+      </CardContent>
+    </Card>
+  )
+}
 
 export function StatsCards() {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {stats.map((stat) => {
-        const Icon = stat.icon
-        return (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              <Icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-emerald-500">{stat.change}</span> from
-                last month
-              </p>
-            </CardContent>
-          </Card>
-        )
-      })}
+      {stats.map((stat) => (
+        <StatCard key={stat.title} stat={stat} />
+      ))}
     </div>
   )
 }
