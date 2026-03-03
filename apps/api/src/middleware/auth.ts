@@ -1,6 +1,7 @@
 import { createMiddleware } from 'hono/factory'
 import { verify } from 'hono/jwt'
 import type { Bindings, Variables } from '../types'
+import { PermissionService } from '../services/permission.service'
 
 /**
  * JWT authentication middleware.
@@ -44,5 +45,38 @@ export const requireRole = (...allowedRoles: string[]) =>
     if (!allowedRoles.includes(role)) {
       return c.json({ error: 'Forbidden' }, 403)
     }
+    await next()
+  })
+
+/**
+ * Permission-based access guard.
+ * Resolves user's merged permissions from groups, caches in context.
+ * Admins always pass.
+ * Usage: `route.use(requirePermission('game:create'))`
+ */
+export const requirePermission = (...requiredPermissions: string[]) =>
+  createMiddleware<{
+    Bindings: Bindings
+    Variables: Variables
+  }>(async (c, next) => {
+    const role = c.get('role')
+    if (role === 'admin') {
+      await next()
+      return
+    }
+
+    // Resolve & cache permissions in context
+    let perms = c.get('permissions')
+    if (!perms) {
+      const permService = new PermissionService(c.env.DB)
+      perms = await permService.getUserPermissions(c.get('userId'))
+      c.set('permissions', perms)
+    }
+
+    const hasAll = requiredPermissions.every((p) => perms!.includes(p))
+    if (!hasAll) {
+      return c.json({ error: 'Forbidden — insufficient permissions' }, 403)
+    }
+
     await next()
   })

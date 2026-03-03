@@ -1,5 +1,6 @@
 import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core'
 import { createId } from '@paralleldrive/cuid2'
+import { APP_ROLES } from '../../constants/permissions'
 
 /** Users table */
 export const users = sqliteTable(
@@ -10,7 +11,7 @@ export const users = sqliteTable(
       .$defaultFn(() => createId()),
     email: text('email').notNull().unique(),
     name: text('name').notNull(),
-    role: text('role', { enum: ['admin', 'user', 'viewer'] })
+    role: text('role', { enum: APP_ROLES })
       .notNull()
       .default('user'),
     passwordHash: text('password_hash'),

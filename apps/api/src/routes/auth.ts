@@ -3,11 +3,12 @@ import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { verify } from 'hono/jwt'
 import { rateLimiter } from '../middleware/rate-limit'
+import { authMiddleware } from '../middleware/auth'
 import { UserService } from '../services/user.service'
 import { AuthService } from '../services/auth.service'
-import type { Bindings } from '../types'
+import type { Bindings, Variables } from '../types'
 
-export const authRoute = new Hono<{ Bindings: Bindings }>()
+export const authRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -150,5 +151,35 @@ authRoute.post('/refresh', zValidator('json', refreshSchema), async (c) => {
   } catch (err) {
     console.error('Token refresh failed:', err)
     return c.json({ error: 'Invalid refresh token' }, 401)
+  }
+})
+
+// GET /api/v1/auth/me — return current authenticated user
+authRoute.get('/me', authMiddleware, async (c) => {
+  try {
+    const userId = c.get('userId')
+    const userService = new UserService(c.env.DB)
+    const user = await userService.findById(userId)
+    if (!user) {
+      return c.json({ error: 'User not found' }, 404)
+    }
+    return c.json({
+      data: { id: user.id, email: user.email, name: user.name, role: user.role },
+    })
+  } catch (err) {
+    console.error('Get me failed:', err)
+    return c.json({ error: 'Internal server error' }, 500)
+  }
+})
+
+// POST /api/v1/auth/logout — revoke refresh token from KV
+authRoute.post('/logout', authMiddleware, async (c) => {
+  try {
+    const userId = c.get('userId')
+    await c.env.SESSIONS.delete(`refresh:${userId}`)
+    return c.json({ success: true })
+  } catch (err) {
+    console.error('Logout failed:', err)
+    return c.json({ error: 'Logout failed' }, 500)
   }
 })

@@ -5,11 +5,13 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 ALLOWED_ORIGINS = "http://localhost:4321"
+JWT_SECRET = "dev_jwt_secret_change_me"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "gamexamxi-db"
 database_id = "placeholder-replace-after-creation"
+migrations_dir = "./drizzle"
 
 [[kv_namespaces]]
 binding = "CACHE"

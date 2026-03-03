@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { getDb } from '../db'
-import { users } from '../db/schema'
+import { users } from '../db/schemas'
 
 /** User service — business logic for user CRUD */
 export class UserService {
