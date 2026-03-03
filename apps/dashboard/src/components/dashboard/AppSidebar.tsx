@@ -51,7 +51,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { clearTokens } from "@/lib/api"
+import { api, clearTokens } from "@/lib/api"
 import { clearAuthState, $currentUser } from "@/stores/auth"
 import { useStore } from "@nanostores/react"
 import { cn } from "@/lib/utils"
@@ -186,7 +186,12 @@ function NavUser() {
   const { isMobile } = useSidebar()
   const currentUser = useStore($currentUser)
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await api.auth.logout()
+    } catch {
+      // ignore — still clear local state
+    }
     clearTokens()
     clearAuthState()
     window.location.href = "/login"

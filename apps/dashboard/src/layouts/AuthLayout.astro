@@ -6,6 +6,12 @@ interface Props {
 }
 
 const { title } = Astro.props
+
+// Redirect to dashboard if already logged in
+const loggedIn = Astro.cookies.get('logged_in')
+if (loggedIn?.value) {
+  return Astro.redirect('/')
+}
 ---
 
 <html lang="en" class="dark">

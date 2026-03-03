@@ -1,5 +1,5 @@
 /** User roles available in the system */
-export type UserRole = 'admin' | 'user' | 'viewer'
+export type UserRole = 'admin' | 'mod' | 'user'
 
 /** Core user entity */
 export interface User {

@@ -8,16 +8,19 @@ function getToken(): string | null {
   return localStorage.getItem('access_token')
 }
 
-/** Store auth tokens */
+/** Store auth tokens + set a cookie hint for SSR auth guard */
 export function setTokens(accessToken: string, refreshToken: string): void {
   localStorage.setItem('access_token', accessToken)
   localStorage.setItem('refresh_token', refreshToken)
+  // Non-HttpOnly cookie so Astro SSR can check auth state
+  document.cookie = 'logged_in=1; path=/; SameSite=Lax; Max-Age=86400'
 }
 
-/** Clear stored tokens */
+/** Clear stored tokens and remove auth cookie */
 export function clearTokens(): void {
   localStorage.removeItem('access_token')
   localStorage.removeItem('refresh_token')
+  document.cookie = 'logged_in=; path=/; Max-Age=0'
 }
 
 /** Type-safe fetch wrapper with JWT auth */
@@ -63,6 +66,8 @@ export const api = {
         method: 'POST',
         body: JSON.stringify({ refreshToken }),
       }),
+    me: () => request<ApiResponse<User>>('/api/v1/auth/me'),
+    logout: () => request<{ success: boolean }>('/api/v1/auth/logout', { method: 'POST' }),
   },
   users: {
     list: () => request<ApiResponse<User[]>>('/api/v1/users'),

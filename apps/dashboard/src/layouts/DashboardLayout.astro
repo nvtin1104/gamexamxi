@@ -8,6 +8,12 @@ interface Props {
 
 const { title } = Astro.props
 
+// Server-side auth guard: redirect to /login if not authenticated
+const loggedIn = Astro.cookies.get('logged_in')
+if (!loggedIn?.value) {
+  return Astro.redirect('/login')
+}
+
 // Read sidebar state from cookie to prevent layout shift
 const sidebarCookie = Astro.cookies.get('sidebar_state')
 const defaultSidebarOpen = sidebarCookie?.value !== 'false'
