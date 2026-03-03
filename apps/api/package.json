@@ -9,6 +9,8 @@
     "lint": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply gamexamxi-db --local",
+    "db:seed": "node scripts/seed.mjs | npx wrangler d1 execute gamexamxi-db --local --file=-",
+    "db:seed:win": "node scripts/seed.mjs > drizzle/seed.sql && npx wrangler d1 execute gamexamxi-db --local --file=drizzle/seed.sql",
     "db:migrate:prod": "wrangler d1 migrations apply gamexamxi-db --remote"
   },
   "dependencies": {
