@@ -1,4 +1,4 @@
-import type { User, ApiResponse, AuthTokens, LoginInput, RegisterInput, CreateUserInput, UpdateUserInput } from '@gamexamxi/shared'
+import type { User, ApiResponse, AuthTokens, LoginInput, RegisterInput, CreateUserInput, UpdateUserInput, PermissionGroup } from '@gamexamxi/shared'
 
 const BASE_URL = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8787'
 
@@ -86,5 +86,36 @@ export const api = {
       request<{ success: boolean }>(`/api/v1/users/${id}`, {
         method: 'DELETE',
       }),
+  },
+  permissions: {
+    listGroups: () =>
+      request<ApiResponse<PermissionGroup[]>>('/api/v1/permissions/groups'),
+    createGroup: (body: { name: string; permissions: string[] }) =>
+      request<ApiResponse<PermissionGroup>>('/api/v1/permissions/groups', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    updateGroup: (id: string, body: { permissions: string[] }) =>
+      request<ApiResponse<PermissionGroup>>(`/api/v1/permissions/groups/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      }),
+    deleteGroup: (id: string) =>
+      request<{ success: boolean }>(`/api/v1/permissions/groups/${id}`, {
+        method: 'DELETE',
+      }),
+    assignUser: (groupId: string, userId: string) =>
+      request<{ success: boolean }>(`/api/v1/permissions/groups/${groupId}/users`, {
+        method: 'POST',
+        body: JSON.stringify({ userId }),
+      }),
+    removeUser: (groupId: string, userId: string) =>
+      request<{ success: boolean }>(`/api/v1/permissions/groups/${groupId}/users/${userId}`, {
+        method: 'DELETE',
+      }),
+    getUserPermissions: (userId: string) =>
+      request<ApiResponse<{ userId: string; permissions: string[] }>>(
+        `/api/v1/permissions/users/${userId}`
+      ),
   },
 }
