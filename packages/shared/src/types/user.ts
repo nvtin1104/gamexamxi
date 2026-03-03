@@ -14,7 +14,9 @@ export interface User {
   avatar?: string | null
   phone?: string | null
   level: number
+  experience: number
   pointsBalance: number
+  loginStreak?: number | null
   lastLoginAt?: string | null
   createdAt: string
   updatedAt: string
@@ -36,4 +38,24 @@ export interface UpdateUserInput {
   status?: UserStatus
   avatar?: string
   phone?: string
+}
+
+/** Full user profile returned by GET /users/:id/profile */
+export interface UserProfile extends User {
+  stats: {
+    userId: string
+    currentXp: number
+    currentLevel: number
+  } | null
+  points: {
+    userId: string
+    balance: number
+    pointLimit: number
+  } | null
+  groups: Array<{
+    id: string
+    name: string
+    permissions: string[]
+    createdAt: string | null
+  }>
 }
