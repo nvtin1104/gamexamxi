@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { PanelLeft } from "lucide-react"
+import { PanelLeft, ChevronLeft, ChevronRight } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -171,7 +171,7 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+    const { isMobile, state, openMobile, setOpenMobile, toggleSidebar } = useSidebar()
 
     if (collapsible === "none") {
       return (
@@ -249,6 +249,31 @@ const Sidebar = React.forwardRef<
             {children}
           </div>
         </div>
+        {/* Floating toggle button — Notion/Linear style */}
+        <button
+          onClick={toggleSidebar}
+          aria-label="Toggle Sidebar"
+          className={cn(
+            "absolute top-1/2 -translate-y-1/2 z-30 hidden md:flex",
+            "items-center justify-center",
+            "size-6 rounded-full",
+            "border border-sidebar-border bg-sidebar shadow-sm",
+            "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent",
+            "opacity-0 group-hover:opacity-100",
+            "transition-all duration-200 ease-in-out",
+            "hover:scale-110 hover:shadow-md",
+            // Position at the right edge of the sidebar
+            state === "collapsed"
+              ? "left-[--sidebar-width-icon] -translate-x-1/2"
+              : "left-[--sidebar-width] -translate-x-1/2"
+          )}
+        >
+          {state === "collapsed" ? (
+            <ChevronRight className="size-3.5" />
+          ) : (
+            <ChevronLeft className="size-3.5" />
+          )}
+        </button>
       </div>
     )
   }
@@ -294,7 +319,6 @@ const SidebarRail = React.forwardRef<
       aria-label="Toggle Sidebar"
       tabIndex={-1}
       onClick={toggleSidebar}
-      title="Toggle Sidebar"
       className={cn(
         "absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex",
         "[[data-side=left]_&]:cursor-w-resize [[data-side=right]_&]:cursor-e-resize",
@@ -302,6 +326,9 @@ const SidebarRail = React.forwardRef<
         "group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full group-data-[collapsible=offcanvas]:hover:bg-sidebar",
         "[[data-side=left][data-collapsible=offcanvas]_&]:-right-2",
         "[[data-side=right][data-collapsible=offcanvas]_&]:-left-2",
+        // In icon-collapsed mode, move rail further out so it doesn't overlap menu item icons
+        "group-data-[collapsible=icon]:w-2 group-data-[collapsible=icon]:-right-2 group-data-[collapsible=icon]:translate-x-0",
+        "hover:after:bg-sidebar-border",
         className
       )}
       {...props}

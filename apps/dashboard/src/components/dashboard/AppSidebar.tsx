@@ -32,7 +32,6 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarRail,
   SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar"
@@ -41,6 +40,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -102,6 +106,8 @@ const navSecondary: NavItem[] = [
 
 function NavMain({ items }: { items: NavItem[] }) {
   const currentPath = typeof window !== "undefined" ? window.location.pathname : ""
+  const { state } = useSidebar()
+  const isCollapsed = state === "collapsed"
 
   return (
     <SidebarGroup>
@@ -113,6 +119,18 @@ function NavMain({ items }: { items: NavItem[] }) {
           const hasActiveSub = item.subItems?.some((s) => currentPath.startsWith(s.href))
 
           if (item.subItems) {
+            // Collapsed mode: hover popover with sub-menu list
+            if (isCollapsed) {
+              return (
+                <NavPopoverItem
+                  key={item.label}
+                  item={item}
+                  currentPath={currentPath}
+                />
+              )
+            }
+
+            // Expanded mode: collapsible inline sub-menu
             return (
               <Collapsible key={item.label} asChild defaultOpen={hasActiveSub} className="group/collapsible">
                 <SidebarMenuItem>
@@ -179,6 +197,99 @@ function NavMain({ items }: { items: NavItem[] }) {
         })}
       </SidebarMenu>
     </SidebarGroup>
+  )
+}
+
+// Hover popover for items with sub-menus in collapsed sidebar mode
+function NavPopoverItem({
+  item,
+  currentPath,
+}: {
+  item: NavItem
+  currentPath: string
+}) {
+  const [open, setOpen] = React.useState(false)
+  const closeTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleMouseEnter = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    setOpen(true)
+  }
+
+  const handleMouseLeave = () => {
+    closeTimer.current = setTimeout(() => setOpen(false), 120)
+  }
+
+  React.useEffect(() => {
+    return () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current)
+    }
+  }, [])
+
+  const isGroupActive = item.subItems?.some((s) => currentPath.startsWith(s.href))
+
+  return (
+    <SidebarMenuItem>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <SidebarMenuButton
+            isActive={!!isGroupActive}
+            className={cn(
+              "transition-all hover:bg-sidebar-accent",
+              isGroupActive && "bg-primary/10 text-primary"
+            )}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <item.icon className="size-4 opacity-70" />
+            <span className="font-medium">{item.label}</span>
+          </SidebarMenuButton>
+        </PopoverTrigger>
+        <PopoverContent
+          side="right"
+          align="start"
+          sideOffset={8}
+          className="w-48 p-1.5"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
+          {/* Group header */}
+          <div className="flex items-center gap-2 px-2 py-1.5 mb-1">
+            <item.icon className="size-3.5 text-muted-foreground" />
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {item.label}
+            </span>
+          </div>
+          <div className="h-px bg-border mb-1" />
+          {/* Sub-items */}
+          {item.subItems?.map((sub) => {
+            const isActive = currentPath === sub.href || currentPath.startsWith(sub.href + "/")
+            return (
+              <a
+                key={sub.href}
+                href={sub.href}
+                className={cn(
+                  "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors",
+                  "hover:bg-accent hover:text-accent-foreground",
+                  isActive
+                    ? "bg-primary/10 text-primary font-medium"
+                    : "text-foreground"
+                )}
+              >
+                {isActive && (
+                  <span className="size-1.5 rounded-full bg-primary shrink-0" />
+                )}
+                {!isActive && (
+                  <span className="size-1.5 rounded-full bg-transparent shrink-0" />
+                )}
+                {sub.label}
+              </a>
+            )
+          })}
+        </PopoverContent>
+      </Popover>
+    </SidebarMenuItem>
   )
 }
 
@@ -335,7 +446,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser />
       </SidebarFooter>
 
-      <SidebarRail />
     </Sidebar>
   )
 }
