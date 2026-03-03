@@ -13,7 +13,7 @@ export const usersRoute = new Hono<{
 const createUserSchema = z.object({
   email: z.string().email(),
   name: z.string().min(2).max(100),
-  role: z.enum(['admin', 'user', 'viewer']).default('user'),
+  role: z.enum(['admin', 'mod', 'user']).default('user'),
 })
 
 const updateUserSchema = createUserSchema.partial()
@@ -57,6 +57,20 @@ usersRoute.get('/:id', async (c) => {
   } catch (err) {
     console.error('Failed to get user:', err)
     return c.json({ error: 'Failed to fetch user' }, 500)
+  }
+})
+
+// GET /api/v1/users/:id/profile — full profile: user + stats + points + groups
+usersRoute.get('/:id/profile', async (c) => {
+  try {
+    const id = c.req.param('id')
+    const service = new UserService(c.env.DB)
+    const profile = await service.findWithProfile(id)
+    if (!profile) return c.json({ error: 'User not found' }, 404)
+    return c.json({ data: profile })
+  } catch (err) {
+    console.error('Failed to get user profile:', err)
+    return c.json({ error: 'Failed to fetch user profile' }, 500)
   }
 })
 
