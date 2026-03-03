@@ -284,7 +284,7 @@ function NavUser() {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border" {...props}>
+    <Sidebar collapsible="icon" className="" {...props}>
       <SidebarHeader className="">
         <SidebarMenu>
           <SidebarMenuItem>
