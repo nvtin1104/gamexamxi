@@ -5,5 +5,6 @@ dist/
 .turbo/
 .env
 .env.local
+.opencode/
 .dev.vars
 *.log
