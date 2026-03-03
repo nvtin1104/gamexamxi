@@ -1,0 +1,10 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro'
+import { UserDetailPage } from '@/components/users/UserDetailPage'
+
+const { id } = Astro.params
+---
+
+<DashboardLayout title="User Detail">
+  <UserDetailPage userId={id!} client:load />
+</DashboardLayout>

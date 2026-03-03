@@ -1,4 +1,4 @@
-import type { User, ApiResponse, AuthTokens, LoginInput, RegisterInput, CreateUserInput, UpdateUserInput, PermissionGroup } from '@gamexamxi/shared'
+import type { User, UserProfile, ApiResponse, AuthTokens, LoginInput, RegisterInput, CreateUserInput, UpdateUserInput, PermissionGroup } from '@gamexamxi/shared'
 
 const BASE_URL = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8787'
 
@@ -86,6 +86,8 @@ export const api = {
       request<{ success: boolean }>(`/api/v1/users/${id}`, {
         method: 'DELETE',
       }),
+    getProfile: (id: string) =>
+      request<ApiResponse<UserProfile>>(`/api/v1/users/${id}/profile`),
   },
   permissions: {
     listGroups: () =>

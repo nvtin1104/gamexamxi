@@ -27,15 +27,20 @@ export function makeUserColumns({ onAction }: MakeColumnsOpts): ColumnDef<User, 
       header: 'Name',
       size: 200,
       cell: ({ row }) => (
-        <div className="flex items-center gap-2.5">
+        <a
+          href={`/users/${row.original.id}`}
+          className="flex items-center gap-2.5 group"
+        >
           <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary shrink-0">
             {row.original.name.charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium leading-none">{row.original.name}</p>
+            <p className="truncate font-medium leading-none group-hover:underline underline-offset-2">
+              {row.original.name}
+            </p>
             <p className="truncate text-xs text-muted-foreground mt-0.5">{row.original.email}</p>
           </div>
-        </div>
+        </a>
       ),
     },
     {
