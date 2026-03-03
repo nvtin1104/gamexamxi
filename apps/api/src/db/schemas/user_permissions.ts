@@ -3,8 +3,8 @@ import { users } from './users'
 import { permissionGroups } from './permission-groups'
 
 /** Many-to-many join: users ↔ permission_groups */
-export const userToGroups = sqliteTable(
-  'user_to_groups',
+export const userPermissions = sqliteTable(
+  'user_permissions',
   {
     userId: text('user_id')
       .notNull()

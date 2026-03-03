@@ -14,16 +14,16 @@ DELETE FROM users;
 -- Users
 -- ==================
 INSERT INTO users (id, email, name, role, password_hash, created_at, updated_at) VALUES
-  ('seed_admin_001', 'admin@example.com', 'Dev Admin', 'admin', '7bf965c301c59da5365829331f6d169c:c732dbe53a9f54f30c8f96fed9e4f64406866a7a70c7a6cfa5c381e2a0cabd0f', 1772508497778, 1772508497778),
-  ('seed_mod_001',   'mod@example.com',   'Dev Mod',   'mod',   '3bf353dc8641bb79646ba399ddcd0a3a:0193412b03ba08dab2fb4dd8616900f86f676da613ebcec2b337789ee2701edb',   1772508497778, 1772508497778),
-  ('seed_user_001',  'user@example.com',  'Dev User',  'user',  'b6f5fb42d4c82156c731f6a9ba333636:30a866b47fc7ff341b689d68a01b7ae11ad28e057a1f19cc1ae24216346766dc',  1772508497778, 1772508497778);
+  ('seed_admin_001', 'admin@example.com', 'Dev Admin', 'admin', 'd45c74741c2052f3614c3f770ac48f27:9120c725f49c88ac784b2eb0a7646928be3df95519dbc2622c7aafa04ddf56f5', 1772549363733, 1772549363733),
+  ('seed_mod_001',   'mod@example.com',   'Dev Mod',   'mod',   '8bd2d813f3003ace8ea16809d228b5ac:ec117335192f38ba71949b024555ececa7edbf8beacf4c645bd5f56f3940d0cc',   1772549363733, 1772549363733),
+  ('seed_user_001',  'user@example.com',  'Dev User',  'user',  '6786cb5fabd6995fb6eba7db87fbb525:151ae41b09efaf0b28aeddc5f20d5f490fb4817b703861807b609efc7e34bdfb',  1772549363733, 1772549363733);
 
 -- ==================
 -- Permission Groups
 -- ==================
 INSERT INTO permission_groups (id, name, permissions, created_at) VALUES
-  ('seed_grp_creator',  'Standard Creator', '["game:create","game:edit"]', 1772508497778),
-  ('seed_grp_supermod', 'Super Mod',        '["game:all","user:moderate","points:grant","xp:grant"]', 1772508497778);
+  ('seed_grp_creator',  'Standard Creator', '["game:create","game:edit"]', 1772549363733),
+  ('seed_grp_supermod', 'Super Mod',        '["game:all","user:moderate","points:grant","xp:grant"]', 1772549363733);
 
 -- ==================
 -- User ↔ Group assignments

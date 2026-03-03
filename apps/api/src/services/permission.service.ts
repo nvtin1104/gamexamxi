@@ -1,6 +1,6 @@
 import { eq, and } from 'drizzle-orm'
 import { getDb } from '../db'
-import { users, permissionGroups, userToGroups } from '../db/schemas'
+import { users, permissionGroups, userPermissions } from '../db/schemas'
 
 /** Permission service — resolves merged permissions from groups */
 export class PermissionService {
@@ -20,12 +20,12 @@ export class PermissionService {
         groupName: permissionGroups.name,
         permissions: permissionGroups.permissions,
       })
-      .from(userToGroups)
+      .from(userPermissions)
       .innerJoin(
         permissionGroups,
-        eq(userToGroups.groupId, permissionGroups.id)
+        eq(userPermissions.groupId, permissionGroups.id)
       )
-      .where(eq(userToGroups.userId, userId))
+      .where(eq(userPermissions.userId, userId))
       .all()
 
     return rows
@@ -118,7 +118,7 @@ export class PermissionService {
   /** Assign a user to a permission group */
   async assignUserToGroup(userId: string, groupId: string) {
     await this.db
-      .insert(userToGroups)
+      .insert(userPermissions)
       .values({ userId, groupId })
       .onConflictDoNothing()
       .run()
@@ -127,11 +127,11 @@ export class PermissionService {
   /** Remove a user from a permission group */
   async removeUserFromGroup(userId: string, groupId: string) {
     await this.db
-      .delete(userToGroups)
+      .delete(userPermissions)
       .where(
         and(
-          eq(userToGroups.userId, userId),
-          eq(userToGroups.groupId, groupId)
+          eq(userPermissions.userId, userId),
+          eq(userPermissions.groupId, groupId)
         )
       )
       .run()
