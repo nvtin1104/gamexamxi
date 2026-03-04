@@ -13,16 +13,27 @@ export interface User {
   status: UserStatus
   avatar?: string | null
   phone?: string | null
+  address?: string | null
+  birthdate?: string | null        // ISO date string (serialized from timestamp)
   level: number
   experience: number
   pointsBalance: number
+  pointsEarned: number
+  pointsSpent: number
+  pointsExpired: number
+  pointsExpiring: number
   loginStreak?: number | null
   lastLoginAt?: string | null
+  emailVerifiedAt?: string | null  // null = not verified; ISO string = verified
+  blockExpiresAt?: string | null
+  blockReason?: string | null
+  banReason?: string | null
+  lastLoginIp?: string | null      // only populated for admin callers
   createdAt: string
   updatedAt: string
 }
 
-/** Payload for creating a new user */
+/** Payload for creating a new user (admin action) */
 export interface CreateUserInput {
   email: string
   name: string
@@ -34,10 +45,15 @@ export interface CreateUserInput {
 export interface UpdateUserInput {
   email?: string
   name?: string
-  role?: UserRole
-  status?: UserStatus
+  role?: UserRole          // admin only
+  status?: UserStatus      // admin only
   avatar?: string
   phone?: string
+  address?: string
+  birthdate?: string       // ISO date string
+  banReason?: string       // admin only
+  blockReason?: string     // admin only
+  blockExpiresAt?: string  // admin only, ISO date string
 }
 
 /** Full user profile returned by GET /users/:id/profile */

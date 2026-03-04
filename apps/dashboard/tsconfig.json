@@ -1,12 +1,13 @@
 {
-  "extends": "astro/tsconfigs/strict",
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@gamexamxi/shared": ["../../packages/shared/src"]
+      "@/*": ["./src/*"]
     }
   }
 }
