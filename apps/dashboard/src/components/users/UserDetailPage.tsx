@@ -74,7 +74,7 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
       <p className="text-muted-foreground text-sm">{message}</p>
       <Button variant="outline" size="sm" onClick={onRetry}>
         <RefreshCw className="mr-2 h-4 w-4" />
-        Retry
+        Thử lại
       </Button>
     </div>
   )
@@ -106,7 +106,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
       setProfile(profileRes.data)
       setGroups(groupsRes.data ?? [])
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load user')
+      setError(err instanceof Error ? err.message : 'Không thể tải thông tin người dùng')
     } finally {
       setLoading(false)
     }
@@ -123,7 +123,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
         <Button variant="ghost" size="sm" asChild>
           <a href="/users" className="flex items-center gap-1.5">
             <ArrowLeft className="h-4 w-4" />
-            Users
+            Người dùng
           </a>
         </Button>
         {profile && (
@@ -148,7 +148,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
           {/* Right: edit form */}
           <Card>
             <CardHeader className="pb-4">
-              <CardTitle className="text-base">Edit Profile</CardTitle>
+              <CardTitle className="text-base">Chỉnh sửa hồ sơ</CardTitle>
             </CardHeader>
             <CardContent>
               <UserEditForm

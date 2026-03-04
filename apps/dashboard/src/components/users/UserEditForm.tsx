@@ -23,12 +23,12 @@ import { api } from '@/lib/api'
 // ── Validation schema ─────────────────────────────────────────────────────────
 
 const schema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email'),
+  name: z.string().min(1, 'Tên không được để trống'),
+  email: z.string().email('Email không hợp lệ'),
   role: z.enum(['admin', 'mod', 'user']),
   status: z.enum(['active', 'banned', 'block']),
   phone: z.string().optional(),
-  avatar: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  avatar: z.string().url('Phải là URL hợp lệ').optional().or(z.literal('')),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -156,18 +156,18 @@ export function UserEditForm({ profile, groups, onSaved }: UserEditFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* ── Basic info ─────────────────────────────────────────── */}
-      <FormSection title="Basic Information">
+      <FormSection title="Thông tin cơ bản">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Display Name" error={errors.name?.message}>
+          <Field label="Tên hiển thị" error={errors.name?.message}>
             <Input id="name" {...register('name')} />
           </Field>
-          <Field label="Email Address" error={errors.email?.message}>
+          <Field label="Địa chỉ Email" error={errors.email?.message}>
             <Input id="email" type="email" {...register('email')} />
           </Field>
-          <Field label="Phone" error={errors.phone?.message}>
-            <Input id="phone" placeholder="Optional" {...register('phone')} />
+          <Field label="Điện thoại" error={errors.phone?.message}>
+            <Input id="phone" placeholder="Tuỳ chọn" {...register('phone')} />
           </Field>
-          <Field label="Avatar URL" error={errors.avatar?.message}>
+          <Field label="URL ảnh đại diện" error={errors.avatar?.message}>
             <Input id="avatar" placeholder="https://…" {...register('avatar')} />
           </Field>
         </div>
@@ -176,9 +176,9 @@ export function UserEditForm({ profile, groups, onSaved }: UserEditFormProps) {
       <Separator />
 
       {/* ── Account settings ───────────────────────────────────── */}
-      <FormSection title="Account Settings">
+      <FormSection title="Cài đặt tài khoản">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Role">
+          <Field label="Vai trò">
             <Select
               value={role}
               onValueChange={(v) => setValue('role', v as FormValues['role'])}
@@ -187,14 +187,14 @@ export function UserEditForm({ profile, groups, onSaved }: UserEditFormProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="mod">Moderator</SelectItem>
-                <SelectItem value="user">User</SelectItem>
+                <SelectItem value="admin">Quản trị viên</SelectItem>
+                <SelectItem value="mod">Kiểm duyệt viên</SelectItem>
+                <SelectItem value="user">Người dùng</SelectItem>
               </SelectContent>
             </Select>
           </Field>
 
-          <Field label="Status">
+          <Field label="Trạng thái">
             <Select
               value={status}
               onValueChange={(v) => setValue('status', v as FormValues['status'])}
@@ -203,9 +203,9 @@ export function UserEditForm({ profile, groups, onSaved }: UserEditFormProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="banned">Banned</SelectItem>
-                <SelectItem value="block">Blocked</SelectItem>
+                <SelectItem value="active">Hoạt động</SelectItem>
+                <SelectItem value="banned">Bị cấm</SelectItem>
+                <SelectItem value="block">Bị khóa</SelectItem>
               </SelectContent>
             </Select>
           </Field>
@@ -216,7 +216,7 @@ export function UserEditForm({ profile, groups, onSaved }: UserEditFormProps) {
       {groups.length > 0 && (
         <>
           <Separator />
-          <FormSection title="Permission Groups">
+          <FormSection title="Nhóm quyền hạn">
             <div className="grid gap-2 sm:grid-cols-2">
               {groups.map((g) => {
                 const checked = groupSelection.has(g.id)
@@ -275,7 +275,7 @@ export function UserEditForm({ profile, groups, onSaved }: UserEditFormProps) {
           <p className="text-sm text-destructive">{saveError}</p>
         )}
         {saveSuccess && (
-          <p className="text-sm text-green-600 dark:text-green-400">Changes saved successfully.</p>
+          <p className="text-sm text-green-600 dark:text-green-400">Đã lưu thay đổi thành công.</p>
         )}
         {!saveError && !saveSuccess && <span />}
 
@@ -285,7 +285,7 @@ export function UserEditForm({ profile, groups, onSaved }: UserEditFormProps) {
           ) : (
             <Save className="mr-2 h-4 w-4" />
           )}
-          Save Changes
+          Lưu thay đổi
         </Button>
       </div>
     </form>

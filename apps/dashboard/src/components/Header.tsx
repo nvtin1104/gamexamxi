@@ -104,16 +104,16 @@ const initialNotifications: Notification[] = [
 
 // --- Search command items ---
 const searchPages = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/" },
-  { label: "Analytics", icon: BarChart3, href: "/analytics" },
-  { label: "Users", icon: Users, href: "/users" },
-  { label: "Orders", icon: ShoppingCart, href: "/orders" },
-  { label: "Inbox", icon: Inbox, href: "/inbox" },
+  { label: "Tổng quan", icon: LayoutDashboard, href: "/" },
+  { label: "Phân tích", icon: BarChart3, href: "/analytics" },
+  { label: "Người dùng", icon: Users, href: "/users" },
+  { label: "Đơn hàng", icon: ShoppingCart, href: "/orders" },
+  { label: "Hộp thư", icon: Inbox, href: "/inbox" },
 ]
 
 const searchSettings = [
-  { label: "General Settings", icon: Settings, href: "/settings" },
-  { label: "Support", icon: HelpCircle, href: "/support" },
+  { label: "Cài đặt chung", icon: Settings, href: "/settings" },
+  { label: "Hỗ trợ", icon: HelpCircle, href: "/support" },
 ]
 
 // --- Breadcrumb builder ---
@@ -167,18 +167,18 @@ function SearchCommand() {
         className="relative h-8 w-full justify-start rounded-md bg-muted/40 px-3 text-sm font-normal text-muted-foreground shadow-none hover:bg-muted/60 sm:w-56 md:w-64"
       >
         <Search className="mr-2 h-4 w-4" />
-        <span className="hidden lg:inline-flex">Search...</span>
-        <span className="inline-flex lg:hidden">Search...</span>
+        <span className="hidden lg:inline-flex">Tìm kiếm...</span>
+        <span className="inline-flex lg:hidden">Tìm kiếm...</span>
         <kbd className="pointer-events-none ml-auto hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
           <span className="text-xs">Ctrl</span>K
         </kbd>
       </Button>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type to search..." />
+        <CommandInput placeholder="Nhập từ khóa tìm kiếm..." />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Pages">
+          <CommandEmpty>Không tìm thấy kết quả.</CommandEmpty>
+          <CommandGroup heading="Trang">
             {searchPages.map((item) => (
               <CommandItem
                 key={item.href}
@@ -191,7 +191,7 @@ function SearchCommand() {
             ))}
           </CommandGroup>
           <CommandSeparator />
-          <CommandGroup heading="Settings">
+          <CommandGroup heading="Cài đặt">
             {searchSettings.map((item) => (
               <CommandItem
                 key={item.href}
@@ -201,7 +201,7 @@ function SearchCommand() {
                 <item.icon className="mr-2 h-4 w-4" />
                 <span>{item.label}</span>
                 <CommandShortcut>
-                  {item.label === "General Settings" ? "Ctrl+," : ""}
+                  {item.label === "Cài đặt chung" ? "Ctrl+," : ""}
                 </CommandShortcut>
               </CommandItem>
             ))}
@@ -246,7 +246,7 @@ function NotificationsPopover() {
         {/* Header */}
         <div className="flex items-center justify-between border-b px-4 py-3">
           <div className="flex items-center gap-2">
-            <h4 className="text-sm font-semibold">Notifications</h4>
+            <h4 className="text-sm font-semibold">Thông báo</h4>
             {unreadCount > 0 && (
               <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/10 px-1.5 text-[10px] font-semibold text-primary">
                 {unreadCount}
@@ -261,7 +261,7 @@ function NotificationsPopover() {
               className="h-auto px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
             >
               <Check className="mr-1 h-3 w-3" />
-              Mark all read
+              Đánh dấu tất cả đã đọc
             </Button>
           )}
         </div>
@@ -317,7 +317,7 @@ function NotificationsPopover() {
             size="sm"
             asChild
           >
-            <a href="/notifications">View all notifications</a>
+            <a href="/notifications">Xem tất cả thông báo</a>
           </Button>
         </div>
       </PopoverContent>

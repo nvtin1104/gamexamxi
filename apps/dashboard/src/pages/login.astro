@@ -3,16 +3,16 @@ import AuthLayout from '@/layouts/AuthLayout.astro'
 import { LoginForm } from '@/components/auth/LoginForm'
 ---
 
-<AuthLayout title="Login">
+<AuthLayout title="Đăng nhập">
   <div class="flex min-h-screen items-center justify-center">
     <div class="w-full max-w-sm">
       <div class="mb-8 text-center">
         <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-xl">
           G
         </div>
-        <h1 class="text-2xl font-bold tracking-tight">Welcome back</h1>
+        <h1 class="text-2xl font-bold tracking-tight">Chào mừng trở lại</h1>
         <p class="mt-2 text-sm text-muted-foreground">
-          Sign in to your Gamexamxi account
+          Đăng nhập vào tài khoản Gamexamxi của bạn
         </p>
       </div>
       <LoginForm client:load />

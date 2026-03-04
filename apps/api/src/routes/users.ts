@@ -29,7 +29,7 @@ usersRoute.get('/', async (c) => {
     return c.json({ data: users })
   } catch (err) {
     console.error('Failed to list users:', err)
-    return c.json({ error: 'Failed to fetch users' }, 500)
+    return c.json({ error: 'Không thể lấy danh sách người dùng' }, 500)
   }
 })
 
@@ -42,7 +42,7 @@ usersRoute.post('/', zValidator('json', createUserSchema), async (c) => {
     return c.json({ data: user }, 201)
   } catch (err) {
     console.error('Failed to create user:', err)
-    return c.json({ error: 'Failed to create user' }, 500)
+    return c.json({ error: 'Không thể tạo người dùng' }, 500)
   }
 })
 
@@ -52,11 +52,11 @@ usersRoute.get('/:id', async (c) => {
     const id = c.req.param('id')
     const service = new UserService(c.env.DB)
     const user = await service.findById(id)
-    if (!user) return c.json({ error: 'User not found' }, 404)
+    if (!user) return c.json({ error: 'Không tìm thấy người dùng' }, 404)
     return c.json({ data: user })
   } catch (err) {
     console.error('Failed to get user:', err)
-    return c.json({ error: 'Failed to fetch user' }, 500)
+    return c.json({ error: 'Không thể lấy thông tin người dùng' }, 500)
   }
 })
 
@@ -66,11 +66,11 @@ usersRoute.get('/:id/profile', async (c) => {
     const id = c.req.param('id')
     const service = new UserService(c.env.DB)
     const profile = await service.findWithProfile(id)
-    if (!profile) return c.json({ error: 'User not found' }, 404)
+    if (!profile) return c.json({ error: 'Không tìm thấy người dùng' }, 404)
     return c.json({ data: profile })
   } catch (err) {
     console.error('Failed to get user profile:', err)
-    return c.json({ error: 'Failed to fetch user profile' }, 500)
+    return c.json({ error: 'Không thể lấy hồ sơ người dùng' }, 500)
   }
 })
 
@@ -84,7 +84,7 @@ usersRoute.patch('/:id', zValidator('json', updateUserSchema), async (c) => {
     return c.json({ data: user })
   } catch (err) {
     console.error('Failed to update user:', err)
-    return c.json({ error: 'Failed to update user' }, 500)
+    return c.json({ error: 'Không thể cập nhật người dùng' }, 500)
   }
 })
 
@@ -97,6 +97,6 @@ usersRoute.delete('/:id', async (c) => {
     return c.json({ success: true })
   } catch (err) {
     console.error('Failed to delete user:', err)
-    return c.json({ error: 'Failed to delete user' }, 500)
+    return c.json({ error: 'Không thể xóa người dùng' }, 500)
   }
 })

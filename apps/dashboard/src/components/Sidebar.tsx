@@ -18,9 +18,9 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { label: 'Users', href: '/users', icon: Users },
-  { label: 'Settings', href: '/settings', icon: Settings },
+  { label: 'Tổng quan', href: '/', icon: LayoutDashboard },
+  { label: 'Người dùng', href: '/users', icon: Users },
+  { label: 'Cài đặt', href: '/settings', icon: Settings },
 ]
 
 export function Sidebar() {
@@ -77,7 +77,7 @@ export function Sidebar() {
           onClick={handleLogout}
         >
           <LogOut className="h-4 w-4" />
-          Logout
+          Đăng xuất
         </Button>
       </div>
     </aside>

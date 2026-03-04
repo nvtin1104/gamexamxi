@@ -102,12 +102,12 @@ export function UserDetailCard({ profile }: UserDetailCardProps) {
           <div className="divide-y divide-border/50">
             <StatRow icon={Mail} label="Email" value={profile.email} />
             {profile.phone && (
-              <StatRow icon={Phone} label="Phone" value={profile.phone} />
+              <StatRow icon={Phone} label="Điện thoại" value={profile.phone} />
             )}
-            <StatRow icon={Calendar} label="Joined" value={formatDate(profile.createdAt)} />
+            <StatRow icon={Calendar} label="Ngày tham gia" value={formatDate(profile.createdAt)} />
             <StatRow
               icon={Clock}
-              label="Last login"
+              label="Đăng nhập lần cuối"
               value={formatDateTime(profile.lastLoginAt)}
             />
           </div>
@@ -117,13 +117,13 @@ export function UserDetailCard({ profile }: UserDetailCardProps) {
       {/* ── XP / Level card ─────────────────────────────────────── */}
       <Card>
         <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Progress</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">Tiến độ</CardTitle>
         </CardHeader>
         <CardContent className="px-4 pb-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Star className="h-4 w-4 text-yellow-500" />
-              <span className="text-sm font-medium">Level {level}</span>
+              <span className="text-sm font-medium">Cấp {level}</span>
             </div>
             <span className="text-xs text-muted-foreground">{xp} / {xpForNextLevel} XP</span>
           </div>
@@ -139,7 +139,7 @@ export function UserDetailCard({ profile }: UserDetailCardProps) {
             <StatRow icon={Zap} label="XP" value={xp.toLocaleString()} />
             <StatRow
               icon={Coins}
-              label="Points"
+              label="Điểm"
               value={
                 <span>
                   <span className="text-foreground">{balance.toLocaleString()}</span>
@@ -147,7 +147,7 @@ export function UserDetailCard({ profile }: UserDetailCardProps) {
                 </span>
               }
             />
-            <StatRow icon={Flame} label="Login streak" value={`${profile.loginStreak ?? 0} days`} />
+            <StatRow icon={Flame} label="Chuỗi đăng nhập" value={`${profile.loginStreak ?? 0} ngày`} />
           </div>
         </CardContent>
       </Card>
@@ -158,7 +158,7 @@ export function UserDetailCard({ profile }: UserDetailCardProps) {
           <CardHeader className="pb-2 pt-4 px-4">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <ShieldCheck className="h-3.5 w-3.5" />
-              Permission Groups
+              Nhóm quyền hạn
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-4 space-y-2.5">

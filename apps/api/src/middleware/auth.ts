@@ -14,12 +14,12 @@ export const authMiddleware = createMiddleware<{
 }>(async (c, next) => {
   const header = c.req.header('Authorization')
   if (!header) {
-    return c.json({ error: 'Missing Authorization header' }, 401)
+    return c.json({ error: 'Thiếu header Authorization' }, 401)
   }
 
   const token = header.replace('Bearer ', '')
   if (!token) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: 'Không có quyền truy cập' }, 401)
   }
 
   try {
@@ -28,7 +28,7 @@ export const authMiddleware = createMiddleware<{
     c.set('role', payload.role as string)
     await next()
   } catch {
-    return c.json({ error: 'Invalid or expired token' }, 401)
+    return c.json({ error: 'Token không hợp lệ hoặc đã hết hạn' }, 401)
   }
 })
 
@@ -43,7 +43,7 @@ export const requireRole = (...allowedRoles: string[]) =>
   }>(async (c, next) => {
     const role = c.get('role')
     if (!allowedRoles.includes(role)) {
-      return c.json({ error: 'Forbidden' }, 403)
+      return c.json({ error: 'Không có quyền' }, 403)
     }
     await next()
   })
@@ -75,7 +75,7 @@ export const requirePermission = (...requiredPermissions: string[]) =>
 
     const hasAll = requiredPermissions.every((p) => perms!.includes(p))
     if (!hasAll) {
-      return c.json({ error: 'Forbidden — insufficient permissions' }, 403)
+      return c.json({ error: 'Không có quyền — quyền hạn không đủ' }, 403)
     }
 
     await next()

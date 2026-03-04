@@ -20,35 +20,35 @@ interface StatCard {
 
 const stats: StatCard[] = [
   {
-    title: "Total Revenue",
+    title: "Tổng doanh thu",
     value: "$45,231.89",
     change: "+20.1%",
     trend: "up",
-    description: "from last month",
+    description: "so với tháng trước",
     icon: DollarSign,
   },
   {
-    title: "Subscriptions",
+    title: "Lượt đăng ký",
     value: "+2,350",
     change: "+180.1%",
     trend: "up",
-    description: "from last month",
+    description: "so với tháng trước",
     icon: Users,
   },
   {
-    title: "Sales",
+    title: "Doanh số",
     value: "+12,234",
     change: "+19%",
     trend: "up",
-    description: "from last month",
+    description: "so với tháng trước",
     icon: CreditCard,
   },
   {
-    title: "Active Now",
+    title: "Đang hoạt động",
     value: "+573",
     change: "+201",
     trend: "up",
-    description: "since last hour",
+    description: "trong giờ qua",
     icon: Activity,
   },
 ]

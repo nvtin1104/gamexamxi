@@ -5,6 +5,6 @@ import { UserDetailPage } from '@/components/users/UserDetailPage'
 const { id } = Astro.params
 ---
 
-<DashboardLayout title="User Detail">
+<DashboardLayout title="Chi tiết người dùng">
   <UserDetailPage userId={id!} client:load />
 </DashboardLayout>

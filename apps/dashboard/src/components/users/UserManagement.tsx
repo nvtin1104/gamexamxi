@@ -15,21 +15,21 @@ import { api } from '@/lib/api'
 
 const ROLE_FILTER = {
   columnId: 'role',
-  placeholder: 'All Roles',
+  placeholder: 'Tất cả vai trò',
   options: [
-    { label: 'Admin', value: 'admin' },
-    { label: 'Mod', value: 'mod' },
-    { label: 'User', value: 'user' },
+    { label: 'Quản trị viên', value: 'admin' },
+    { label: 'Kiểm duyệt viên', value: 'mod' },
+    { label: 'Người dùng', value: 'user' },
   ],
 }
 
 const STATUS_FILTER = {
   columnId: 'status',
-  placeholder: 'All Status',
+  placeholder: 'Tất cả trạng thái',
   options: [
-    { label: 'Active', value: 'active' },
-    { label: 'Banned', value: 'banned' },
-    { label: 'Blocked', value: 'block' },
+    { label: 'Hoạt động', value: 'active' },
+    { label: 'Bị cấm', value: 'banned' },
+    { label: 'Bị khóa', value: 'block' },
   ],
 }
 
@@ -110,7 +110,7 @@ export function UserManagement() {
     }
 
     if (action.type === 'delete') {
-      if (!confirm(`Delete user "${action.user.name}"?`)) return
+      if (!confirm(`Xóa người dùng "${action.user.name}"?`)) return
       try {
         await api.users.delete(action.user.id)
         setUsers((prev) => prev.filter((u) => u.id !== action.user.id))
@@ -159,15 +159,15 @@ export function UserManagement() {
             <Users className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">User Management</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Quản lý người dùng</h1>
             <p className="text-sm text-muted-foreground">
-              {users.length} user{users.length !== 1 ? 's' : ''} registered
+              {users.length} người dùng đã đăng ký
             </p>
           </div>
         </div>
         <Button variant="outline" size="sm" onClick={loadData} disabled={loadingUsers}>
           <RefreshCw className={`mr-1.5 h-3.5 w-3.5 ${loadingUsers ? 'animate-spin' : ''}`} />
-          Refresh
+          Cài lại
         </Button>
       </div>
 
@@ -176,11 +176,11 @@ export function UserManagement() {
         <TabsList>
           <TabsTrigger value="users" className="gap-1.5">
             <Users className="h-3.5 w-3.5" />
-            Users
+            Người dùng
           </TabsTrigger>
           <TabsTrigger value="permissions" className="gap-1.5">
             <ShieldCheck className="h-3.5 w-3.5" />
-            Permission Groups
+            Nhóm quyền hạn
           </TabsTrigger>
         </TabsList>
 
@@ -190,7 +190,7 @@ export function UserManagement() {
             columns={columns}
             data={users}
             searchColumn="email"
-            searchPlaceholder="Search by name or email…"
+            searchPlaceholder="Tìm theo tên hoặc email…"
             filters={[ROLE_FILTER, STATUS_FILTER]}
             isLoading={loadingUsers}
             pageSize={15}

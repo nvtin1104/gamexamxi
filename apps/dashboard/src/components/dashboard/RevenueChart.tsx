@@ -36,9 +36,9 @@ export function RevenueChart() {
   return (
     <Card className="col-span-4">
       <CardHeader>
-        <CardTitle>Revenue Overview</CardTitle>
+        <CardTitle>Tổng quan doanh thu</CardTitle>
         <CardDescription>
-          Monthly revenue and subscriptions for the current year
+          Doanh thu và lượt đăng ký hàng tháng trong năm hiện tại
         </CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
@@ -88,7 +88,7 @@ export function RevenueChart() {
               }}
               formatter={(value: number, name: string) => [
                 name === "revenue" ? `$${value.toLocaleString()}` : value,
-                name === "revenue" ? "Revenue" : "Subscriptions",
+                name === "revenue" ? "Doanh thu" : "Lượt đăng ký",
               ]}
             />
             <Area

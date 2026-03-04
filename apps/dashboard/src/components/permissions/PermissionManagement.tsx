@@ -113,7 +113,7 @@ export function PermissionManagement() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Delete this permission group?')) return
+    if (!confirm('Xóa nhóm quyền hạn này?')) return
     await api.permissions.deleteGroup(id)
     setGroups((prev) => prev.filter((g) => g.id !== id))
   }
@@ -123,7 +123,7 @@ export function PermissionManagement() {
   const columns: ColumnDef<PermissionGroup, unknown>[] = [
     {
       accessorKey: 'name',
-      header: 'Group Name',
+      header: 'Tên nhóm',
       size: 200,
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
@@ -134,7 +134,7 @@ export function PermissionManagement() {
     },
     {
       accessorKey: 'permissions',
-      header: 'Permissions',
+      header: 'Quyền hạn',
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-1">
@@ -178,14 +178,14 @@ export function PermissionManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Permission Groups</h2>
+          <h2 className="text-xl font-semibold">Nhóm quyền hạn</h2>
           <p className="text-sm text-muted-foreground">
-            Manage named groups and their permissions.
+            Quản lý các nhóm và quyền hạn của chúng.
           </p>
         </div>
         <Button size="sm" onClick={openCreate}>
           <Plus className="mr-1.5 h-4 w-4" />
-          Create Group
+          Tạo nhóm
         </Button>
       </div>
 
@@ -194,7 +194,7 @@ export function PermissionManagement() {
         columns={columns}
         data={groups}
         searchColumn="name"
-        searchPlaceholder="Search groups…"
+        searchPlaceholder="Tìm kiếm nhóm…"
         isLoading={loading}
         pageSize={10}
       />
@@ -203,20 +203,20 @@ export function PermissionManagement() {
       <Dialog open={dialogOpen} onOpenChange={(o) => !o && setDialogOpen(false)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{editTarget ? 'Edit Group' : 'Create Group'}</DialogTitle>
+            <DialogTitle>{editTarget ? 'Chỉnh sửa nhóm' : 'Tạo nhóm'}</DialogTitle>
             <DialogDescription>
               {editTarget
-                ? 'Update the permissions for this group.'
-                : 'Create a new permission group.'}
+                ? 'Cập nhật quyền hạn cho nhóm này.'
+                : 'Tạo nhóm quyền hạn mới.'}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             {/* Name (disabled when editing) */}
             <div className="space-y-1.5">
-              <Label>Group Name</Label>
+              <Label>Tên nhóm</Label>
               <Input
-                placeholder="e.g. Moderation Team"
+                placeholder="ví dụ: Nhóm kiểm duyệt"
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
                 disabled={!!editTarget}
@@ -225,7 +225,7 @@ export function PermissionManagement() {
 
             {/* Permissions checkboxes */}
             <div className="space-y-2">
-              <Label>Permissions</Label>
+              <Label>Quyền hạn</Label>
               <div className="grid grid-cols-2 gap-2">
                 {ALL_PERMISSIONS.map((p) => {
                   const checked = formPerms.has(p)
@@ -252,7 +252,7 @@ export function PermissionManagement() {
               </div>
               {formPerms.size === 0 && (
                 <p className="text-xs text-muted-foreground">
-                  Select at least one permission.
+                  Chọn ít nhất một quyền hạn.
                 </p>
               )}
             </div>
@@ -260,14 +260,14 @@ export function PermissionManagement() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={saving}>
-              Cancel
+              Hủy
             </Button>
             <Button
               onClick={handleSave}
               disabled={saving || !formName.trim() || formPerms.size === 0}
             >
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {editTarget ? 'Update' : 'Create'}
+              {editTarget ? 'Cập nhật' : 'Tạo mới'}
             </Button>
           </DialogFooter>
         </DialogContent>

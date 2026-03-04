@@ -53,7 +53,7 @@ export function makeUserColumns({ onAction }: MakeColumnsOpts): ColumnDef<User, 
     },
     {
       accessorKey: 'role',
-      header: 'Role',
+      header: 'Vai trò',
       size: 90,
       cell: ({ getValue }) => <RoleBadge role={getValue() as User['role']} />,
       filterFn: (row, _id, filterValue) =>
@@ -61,7 +61,7 @@ export function makeUserColumns({ onAction }: MakeColumnsOpts): ColumnDef<User, 
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: 'Trạng thái',
       size: 90,
       cell: ({ getValue }) => <StatusBadge status={getValue() as User['status']} />,
       filterFn: (row, _id, filterValue) =>
@@ -69,7 +69,7 @@ export function makeUserColumns({ onAction }: MakeColumnsOpts): ColumnDef<User, 
     },
     {
       accessorKey: 'level',
-      header: 'Level',
+      header: 'Cấp độ',
       size: 70,
       cell: ({ getValue }) => (
         <span className="font-mono text-sm">Lv {getValue() as number}</span>
@@ -77,7 +77,7 @@ export function makeUserColumns({ onAction }: MakeColumnsOpts): ColumnDef<User, 
     },
     {
       accessorKey: 'pointsBalance',
-      header: 'Points',
+      header: 'Điểm',
       size: 90,
       cell: ({ getValue }) => (
         <span className="font-mono text-sm">{(getValue() as number).toLocaleString()}</span>
@@ -85,7 +85,7 @@ export function makeUserColumns({ onAction }: MakeColumnsOpts): ColumnDef<User, 
     },
     {
       accessorKey: 'createdAt',
-      header: 'Joined',
+      header: 'Ngày tham gia',
       size: 110,
       cell: ({ getValue }) => (
         <span className="text-sm text-muted-foreground">{formatDate(getValue() as string)}</span>
@@ -103,13 +103,13 @@ export function makeUserColumns({ onAction }: MakeColumnsOpts): ColumnDef<User, 
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-7 w-7">
                 <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Actions</span>
+                <span className="sr-only">Thao tác</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onAction({ type: 'edit', user })}>
                 <Pencil className="mr-2 h-4 w-4" />
-                Edit
+                Chỉnh sửa
               </DropdownMenuItem>
               {user.status === 'active' ? (
                 <DropdownMenuItem
@@ -117,12 +117,12 @@ export function makeUserColumns({ onAction }: MakeColumnsOpts): ColumnDef<User, 
                   onClick={() => onAction({ type: 'ban', user })}
                 >
                   <ShieldBan className="mr-2 h-4 w-4" />
-                  Ban
+                  Cấm
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem onClick={() => onAction({ type: 'ban', user })}>
                   <ShieldBan className="mr-2 h-4 w-4" />
-                  Unban
+                  Bỏ cấm
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
@@ -131,7 +131,7 @@ export function makeUserColumns({ onAction }: MakeColumnsOpts): ColumnDef<User, 
                 onClick={() => onAction({ type: 'delete', user })}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                Xóa
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

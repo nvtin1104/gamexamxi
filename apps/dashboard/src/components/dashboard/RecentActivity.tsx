@@ -9,28 +9,28 @@ import {
 const activities = [
   {
     user: 'Admin',
-    action: 'Created a new user account',
-    time: '2 minutes ago',
+    action: 'Tạo tài khoản người dùng mới',
+    time: '2 phút trước',
   },
   {
-    user: 'System',
-    action: 'Database backup completed',
-    time: '15 minutes ago',
-  },
-  {
-    user: 'Admin',
-    action: 'Updated system settings',
-    time: '1 hour ago',
-  },
-  {
-    user: 'System',
-    action: 'Scheduled maintenance completed',
-    time: '3 hours ago',
+    user: 'Hệ thống',
+    action: 'Sao lưu cơ sở dữ liệu hoàn tất',
+    time: '15 phút trước',
   },
   {
     user: 'Admin',
-    action: 'Deployed new version v1.2.0',
-    time: '5 hours ago',
+    action: 'Cập nhật cài đặt hệ thống',
+    time: '1 giờ trước',
+  },
+  {
+    user: 'Hệ thống',
+    action: 'Bảo trì theo lịch hoàn tất',
+    time: '3 giờ trước',
+  },
+  {
+    user: 'Admin',
+    action: 'Triển khai phiên bản mới v1.2.0',
+    time: '5 giờ trước',
   },
 ]
 
@@ -38,8 +38,8 @@ export function RecentActivity() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
-        <CardDescription>Latest actions in the system</CardDescription>
+        <CardTitle>Hoạt động gần đây</CardTitle>
+        <CardDescription>Các hành động mới nhất trong hệ thống</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

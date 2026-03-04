@@ -76,30 +76,30 @@ interface NavItem {
 
 // --- Navigation Data ---
 const navMain: NavItem[] = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
+  { label: "Tổng quan", href: "/", icon: LayoutDashboard },
   {
-    label: "Analytics",
+    label: "Phân tích",
     icon: BarChart3,
     subItems: [
-      { label: "Overview", href: "/analytics" },
-      { label: "Reports", href: "/analytics/reports" },
+      { label: "Thống kê", href: "/analytics" },
+      { label: "Báo cáo", href: "/analytics/reports" },
     ],
   },
-  { label: "Users", href: "/users", icon: Users, badge: "12" },
+  { label: "Người dùng", href: "/users", icon: Users, badge: "12" },
   {
-    label: "Orders",
+    label: "Đơn hàng",
     icon: ShoppingCart,
     subItems: [
-      { label: "All Orders", href: "/orders" },
-      { label: "Pending", href: "/orders/pending" },
+      { label: "Tất cả đơn hàng", href: "/orders" },
+      { label: "Chờ xử lý", href: "/orders/pending" },
     ],
   },
-  { label: "Inbox", href: "/inbox", icon: Inbox, badge: "3" },
+  { label: "Hộp thư", href: "/inbox", icon: Inbox, badge: "3" },
 ]
 
 const navSecondary: NavItem[] = [
-  { label: "Support", href: "/support", icon: HelpCircle },
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Hỗ trợ", href: "/support", icon: HelpCircle },
+  { label: "Cài đặt", href: "/settings", icon: Settings },
 ]
 
 // --- Sub-components ---
@@ -112,7 +112,7 @@ function NavMain({ items }: { items: NavItem[] }) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="px-2 pb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-        Main Menu
+        Menu chính
       </SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
@@ -361,28 +361,28 @@ function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuItem className="cursor-pointer">
                 <Sparkles className="mr-2 size-4 text-orange-500" />
-                Upgrade to Pro
+                Nâng cấp Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem className="cursor-pointer">
                 <BadgeCheck className="mr-2 size-4" />
-                Account
+                Tài khoản
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">
                 <CreditCard className="mr-2 size-4" />
-                Billing
+                Thanh toán
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">
                 <Bell className="mr-2 size-4" />
-                Notifications
+                Thông báo
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:bg-destructive/10 cursor-pointer">
               <LogOut className="mr-2 size-4" />
-              Log out
+              Đăng xuất
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -407,7 +407,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <div className="grid flex-1 text-left leading-tight">
                   <span className="truncate font-black tracking-tight text-base">GAMEXAMXI</span>
                   <span className="truncate text-[10px] font-medium text-muted-foreground tracking-widest uppercase">
-                    Admin Portal
+                    Quản trị viên
                   </span>
                 </div>
               </a>
@@ -423,7 +423,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
         <SidebarGroup className="mt-auto">
           <SidebarGroupLabel className="px-2 pb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-            System
+            Hệ thống
           </SidebarGroupLabel>
           <SidebarMenu>
             {navSecondary.map((item) => (

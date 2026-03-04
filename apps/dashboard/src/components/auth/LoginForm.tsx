@@ -10,8 +10,8 @@ import { api, setTokens } from '@/lib/api'
 import { setAuthState } from '@/stores/auth'
 
 const loginSchema = z.object({
-  email: z.string().email('Enter a valid email'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().email('Vui lòng nhập email hợp lệ'),
+  password: z.string().min(1, 'Mật khẩu không được để trống'),
 })
 
 type LoginFormData = z.infer<typeof loginSchema>
@@ -37,7 +37,7 @@ export function LoginForm() {
       setAuthState(res.data.user, res.data.accessToken)
       window.location.href = '/'
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      setError(err instanceof Error ? err.message : 'Đăng nhập thất bại')
     } finally {
       setLoading(false)
     }
@@ -58,7 +58,7 @@ export function LoginForm() {
             <Input
               id="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder="ban@example.com"
               {...register('email')}
             />
             {errors.email && (
@@ -67,7 +67,7 @@ export function LoginForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">Mật khẩu</Label>
             <Input
               id="password"
               type="password"
@@ -84,7 +84,7 @@ export function LoginForm() {
 
         <CardFooter className="flex-col gap-4">
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
           </Button>
         </CardFooter>
       </form>

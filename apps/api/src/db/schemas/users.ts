@@ -1,7 +1,5 @@
 import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core'
 import { createId } from '@paralleldrive/cuid2'
-import { point } from 'drizzle-orm/pg-core'
-
 export const users = sqliteTable(
   'users',
   {
@@ -11,8 +9,6 @@ export const users = sqliteTable(
     role: text('role', { enum: ['admin', 'mod', 'user'] }).notNull().default('user'),
     passwordHash: text('password_hash').notNull(),
     ggId: text('gg_id').unique(),
-
-    // --- CÁC TRƯỜNG BỔ SUNG THÔNG TIN CƠ BẢN ---
 
     /** Ngày sinh (timestamp) */
     birthdate: integer('birthdate', { mode: 'timestamp' }),

@@ -77,7 +77,7 @@ export function DataTable<TData>({
   columns,
   data,
   searchColumn,
-  searchPlaceholder = 'Search…',
+  searchPlaceholder = 'Tìm kiếm…',
   filters = [],
   isLoading = false,
   pageSize: defaultPageSize = 10,
@@ -209,7 +209,7 @@ export function DataTable<TData>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                  No results found.
+                  Không tìm thấy kết quả.
                 </TableCell>
               </TableRow>
             )}
@@ -220,7 +220,7 @@ export function DataTable<TData>({
       {/* ── Pagination ──────────────────────────────────────────── */}
       <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
         <span>
-          {totalRows === 0 ? 'No results' : `${start}–${end} of ${totalRows}`}
+          {totalRows === 0 ? 'Không có kết quả' : `${start}–${end} trên ${totalRows}`}
         </span>
         <div className="flex items-center gap-2">
           <Select
@@ -247,7 +247,7 @@ export function DataTable<TData>({
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            Trước
           </Button>
           <span className="text-foreground font-medium">
             {pageIndex + 1} / {table.getPageCount() || 1}
@@ -259,7 +259,7 @@ export function DataTable<TData>({
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            Tiếp
           </Button>
         </div>
       </div>

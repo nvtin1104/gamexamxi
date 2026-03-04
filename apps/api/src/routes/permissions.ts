@@ -62,7 +62,7 @@ permissionsRoute.patch(
     const { permissions } = c.req.valid('json')
     const svc = new PermissionService(c.env.DB)
     const group = await svc.updateGroup(id, permissions)
-    if (!group) return c.json({ error: 'Group not found' }, 404)
+    if (!group) return c.json({ error: 'Không tìm thấy nhóm' }, 404)
     return c.json({
       data: { ...group, permissions: JSON.parse(group.permissions) },
     })

@@ -30,9 +30,9 @@ export function formatDateTime(value: string | number | null | undefined): strin
 // ── Role Badge ────────────────────────────────────────────────────────────────
 
 const ROLE_CONFIG: Record<UserRole, { label: string; className: string }> = {
-  admin: { label: 'Admin', className: 'bg-purple-100 text-purple-800 border-purple-200' },
-  mod: { label: 'Mod', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-  user: { label: 'User', className: 'bg-gray-100 text-gray-700 border-gray-200' },
+  admin: { label: 'Quản trị viên', className: 'bg-purple-100 text-purple-800 border-purple-200' },
+  mod: { label: 'Kiểm duyệt viên', className: 'bg-blue-100 text-blue-800 border-blue-200' },
+  user: { label: 'Người dùng', className: 'bg-gray-100 text-gray-700 border-gray-200' },
 }
 
 export function RoleBadge({ role }: { role: UserRole }) {
@@ -47,9 +47,9 @@ export function RoleBadge({ role }: { role: UserRole }) {
 // ── Status Badge ──────────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<UserStatus, { label: string; className: string }> = {
-  active: { label: 'Active', className: 'bg-green-100 text-green-800 border-green-200' },
-  banned: { label: 'Banned', className: 'bg-red-100 text-red-800 border-red-200' },
-  block: { label: 'Blocked', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+  active: { label: 'Hoạt động', className: 'bg-green-100 text-green-800 border-green-200' },
+  banned: { label: 'Bị cấm', className: 'bg-red-100 text-red-800 border-red-200' },
+  block: { label: 'Bị khóa', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
 }
 
 export function StatusBadge({ status }: { status: UserStatus }) {

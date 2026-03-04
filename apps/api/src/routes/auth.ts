@@ -38,7 +38,7 @@ authRoute.post('/register', zValidator('json', registerSchema), async (c) => {
     // Check if email already taken
     const existing = await userService.findByEmail(email)
     if (existing) {
-      return c.json({ error: 'Email already registered' }, 409)
+      return c.json({ error: 'Email đã được đăng ký' }, 409)
     }
 
     // Hash password and create user
@@ -70,7 +70,7 @@ authRoute.post('/register', zValidator('json', registerSchema), async (c) => {
     )
   } catch (err) {
     console.error('Registration failed:', err)
-    return c.json({ error: 'Registration failed' }, 500)
+    return c.json({ error: 'Đăng ký thất bại' }, 500)
   }
 })
 
@@ -83,12 +83,12 @@ authRoute.post('/login', zValidator('json', loginSchema), async (c) => {
 
     const user = await userService.findByEmail(email)
     if (!user || !user.passwordHash) {
-      return c.json({ error: 'Invalid credentials' }, 401)
+      return c.json({ error: 'Thông tin đăng nhập không đúng' }, 401)
     }
 
     const valid = await authService.verifyPassword(password, user.passwordHash)
     if (!valid) {
-      return c.json({ error: 'Invalid credentials' }, 401)
+      return c.json({ error: 'Thông tin đăng nhập không đúng' }, 401)
     }
 
     const accessToken = await authService.generateAccessToken(user.id, user.role)
@@ -107,7 +107,7 @@ authRoute.post('/login', zValidator('json', loginSchema), async (c) => {
     })
   } catch (err) {
     console.error('Login failed:', err)
-    return c.json({ error: 'Login failed' }, 500)
+    return c.json({ error: 'Đăng nhập thất bại' }, 500)
   }
 })
 
@@ -119,20 +119,20 @@ authRoute.post('/refresh', zValidator('json', refreshSchema), async (c) => {
 
     const payload = await verify(refreshToken, c.env.JWT_SECRET, 'HS256')
     if (payload.type !== 'refresh') {
-      return c.json({ error: 'Invalid token type' }, 401)
+      return c.json({ error: 'Loại token không hợp lệ' }, 401)
     }
 
     const userId = payload.sub as string
     const stored = await c.env.SESSIONS.get(`refresh:${userId}`)
     if (stored !== refreshToken) {
-      return c.json({ error: 'Token revoked' }, 401)
+      return c.json({ error: 'Token đã bị thu hồi' }, 401)
     }
 
     // Issue new tokens
     const userService = new UserService(c.env.DB)
     const user = await userService.findById(userId)
     if (!user) {
-      return c.json({ error: 'User not found' }, 404)
+      return c.json({ error: 'Không tìm thấy người dùng' }, 404)
     }
 
     const newAccessToken = await authService.generateAccessToken(user.id, user.role)
@@ -150,7 +150,7 @@ authRoute.post('/refresh', zValidator('json', refreshSchema), async (c) => {
     })
   } catch (err) {
     console.error('Token refresh failed:', err)
-    return c.json({ error: 'Invalid refresh token' }, 401)
+    return c.json({ error: 'Refresh token không hợp lệ' }, 401)
   }
 })
 
@@ -161,14 +161,14 @@ authRoute.get('/me', authMiddleware, async (c) => {
     const userService = new UserService(c.env.DB)
     const user = await userService.findById(userId)
     if (!user) {
-      return c.json({ error: 'User not found' }, 404)
+      return c.json({ error: 'Không tìm thấy người dùng' }, 404)
     }
     return c.json({
       data: { id: user.id, email: user.email, name: user.name, role: user.role },
     })
   } catch (err) {
     console.error('Get me failed:', err)
-    return c.json({ error: 'Internal server error' }, 500)
+    return c.json({ error: 'Lỗi máy chủ nội bộ' }, 500)
   }
 })
 
@@ -180,6 +180,6 @@ authRoute.post('/logout', authMiddleware, async (c) => {
     return c.json({ success: true })
   } catch (err) {
     console.error('Logout failed:', err)
-    return c.json({ error: 'Logout failed' }, 500)
+    return c.json({ error: 'Đăng xuất thất bại' }, 500)
   }
 })

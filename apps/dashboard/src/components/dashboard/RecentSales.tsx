@@ -58,12 +58,18 @@ const statusVariant: Record<
   failed: "destructive",
 }
 
+const statusLabel: Record<Sale["status"], string> = {
+  completed: "Hoàn thành",
+  pending: "Chờ xử lý",
+  failed: "Thất bại",
+}
+
 export function RecentSales() {
   return (
     <Card className="col-span-3">
       <CardHeader>
-        <CardTitle>Recent Sales</CardTitle>
-        <CardDescription>You made 265 sales this month.</CardDescription>
+        <CardTitle>Doanh số gần đây</CardTitle>
+        <CardDescription>Bạn đã thực hiện 265 giao dịch trong tháng này.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -92,7 +98,7 @@ export function RecentSales() {
                   variant={statusVariant[sale.status]}
                   className="text-[10px] h-4 px-1.5"
                 >
-                  {sale.status}
+                  {statusLabel[sale.status]}
                 </Badge>
               </div>
             </div>
