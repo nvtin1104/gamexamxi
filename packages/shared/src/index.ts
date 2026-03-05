@@ -4,3 +4,5 @@ export type { LoginInput, RegisterInput, AuthTokens, JwtPayload } from './types/
 export type { PermissionGroup, UserPermissions } from './types/permissions'
 export type { UserPoints, PointTransaction, PointTransactionType } from './types/points'
 export type { UserStats, LevelUpResult } from './types/xp'
+
+export { loginSchema, type LoginFormData } from './schemas/auth'
