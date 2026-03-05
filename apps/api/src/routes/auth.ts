@@ -50,7 +50,7 @@ authRoute.post('/register', zValidator('json', registerSchema), async (c) => {
     })
 
     // Generate tokens
-    const accessToken = await authService.generateAccessToken(user.id, user.role)
+    const accessToken = await authService.generateAccessToken(user.id, user.accountRole)
     const refreshToken = await authService.generateRefreshToken(user.id)
 
     // Store refresh token in KV
@@ -61,7 +61,7 @@ authRoute.post('/register', zValidator('json', registerSchema), async (c) => {
     return c.json(
       {
         data: {
-          user: { id: user.id, email: user.email, name: user.name, role: user.role },
+          user: { id: user.id, email: user.email, name: user.name, accountRole: user.accountRole, role: user.role },
           accessToken,
           refreshToken,
         },
@@ -91,7 +91,7 @@ authRoute.post('/login', zValidator('json', loginSchema), async (c) => {
       return c.json({ error: 'Thông tin đăng nhập không đúng' }, 401)
     }
 
-    const accessToken = await authService.generateAccessToken(user.id, user.role)
+    const accessToken = await authService.generateAccessToken(user.id, user.accountRole)
     const refreshToken = await authService.generateRefreshToken(user.id)
 
     await c.env.SESSIONS.put(`refresh:${user.id}`, refreshToken, {
@@ -100,7 +100,7 @@ authRoute.post('/login', zValidator('json', loginSchema), async (c) => {
 
     return c.json({
       data: {
-        user: { id: user.id, email: user.email, name: user.name, role: user.role },
+        user: { id: user.id, email: user.email, name: user.name, accountRole: user.accountRole, role: user.role },
         accessToken,
         refreshToken,
       },
@@ -135,7 +135,7 @@ authRoute.post('/refresh', zValidator('json', refreshSchema), async (c) => {
       return c.json({ error: 'Không tìm thấy người dùng' }, 404)
     }
 
-    const newAccessToken = await authService.generateAccessToken(user.id, user.role)
+    const newAccessToken = await authService.generateAccessToken(user.id, user.accountRole)
     const newRefreshToken = await authService.generateRefreshToken(user.id)
 
     await c.env.SESSIONS.put(`refresh:${user.id}`, newRefreshToken, {
@@ -164,7 +164,7 @@ authRoute.get('/me', authMiddleware, async (c) => {
       return c.json({ error: 'Không tìm thấy người dùng' }, 404)
     }
     return c.json({
-      data: { id: user.id, email: user.email, name: user.name, role: user.role },
+      data: { id: user.id, email: user.email, name: user.name, accountRole: user.accountRole, role: user.role },
     })
   } catch (err) {
     console.error('Get me failed:', err)

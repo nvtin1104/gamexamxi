@@ -1,6 +1,10 @@
-/** Application role constants */
-export const APP_ROLES = ['admin', 'mod', 'user'] as const
+/** Account roles — controls admin access */
+export const APP_ROLES = ['admin', 'user'] as const
 export type AppRole = (typeof APP_ROLES)[number]
+
+/** Community roles — display/hierarchy in the community */
+export const APP_COMMUNITY_ROLES = ['root', 'staff', 'kol', 'mod', 'user'] as const
+export type AppCommunityRole = (typeof APP_COMMUNITY_ROLES)[number]
 
 /** Application permission constants */
 export const APP_PERMISSIONS = {

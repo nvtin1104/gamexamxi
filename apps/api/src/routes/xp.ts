@@ -28,7 +28,7 @@ const addXpSchema = z.object({
 
 xpRoute.post(
   '/add',
-  requireRole('admin', 'mod'),
+  requireRole('admin'),
   zValidator('json', addXpSchema),
   async (c) => {
     const { userId, amount } = c.req.valid('json')

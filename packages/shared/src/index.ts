@@ -1,4 +1,4 @@
-export type { User, UserRole, UserStatus, UserProfile, CreateUserInput, UpdateUserInput } from './types/user'
+export type { User, AccountRole, UserRole, UserStatus, UserProfile, CreateUserInput, UpdateUserInput } from './types/user'
 export type { ApiResponse, ApiError, PaginatedResponse } from './types/api'
 export type { LoginInput, RegisterInput, AuthTokens, JwtPayload } from './types/auth'
 export type { PermissionGroup, UserPermissions } from './types/permissions'

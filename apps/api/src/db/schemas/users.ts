@@ -6,7 +6,8 @@ export const users = sqliteTable(
     id: text('id').primaryKey().$defaultFn(() => createId()),
     email: text('email').notNull().unique(),
     name: text('name').notNull(),
-    role: text('role', { enum: ['admin', 'mod', 'user'] }).notNull().default('user'),
+    accountRole: text('account_role', { enum: ['admin', 'user'] }).notNull().default('user'), // Phân quyền tài khoản
+    role: text('role', { enum: ['root', 'staff', 'kol', 'mod', 'user'] }).notNull().default('user'),
     passwordHash: text('password_hash').notNull(),
     ggId: text('gg_id').unique(),
 

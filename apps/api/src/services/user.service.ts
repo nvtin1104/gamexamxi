@@ -6,7 +6,7 @@ export interface FindAllParams {
   page?: number
   pageSize?: number
   search?: string
-  role?: 'admin' | 'mod' | 'user'
+  role?: 'root' | 'staff' | 'kol' | 'mod' | 'user'
   status?: 'active' | 'banned' | 'block'
   sortBy?: 'name' | 'email' | 'createdAt' | 'level' | 'pointsBalance'
   sortOrder?: 'asc' | 'desc'

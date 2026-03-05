@@ -1,5 +1,8 @@
-/** User roles available in the system */
-export type UserRole = 'admin' | 'mod' | 'user'
+/** Account role — controls admin dashboard/API access */
+export type AccountRole = 'admin' | 'user'
+
+/** Community role — display badge & community hierarchy */
+export type UserRole = 'root' | 'staff' | 'kol' | 'mod' | 'user'
 
 /** User account status */
 export type UserStatus = 'active' | 'banned' | 'block'
@@ -9,6 +12,7 @@ export interface User {
   id: string
   email: string
   name: string
+  accountRole: AccountRole
   role: UserRole
   status: UserStatus
   avatar?: string | null
@@ -37,6 +41,7 @@ export interface User {
 export interface CreateUserInput {
   email: string
   name: string
+  accountRole?: AccountRole
   role?: UserRole
   password: string
 }
@@ -45,8 +50,9 @@ export interface CreateUserInput {
 export interface UpdateUserInput {
   email?: string
   name?: string
-  role?: UserRole          // admin only
-  status?: UserStatus      // admin only
+  accountRole?: AccountRole  // admin only
+  role?: UserRole            // admin only
+  status?: UserStatus        // admin only
   avatar?: string
   phone?: string
   address?: string

@@ -39,11 +39,13 @@ export function UserForm({ mode, defaultValues, onSubmit, isLoading }: UserFormP
           email: (defaultValues as Partial<CreateUserFormData>)?.email ?? '',
           name: (defaultValues as Partial<CreateUserFormData>)?.name ?? '',
           password: '',
+          accountRole: (defaultValues as Partial<CreateUserFormData>)?.accountRole ?? 'user',
           role: (defaultValues as Partial<CreateUserFormData>)?.role ?? 'user',
         } as CreateUserFormData)
       : ({
           name: (defaultValues as Partial<UpdateUserFormData>)?.name ?? '',
           email: (defaultValues as Partial<UpdateUserFormData>)?.email ?? '',
+          accountRole: (defaultValues as Partial<UpdateUserFormData>)?.accountRole ?? 'user',
           role: (defaultValues as Partial<UpdateUserFormData>)?.role ?? 'user',
           status: (defaultValues as Partial<UpdateUserFormData>)?.status ?? 'active',
           avatar: (defaultValues as Partial<UpdateUserFormData>)?.avatar ?? '',
@@ -174,14 +176,35 @@ export function UserForm({ mode, defaultValues, onSubmit, isLoading }: UserFormP
         </form.Field>
       )}
 
-      {/* Role */}
+      {/* Account Role */}
+      <form.Field name="accountRole">
+        {(field) => (
+          <div className="flex flex-col gap-1.5">
+            <Label>Quyền tài khoản</Label>
+            <Select
+              value={(field.state.value as string) ?? 'user'}
+              onValueChange={(val) => field.handleChange(val as 'admin' | 'user')}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn quyền tài khoản" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="user">Người dùng</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+      </form.Field>
+
+      {/* Community Role */}
       <form.Field name="role">
         {(field) => (
           <div className="flex flex-col gap-1.5">
-            <Label>Vai trò</Label>
+            <Label>Vai trò cộng đồng</Label>
             <Select
               value={(field.state.value as string) ?? 'user'}
-              onValueChange={(val) => field.handleChange(val as 'admin' | 'mod' | 'user')}
+              onValueChange={(val) => field.handleChange(val as 'root' | 'staff' | 'kol' | 'mod' | 'user')}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Chọn vai trò" />
@@ -189,7 +212,9 @@ export function UserForm({ mode, defaultValues, onSubmit, isLoading }: UserFormP
               <SelectContent>
                 <SelectItem value="user">Người dùng</SelectItem>
                 <SelectItem value="mod">Mod</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="kol">KOL</SelectItem>
+                <SelectItem value="staff">Staff</SelectItem>
+                <SelectItem value="root">Root</SelectItem>
               </SelectContent>
             </Select>
           </div>

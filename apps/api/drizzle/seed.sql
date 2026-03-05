@@ -5,25 +5,23 @@
 -- Clear existing seed data (idempotent)
 DELETE FROM user_to_groups;
 DELETE FROM point_transactions;
-DELETE FROM user_points;
-DELETE FROM user_stats;
 DELETE FROM permission_groups;
 DELETE FROM users;
 
 -- ==================
 -- Users
 -- ==================
-INSERT INTO users (id, email, name, role, password_hash, created_at, updated_at) VALUES
-  ('seed_admin_001', 'admin@example.com', 'Dev Admin', 'admin', 'd45c74741c2052f3614c3f770ac48f27:9120c725f49c88ac784b2eb0a7646928be3df95519dbc2622c7aafa04ddf56f5', 1772549363733, 1772549363733),
-  ('seed_mod_001',   'mod@example.com',   'Dev Mod',   'mod',   '8bd2d813f3003ace8ea16809d228b5ac:ec117335192f38ba71949b024555ececa7edbf8beacf4c645bd5f56f3940d0cc',   1772549363733, 1772549363733),
-  ('seed_user_001',  'user@example.com',  'Dev User',  'user',  '6786cb5fabd6995fb6eba7db87fbb525:151ae41b09efaf0b28aeddc5f20d5f490fb4817b703861807b609efc7e34bdfb',  1772549363733, 1772549363733);
+INSERT INTO users (id, email, name, account_role, role, password_hash, created_at, updated_at) VALUES
+  ('seed_admin_001', 'admin@example.com', 'Dev Admin', 'admin', 'root',  '4c6adcab9335cd9f63cb49435c205528:eec5a4b6142cdc4e72c2a7bbce87e07e4201900e28c042e512b20fb0e01fa2cc', 1772722863342, 1772722863342),
+  ('seed_mod_001',   'mod@example.com',   'Dev Mod',   'user',  'mod',   'ef84cc7c1187108319a0d6ffde7d86b1:29daffcb57f39a96fbfc23f3990aee510a5d56a6fc2c853e85072b42046b6490',   1772722863342, 1772722863342),
+  ('seed_user_001',  'user@example.com',  'Dev User',  'user',  'user',  '7dd9f1e76130613c07e8b0c14f05959a:13550cf378d22be4a70f59b5969cfd650c0dec41987f5045e1a4ab3a43e4c9ec',  1772722863342, 1772722863342);
 
 -- ==================
 -- Permission Groups
 -- ==================
 INSERT INTO permission_groups (id, name, permissions, created_at) VALUES
-  ('seed_grp_creator',  'Standard Creator', '["game:create","game:edit"]', 1772549363733),
-  ('seed_grp_supermod', 'Super Mod',        '["game:all","user:moderate","points:grant","xp:grant"]', 1772549363733);
+  ('seed_grp_creator',  'Standard Creator', '["game:create","game:edit"]', 1772722863342),
+  ('seed_grp_supermod', 'Super Mod',        '["game:all","user:moderate","points:grant","xp:grant"]', 1772722863342);
 
 -- ==================
 -- User ↔ Group assignments
@@ -35,19 +33,3 @@ INSERT INTO user_to_groups (user_id, group_id) VALUES
 -- Regular user gets Standard Creator group
 INSERT INTO user_to_groups (user_id, group_id) VALUES
   ('seed_user_001', 'seed_grp_creator');
-
--- ==================
--- User Points (init balances)
--- ==================
-INSERT INTO user_points (user_id, balance, point_limit) VALUES
-  ('seed_admin_001', 0, 10000),
-  ('seed_mod_001',   0, 10000),
-  ('seed_user_001',  500, 10000);
-
--- ==================
--- User Stats / XP
--- ==================
-INSERT INTO user_stats (user_id, current_xp, current_level) VALUES
-  ('seed_admin_001', 0, 1),
-  ('seed_mod_001',   0, 1),
-  ('seed_user_001',  250, 1);

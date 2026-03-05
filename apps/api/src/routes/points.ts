@@ -38,7 +38,7 @@ const grantSchema = z.object({
 
 pointsRoute.post(
   '/grant',
-  requireRole('admin', 'mod'),
+  requireRole('admin'),
   zValidator('json', grantSchema),
   async (c) => {
     const { userId, amount, description } = c.req.valid('json')

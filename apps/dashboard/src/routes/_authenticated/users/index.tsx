@@ -64,7 +64,7 @@ const searchSchema = z.object({
   page: z.coerce.number().int().positive().optional().catch(undefined),
   pageSize: z.coerce.number().int().positive().max(100).optional().catch(undefined),
   search: z.string().optional().catch(undefined),
-  role: z.enum(['admin', 'mod', 'user']).optional().catch(undefined),
+  role: z.enum(['root', 'staff', 'kol', 'mod', 'user']).optional().catch(undefined),
   status: z.enum(['active', 'banned', 'block']).optional().catch(undefined),
   sortBy: z
     .enum(['name', 'email', 'createdAt', 'level', 'pointsBalance'])
@@ -217,7 +217,7 @@ function UsersPage() {
     navigate({
       search: {
         ...filters,
-        role: val === 'all' ? undefined : (val as 'admin' | 'mod' | 'user'),
+        role: val === 'all' ? undefined : (val as 'root' | 'staff' | 'kol' | 'mod' | 'user'),
         page: 1,
       },
     })
@@ -291,9 +291,11 @@ function UsersPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả vai trò</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="mod">Mod</SelectItem>
                 <SelectItem value="user">Người dùng</SelectItem>
+                <SelectItem value="mod">Mod</SelectItem>
+                <SelectItem value="kol">KOL</SelectItem>
+                <SelectItem value="staff">Staff</SelectItem>
+                <SelectItem value="root">Root</SelectItem>
               </SelectContent>
             </Select>
 

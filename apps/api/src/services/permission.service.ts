@@ -58,13 +58,13 @@ export class PermissionService {
   ): Promise<boolean> {
     // Look up the user's role first
     const user = await this.db
-      .select({ role: users.role })
+      .select({ accountRole: users.accountRole })
       .from(users)
       .where(eq(users.id, userId))
       .get()
 
     if (!user) return false
-    if (user.role === 'admin') return true
+    if (user.accountRole === 'admin') return true
 
     const perms = await this.getUserPermissions(userId)
     return perms.includes(requiredPermission)
