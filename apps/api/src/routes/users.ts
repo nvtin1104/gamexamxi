@@ -17,23 +17,25 @@ const listQuerySchema = z.object({
   page:      z.coerce.number().int().min(1).default(1),
   pageSize:  z.coerce.number().int().min(1).max(100).default(20),
   search:    z.string().max(100).optional(),
-  role:      z.enum(['admin', 'mod', 'user']).optional(),
+  role:      z.enum(['root', 'staff', 'kol', 'mod', 'user']).optional(),
   status:    z.enum(['active', 'banned', 'block']).optional(),
   sortBy:    z.enum(['name', 'email', 'createdAt', 'level', 'pointsBalance']).optional(),
   sortOrder: z.enum(['asc', 'desc']).default('asc'),
 })
 
 const createUserSchema = z.object({
-  email:    z.string().email(),
-  name:     z.string().min(2).max(100),
-  role:     z.enum(['admin', 'mod', 'user']).default('user'),
-  password: z.string().min(8),
+  email:       z.string().email(),
+  name:        z.string().min(2).max(100),
+  accountRole: z.enum(['admin', 'user']).default('user'),
+  role:        z.enum(['root', 'staff', 'kol', 'mod', 'user']).default('user'),
+  password:    z.string().min(8),
 })
 
 const updateUserSchema = z.object({
   name:           z.string().min(2).max(100).optional(),
   email:          z.string().email().optional(),
-  role:           z.enum(['admin', 'mod', 'user']).optional(),
+  accountRole:    z.enum(['admin', 'user']).optional(),
+  role:           z.enum(['root', 'staff', 'kol', 'mod', 'user']).optional(),
   status:         z.enum(['active', 'banned', 'block']).optional(),
   avatar:         z.string().url().optional(),
   phone:          z.string().max(20).optional(),
@@ -148,9 +150,29 @@ usersRoute.patch('/:id', zValidator('json', updateUserSchema), async (c) => {
 // DELETE /api/v1/users/:id — delete user (admin only)
 usersRoute.delete('/:id', requireRole('admin'), async (c) => {
   try {
-    const id = c.req.param('id')
+    const targetId = c.req.param('id')
+    const requesterId = c.get('userId')
+
+    // Rule 1: block self-deletion
+    if (requesterId === targetId) {
+      return c.json({ error: 'Không thể tự xóa tài khoản của mình' }, 403)
+    }
+
     const service = new UserService(c.env.DB)
-    await service.delete(id)
+
+    const target = await service.findById(targetId)
+    if (!target) return c.json({ error: 'Không tìm thấy người dùng' }, 404)
+
+    // Rule 2: root can delete anyone — skip further checks
+    const requester = await service.findById(requesterId)
+    if (requester?.role !== 'root') {
+      // Rule 3: non-root cannot delete a root account
+      if (target.role === 'root') {
+        return c.json({ error: 'Không có quyền xóa tài khoản root' }, 403)
+      }
+    }
+
+    await service.delete(targetId)
     return c.json({ success: true })
   } catch (err) {
     console.error('Failed to delete user:', err)
