@@ -32,6 +32,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginMutation = useMutation({
     mutationFn: loginApi,
     onSuccess: async (res) => {
+      if (res.data.user.accountRole !== 'admin') {
+        throw new Error('Tài khoản không có quyền truy cập trang quản trị')
+      }
       setAccessToken(res.data.accessToken)
       setRefreshToken(res.data.refreshToken)
       qc.setQueryData(['auth', 'me'], res.data.user)

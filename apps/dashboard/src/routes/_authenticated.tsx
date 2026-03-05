@@ -1,11 +1,15 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { AppSidebar } from '@/components/app-sidebar'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import { isAuthenticated } from '@/lib/auth'
+import { isAuthenticated, isAdmin, clearAuth } from '@/lib/auth'
 
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: () => {
     if (!isAuthenticated()) {
+      throw redirect({ to: '/login' })
+    }
+    if (!isAdmin()) {
+      clearAuth()
       throw redirect({ to: '/login' })
     }
   },
