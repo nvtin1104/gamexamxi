@@ -3,6 +3,16 @@
         "pnpm": true,
         "npx tsc": true,
         "npx astro": true,
-        "npx wrangler": true
+        "npx wrangler": true,
+        "y": true,
+        "npx @tanstack/router-cli": true,
+        "ForEach-Object": true,
+        "git rev-parse": true,
+        "git push": true,
+        "npx shadcn@latest": true,
+        "/^cd c:\\\\project\\\\gamexamxi ; git add -A ; echo \"=== STAGED FILES ===\" ; git diff --cached --stat ; echo \"=== METRICS ===\" ; git diff --cached --shortstat \\| awk '\\{ins=\\$4; del=\\$6; print \"LINES:\"\\(ins\\+del\\)\\}' ; git diff --cached --name-only \\| awk 'END \\{print \"FILES:\"NR\\}' ; echo \"=== SECURITY ===\" ; git diff --cached \\| grep -c -iE \"\\(api\\[_-\\]\\?key\\|token\\|password\\|secret\\|private\\[_-\\]\\?key\\|credential\\)\" \\| awk '\\{print \"SECRETS:\"\\$1\\}' ; echo \"=== FILE GROUPS ===\" ; git diff --cached --name-only \\| awk -F'/' '\\{if \\(\\$0 ~ /\\\\\\.\\(md\\|txt\\)\\$/\\) print \"docs:\"\\$0; else if \\(\\$0 ~ /test\\|spec/\\) print \"test:\"\\$0; else if \\(\\$0 ~ /\\\\\\.claude\\\\/\\(skills\\|agents\\|commands\\|workflows\\)/\\) print \"config:\"\\$0; else if \\(\\$0 ~ /package\\\\\\.json\\|yarn\\\\\\.lock\\|pnpm-lock/\\) print \"deps:\"\\$0; else if \\(\\$0 ~ /\\\\\\.github\\|\\\\\\.gitlab\\|ci\\\\\\.yml/\\) print \"ci:\"\\$0; else print \"code:\"\\$0\\}'$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
     }
 }
