@@ -13,50 +13,26 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon } from "lucide-react"
+import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon, ShieldIcon } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 
 const data = {
-  navMain: [
+  navSections: [
     {
-      title: "Dashboard",
-      url: "#",
-      icon: (
-        <LayoutDashboardIcon
-        />
-      ),
+      items: [
+        { title: "Dashboard", to: "/", icon: <LayoutDashboardIcon /> },
+        { title: "Lifecycle", url: "#", icon: <ListIcon /> },
+        { title: "Analytics", url: "#", icon: <ChartBarIcon /> },
+        { title: "Projects", url: "#", icon: <FolderIcon /> },
+        { title: "Team", url: "#", icon: <UsersIcon /> },
+      ],
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: (
-        <ListIcon
-        />
-      ),
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: (
-        <ChartBarIcon
-        />
-      ),
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: (
-        <FolderIcon
-        />
-      ),
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: (
-        <UsersIcon
-        />
-      ),
+      label: "Quản lý",
+      items: [
+        { title: "Người dùng", to: "/users", icon: <UsersIcon /> },
+        { title: "Phân quyền", to: "/permissions", icon: <ShieldIcon /> },
+      ],
     },
   ],
   navClouds: [
@@ -191,7 +167,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain sections={data.navSections} />
         <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
