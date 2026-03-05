@@ -55,18 +55,16 @@ async function main() {
 -- Clear existing seed data (idempotent)
 DELETE FROM user_to_groups;
 DELETE FROM point_transactions;
-DELETE FROM user_points;
-DELETE FROM user_stats;
 DELETE FROM permission_groups;
 DELETE FROM users;
 
 -- ==================
 -- Users
 -- ==================
-INSERT INTO users (id, email, name, role, password_hash, created_at, updated_at) VALUES
-  ('${seedId('admin')}', 'admin@example.com', 'Dev Admin', 'admin', '${adminHash}', ${now}, ${now}),
-  ('${seedId('mod')}',   'mod@example.com',   'Dev Mod',   'mod',   '${modHash}',   ${now}, ${now}),
-  ('${seedId('user')}',  'user@example.com',  'Dev User',  'user',  '${userHash}',  ${now}, ${now});
+INSERT INTO users (id, email, name, account_role, role, password_hash, created_at, updated_at) VALUES
+  ('${seedId('admin')}', 'admin@example.com', 'Dev Admin', 'admin', 'root',  '${adminHash}', ${now}, ${now}),
+  ('${seedId('mod')}',   'mod@example.com',   'Dev Mod',   'user',  'mod',   '${modHash}',   ${now}, ${now}),
+  ('${seedId('user')}',  'user@example.com',  'Dev User',  'user',  'user',  '${userHash}',  ${now}, ${now});
 
 -- ==================
 -- Permission Groups
@@ -85,22 +83,6 @@ INSERT INTO user_to_groups (user_id, group_id) VALUES
 -- Regular user gets Standard Creator group
 INSERT INTO user_to_groups (user_id, group_id) VALUES
   ('${seedId('user')}', '${seedId('group_creator')}');
-
--- ==================
--- User Points (init balances)
--- ==================
-INSERT INTO user_points (user_id, balance, point_limit) VALUES
-  ('${seedId('admin')}', 0, 10000),
-  ('${seedId('mod')}',   0, 10000),
-  ('${seedId('user')}',  500, 10000);
-
--- ==================
--- User Stats / XP
--- ==================
-INSERT INTO user_stats (user_id, current_xp, current_level) VALUES
-  ('${seedId('admin')}', 0, 1),
-  ('${seedId('mod')}',   0, 1),
-  ('${seedId('user')}',  250, 1);
 `.trim()
 
   console.log(sql)
