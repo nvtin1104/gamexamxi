@@ -1,2 +1,5 @@
 export { usersRoute } from './users'
 export { authRoute } from './auth'
+export { permissionsRoute } from './permissions'
+export { pointsRoute } from './points'
+export { xpRoute } from './xp'

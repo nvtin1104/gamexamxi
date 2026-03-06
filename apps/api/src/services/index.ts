@@ -1,2 +1,5 @@
 export { UserService } from './user.service'
 export { AuthService } from './auth.service'
+export { PermissionService } from './permission.service'
+export { PointService } from './point.service'
+export { LevelService } from './level.service'

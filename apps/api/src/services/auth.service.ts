@@ -4,8 +4,9 @@ import { sign } from 'hono/jwt'
 export class AuthService {
   private secret: string
 
-  constructor(secret: string) {
-    this.secret = secret
+  constructor(secret?: string) {
+    // Use a development fallback secret when running locally without config
+    this.secret = secret ?? 'dev_fallback_secret_change_me'
   }
 
   /** Hash a plain-text password using Web Crypto API (PBKDF2) */
