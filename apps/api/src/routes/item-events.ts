@@ -29,7 +29,6 @@ const listQuerySchema = z.object({
 })
 
 const createItemSchema = z.object({
-  id: z.string().min(1).max(100),
   name: z.string().min(2).max(200),
   logo: z.string().url(),
   description: z.string().min(10).max(2000),

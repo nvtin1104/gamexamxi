@@ -1,3 +1,4 @@
+import { createId } from '@paralleldrive/cuid2'
 import { eq, like, and, asc, desc, count, isNull } from 'drizzle-orm'
 import { getDb } from '../db'
 import { itemEvents } from '../db/schemas'
@@ -32,7 +33,6 @@ export interface PaginatedItemEvents {
 }
 
 export interface CreateItemEventData {
-  id: string
   name: string
   logo: string
   description: string
@@ -169,6 +169,7 @@ export class ItemEventService {
     const result = await this.db
       .insert(itemEvents)
       .values({
+        id: createId(),
         ...data,
         createdBy,
         createdAt: now,
