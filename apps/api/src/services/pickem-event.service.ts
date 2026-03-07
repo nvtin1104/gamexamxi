@@ -28,6 +28,8 @@ export interface CreatePickemEventData {
   winExp: number
   pickExp: number
   eventDate: string
+  closePicksAt: string
+  maxPickItems: number
 }
 
 export interface UpdatePickemEventData {
@@ -39,6 +41,8 @@ export interface UpdatePickemEventData {
   winExp?: number
   pickExp?: number
   eventDate?: string
+  closePicksAt?: string
+  maxPickItems?: number
 }
 
 export interface CreatePickemEventOptionData {
@@ -96,6 +100,8 @@ export class PickemEventService {
         winExp: pickemEvents.winExp,
         pickExp: pickemEvents.pickExp,
         eventDate: pickemEvents.eventDate,
+        closePicksAt: pickemEvents.closePicksAt,
+        maxPickItems: pickemEvents.maxPickItems,
         createdBy: pickemEvents.createdBy,
         createdAt: pickemEvents.createdAt,
         updatedAt: pickemEvents.updatedAt,
@@ -127,6 +133,8 @@ export class PickemEventService {
         winExp: pickemEvents.winExp,
         pickExp: pickemEvents.pickExp,
         eventDate: pickemEvents.eventDate,
+        closePicksAt: pickemEvents.closePicksAt,
+        maxPickItems: pickemEvents.maxPickItems,
         createdBy: pickemEvents.createdBy,
         createdAt: pickemEvents.createdAt,
         updatedAt: pickemEvents.updatedAt,

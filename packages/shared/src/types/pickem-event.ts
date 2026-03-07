@@ -8,6 +8,8 @@ export interface PickemEvent {
   winExp: number
   pickExp: number
   eventDate: string
+  closePicksAt: string
+  maxPickItems: number
   createdBy: string
   createdAt: string
   updatedAt: string

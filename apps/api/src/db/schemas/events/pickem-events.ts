@@ -15,6 +15,8 @@ export const pickemEvents = sqliteTable(
         winExp: integer('win_exp').notNull(),
         pickExp: integer('pick_exp').notNull(),
         eventDate: text('event_date').notNull(),
+        closePicksAt: text('close_picks_at').notNull(),
+        maxPickItems: integer('max_pick_items').notNull(),
         createdBy: text('created_by')
             .notNull()
             .references(() => users.id, { onDelete: 'cascade' }),

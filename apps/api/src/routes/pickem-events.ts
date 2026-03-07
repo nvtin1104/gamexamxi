@@ -28,6 +28,8 @@ const createPickemEventSchema = z.object({
   winExp: z.number().int().min(0).default(0),
   pickExp: z.number().int().min(0).default(0),
   eventDate: z.string().min(1),
+  closePicksAt: z.string().min(1),
+  maxPickItems: z.number().int().min(1).max(10).default(1),
 })
 
 const updatePickemEventSchema = z.object({
@@ -39,6 +41,8 @@ const updatePickemEventSchema = z.object({
   winExp: z.number().int().min(0).optional(),
   pickExp: z.number().int().min(0).optional(),
   eventDate: z.string().min(1).optional(),
+  closePicksAt: z.string().min(1).optional(),
+  maxPickItems: z.number().int().min(1).max(10).optional(),
 })
 
 const createOptionSchema = z.object({

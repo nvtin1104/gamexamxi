@@ -31,6 +31,8 @@ const defaultValues: CreatePickemEventFormData = {
   winExp: 0,
   pickExp: 0,
   eventDate: '',
+  closePicksAt: '',
+  maxPickItems: 1,
 }
 
 export function PickemEventForm(props: PickemEventFormProps) {
@@ -120,6 +122,46 @@ export function PickemEventForm(props: PickemEventFormProps) {
               type="datetime-local"
               value={field.state.value as string}
               onChange={(e) => field.handleChange(e.target.value)}
+            />
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
+            )}
+          </div>
+        )}
+      />
+
+      <form.Field
+        name="closePicksAt"
+        children={(field) => (
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor={field.name}>Thời hạn chọn *</Label>
+            <Input
+              id={field.name}
+              name={field.name}
+              type="datetime-local"
+              value={field.state.value as string}
+              onChange={(e) => field.handleChange(e.target.value)}
+            />
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
+            )}
+          </div>
+        )}
+      />
+
+      <form.Field
+        name="maxPickItems"
+        children={(field) => (
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor={field.name}>Số lượng chọn tối đa</Label>
+            <Input
+              id={field.name}
+              name={field.name}
+              type="number"
+              min="1"
+              max="10"
+              value={field.state.value as number}
+              onChange={(e) => field.handleChange(Number(e.target.value))}
             />
             {field.state.meta.errors.length > 0 && (
               <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
