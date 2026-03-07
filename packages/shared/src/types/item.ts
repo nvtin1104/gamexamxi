@@ -12,7 +12,7 @@ export interface ItemEvent {
   name: string
   logo: string
   description: string
-  linkSocial: LinkSocial
+  linkSocial: LinkSocial[]
   level: number
   parentId: string | null
   type: ItemEventType
