@@ -1,0 +1,488 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/layout/header.astro';
+import Footer from '../components/layout/footer.astro';
+import '../styles/global.css';
+
+interface PickemEvent {
+  id: string;
+  title: string;
+  thumbnail: string;
+  description: string;
+  eventDate: string;
+  closePicksAt: string;
+  status: 'upcoming' | 'active' | 'closed';
+  participants: number;
+  winPoints: number;
+  pickExp: number;
+  options?: PickemOption[];
+}
+
+interface PickemOption {
+  id: string;
+  label: string;
+  odds?: number;
+  votes?: number;
+  percentage?: number;
+}
+
+const pickemEvents: PickemEvent[] = [
+  {
+    id: '1',
+    title: 'Ai vô địch CKTG 2024?',
+    thumbnail: '🏆',
+    description: 'Dự đoán đội vô địch Chung kết Thế giới Liên Minh Huyền Thoại 2024',
+    eventDate: '2024-11-02',
+    closePicksAt: '2024-11-02T18:00:00',
+    status: 'closed',
+    participants: 12450,
+    winPoints: 500,
+    pickExp: 50,
+    options: [
+      { id: '1a', label: 'T1', votes: 5234, percentage: 42 },
+      { id: '1b', label: 'Gen.G', votes: 3421, percentage: 27 },
+      { id: '1c', label: 'JDG', votes: 2103, percentage: 17 },
+      { id: '1d', label: 'Bilibili', votes: 1692, percentage: 14 },
+    ],
+  },
+  {
+    id: '2',
+    title: 'Tỷ số trận Việt Nam - Thái Lan',
+    thumbnail: '⚽',
+    description: 'Dự đoán tỷ số trận đấu giao hữu giữa Việt Nam và Thái Lan',
+    eventDate: '2024-10-15',
+    closePicksAt: '2024-10-15T19:00:00',
+    status: 'closed',
+    participants: 8920,
+    winPoints: 300,
+    pickExp: 30,
+    options: [
+      { id: '2a', label: '2-1', votes: 3245, percentage: 36 },
+      { id: '2b', label: '1-0', votes: 2456, percentage: 28 },
+      { id: '2c', label: '2-0', votes: 1789, percentage: 20 },
+      { id: '2d', label: 'Hòa 1-1', votes: 1430, percentage: 16 },
+    ],
+  },
+  {
+    id: '3',
+    title: 'Đội nào vô địch VCS Mùa Hè 2024?',
+    thumbnail: '🎮',
+    description: 'Dự đoán đội vô địch VCS Mùa Hè 2024',
+    eventDate: '2024-08-25',
+    closePicksAt: '2024-08-25T17:00:00',
+    status: 'closed',
+    participants: 6540,
+    winPoints: 400,
+    pickExp: 40,
+    options: [
+      { id: '3a', label: 'GAM', votes: 2890, percentage: 44 },
+      { id: '3b', label: 'FL', votes: 2134, percentage: 33 },
+      { id: '3c', label: 'TW', votes: 1516, percentage: 23 },
+    ],
+  },
+  {
+    id: '4',
+    title: 'Ai thắng trận Boxing Fury vs Joshua?',
+    thumbnail: '🥊',
+    description: 'Dự đoán kết quả trận đấu boxing hạng nặng giữa Tyson Fury và Anthony Joshua',
+    eventDate: '2024-12-21',
+    closePicksAt: '2024-12-21T22:00:00',
+    status: 'active',
+    participants: 3420,
+    winPoints: 500,
+    pickExp: 50,
+    options: [
+      { id: '4a', label: 'Fury thắng KO', odds: 2.1 },
+      { id: '4b', label: 'Fury thắng điểm', odds: 3.2 },
+      { id: '4c', label: 'Joshua thắng KO', odds: 4.5 },
+      { id: '4d', label: 'Joshua thắng điểm', odds: 5.8 },
+    ],
+  },
+  {
+    id: '5',
+    title: 'Quốc gia nào giành nhiều vàng nhất Olympic 2024?',
+    thumbnail: '🥇',
+    description: 'Dự đoán quốc gia có số huy chương vàng nhiều nhất tại Olympic Paris 2024',
+    eventDate: '2024-08-11',
+    closePicksAt: '2024-07-26T00:00:00',
+    status: 'active',
+    participants: 5680,
+    winPoints: 600,
+    pickExp: 60,
+    options: [
+      { id: '5a', label: 'Mỹ', odds: 1.5 },
+      { id: '5b', label: 'Trung Quốc', odds: 2.0 },
+      { id: '5c', label: 'Anh', odds: 8.5 },
+      { id: '5d', label: 'Pháp', odds: 12.0 },
+    ],
+  },
+  {
+    id: '6',
+    title: 'Đội nào lên ngôi Premier League 2024-25?',
+    thumbnail: '⚽',
+    description: 'Dự đoán đội vô địch Premier League mùa giải 2024-25',
+    eventDate: '2025-05-25',
+    closePicksAt: '2024-08-17T00:00:00',
+    status: 'upcoming',
+    participants: 0,
+    winPoints: 800,
+    pickExp: 80,
+    options: [
+      { id: '6a', label: 'Man City', odds: 1.8 },
+      { id: '6b', label: 'Arsenal', odds: 3.5 },
+      { id: '6c', label: 'Liverpool', odds: 5.0 },
+      { id: '6d', label: 'Man United', odds: 15.0 },
+      { id: '6e', label: 'Chelsea', odds: 25.0 },
+    ],
+  },
+];
+
+const statusLabels = {
+  upcoming: 'Sắp diễn ra',
+  active: 'Đang diễn ra',
+  closed: 'Đã kết thúc',
+};
+
+const statusClasses = {
+  upcoming: 'status-upcoming',
+  active: 'status-active',
+  closed: 'status-closed',
+};
+
+const statusBg = {
+  upcoming: 'var(--color-sky)',
+  active: 'var(--color-sage)',
+  closed: 'var(--color-muted)',
+};
+---
+
+<Layout title="Pickem - PlaySoft">
+  <div class="page">
+    <Header />
+
+    <main class="pickem-page">
+      <div class="page-header">
+        <h1 class="page-title">🎯 Pickem</h1>
+        <p class="page-desc">Dự đoán kết quả các sự kiện thể thao, esports và giải trí để nhận thưởng</p>
+      </div>
+
+      <div class="filter-tabs">
+        <button class="filter-tab active">Tất cả</button>
+        <button class="filter-tab">Đang diễn ra</button>
+        <button class="filter-tab">Sắp diễn ra</button>
+        <button class="filter-tab">Đã kết thúc</button>
+      </div>
+
+      <div class="pickem-grid">
+        {pickemEvents.map((event) => (
+          <a href={`/pickem/${event.id}`} class="pickem-card">
+            <div class="pickem-thumb" style={`background: ${statusBg[event.status]}`}>
+              <span class="pickem-icon">{event.thumbnail}</span>
+              <span class={`pickem-status ${statusClasses[event.status]}`}>
+                {statusLabels[event.status]}
+              </span>
+            </div>
+            <div class="pickem-body">
+              <h3 class="pickem-title">{event.title}</h3>
+              <p class="pickem-desc">{event.description}</p>
+              
+              <div class="pickem-meta">
+                <div class="meta-item">
+                  <span class="meta-icon">👥</span>
+                  <span>{event.participants.toLocaleString()} người</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-icon">⭐</span>
+                  <span>+{event.winPoints} điểm</span>
+                </div>
+              </div>
+
+              {event.status === 'active' && event.options && (
+                <div class="pickem-options">
+                  {event.options.slice(0, 3).map((opt) => (
+                    <div class="option-chip">
+                      {opt.label}
+                      {opt.odds && <span class="option-odds">{opt.odds}x</span>}
+                    </div>
+                  ))}
+                  {event.options.length > 3 && (
+                    <div class="option-more">+{event.options.length - 3}</div>
+                  )}
+                </div>
+              )}
+
+              {event.status === 'closed' && event.options && (
+                <div class="pickem-results">
+                  {event.options.map((opt) => (
+                    <div class="result-row">
+                      <span class="result-label">{opt.label}</span>
+                      <div class="result-bar">
+                        <div class="result-fill" style={`width: ${opt.percentage}%`}></div>
+                      </div>
+                      <span class="result-pct">{opt.percentage}%</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    </main>
+
+    <Footer />
+  </div>
+</Layout>
+
+<style>
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  .pickem-page {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .page-header {
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+
+  .page-desc {
+    color: var(--color-muted);
+    font-size: 16px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .filter-tab {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 16px;
+    border: 2px solid var(--color-border);
+    border-radius: 20px;
+    background: var(--color-cream);
+    color: var(--color-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-tab:hover {
+    background: var(--color-warm);
+  }
+
+  .filter-tab.active {
+    background: var(--color-ink);
+    color: var(--color-cream);
+    border-color: var(--color-ink);
+  }
+
+  .pickem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .pickem-card {
+    background: var(--color-cream);
+    border: 2px solid var(--color-border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pickem-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .pickem-thumb {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .pickem-icon {
+    font-size: 48px;
+  }
+
+  .pickem-status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1.5px solid var(--color-border);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .status-upcoming {
+    background: var(--color-sky);
+  }
+
+  .status-active {
+    background: var(--color-sage);
+  }
+
+  .status-closed {
+    background: var(--color-muted);
+    color: var(--color-cream);
+  }
+
+  .pickem-body {
+    padding: 16px 18px 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pickem-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .pickem-desc {
+    font-size: 13px;
+    color: var(--color-muted);
+    line-height: 1.5;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .pickem-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--color-muted);
+  }
+
+  .meta-icon {
+    font-size: 14px;
+  }
+
+  .pickem-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: auto;
+  }
+
+  .option-chip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    background: var(--color-warm);
+    border: 1.5px solid var(--color-border);
+    border-radius: 16px;
+  }
+
+  .option-odds {
+    font-size: 11px;
+    color: var(--color-sage-dark);
+    font-weight: 700;
+  }
+
+  .option-more {
+    font-size: 11px;
+    color: var(--color-muted);
+    padding: 4px 8px;
+  }
+
+  .pickem-results {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: auto;
+  }
+
+  .result-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .result-label {
+    font-size: 12px;
+    font-weight: 600;
+    width: 70px;
+    flex-shrink: 0;
+  }
+
+  .result-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--color-sand);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .result-fill {
+    height: 100%;
+    background: var(--color-sage-dark);
+    border-radius: 3px;
+  }
+
+  .result-pct {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-muted);
+    width: 35px;
+    text-align: right;
+  }
+
+  @media (max-width: 600px) {
+    .pickem-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

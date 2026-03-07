@@ -1,12 +1,189 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import Header from '../components/layout/header.astro';
+import Footer from '../components/layout/footer.astro';
+import Hero from '../components/home/hero.astro';
+import GameCard from '../components/home/game-card.astro';
+import StatsRow from '../components/home/stats-row.astro';
+import Leaderboard from '../components/home/leaderboard.astro';
+import DailyChallenge from '../components/home/daily-challenge.astro';
 import '../styles/global.css';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const games = [
+  {
+    title: 'Word Twist',
+    icon: '🔤',
+    players: 342,
+    difficulty: 'easy' as const,
+    thumbnail: 'sage' as const,
+    href: '/game/word-twist',
+  },
+  {
+    title: 'Block Puzzle',
+    icon: '🧩',
+    players: 185,
+    difficulty: 'medium' as const,
+    thumbnail: 'peach' as const,
+    href: '/game/block-puzzle',
+  },
+  {
+    title: 'Trivia Blitz',
+    icon: '❓',
+    players: 521,
+    difficulty: 'medium' as const,
+    thumbnail: 'sky' as const,
+    href: '/game/trivia-blitz',
+  },
+  {
+    title: 'Aim Trainer',
+    icon: '🎯',
+    players: 97,
+    difficulty: 'hard' as const,
+    thumbnail: 'butter' as const,
+    href: '/game/aim-trainer',
+  },
+  {
+    title: 'Memory Match',
+    icon: '🃏',
+    players: 214,
+    difficulty: 'easy' as const,
+    thumbnail: 'lilac' as const,
+    href: '/game/memory-match',
+  },
+];
+
+const featuredGames = games.slice(0, 5);
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="PlaySoft - Minigame cho mọi người">
+  <div class="page">
+    <Header />
+
+    <main>
+      <Hero />
+
+      <StatsRow />
+
+      <div class="section-header">
+        <div class="section-title">🕹️ Game nổi bật</div>
+        <a href="/games" class="section-link">Xem tất cả →</a>
+      </div>
+
+      <div class="games-grid">
+        {featuredGames.map((game) => (
+          <GameCard {...game} />
+        ))}
+        <div class="game-card game-card-coming">
+          <div class="coming-content">
+            <div class="coming-icon">✦</div>
+            <div class="coming-title">Sắp ra mắt</div>
+            <div class="coming-sub">+12 game mới</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-grid">
+        <Leaderboard />
+        <DailyChallenge />
+      </div>
+    </main>
+
+    <Footer />
+  </div>
 </Layout>
+
+<style>
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .section-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-muted);
+    border-bottom: 2px solid var(--color-sand);
+    padding-bottom: 1px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    text-decoration: none;
+  }
+
+  .section-link:hover {
+    color: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 56px;
+  }
+
+  .game-card-coming {
+    border-style: dashed;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    background: var(--color-warm);
+  }
+
+  .coming-content {
+    text-align: center;
+  }
+
+  .coming-icon {
+    font-size: 36px;
+    margin-bottom: 10px;
+  }
+
+  .coming-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .coming-sub {
+    font-size: 12px;
+    color: var(--color-muted);
+    margin-top: 4px;
+  }
+
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 24px;
+    margin-bottom: 56px;
+  }
+
+  @media (max-width: 760px) {
+    .bottom-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

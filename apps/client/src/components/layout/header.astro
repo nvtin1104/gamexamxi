@@ -1,0 +1,135 @@
+---
+interface Props {
+  logo?: string;
+  logoIcon?: string;
+}
+
+const { logo = 'PlaySoft', logoIcon = '🎮' } = Astro.props;
+
+const navLinks = [
+  { label: 'Games', href: '/', active: true },
+  { label: 'Leaderboard', href: '/leaderboard', active: false },
+  { label: 'Profile', href: '/profile', active: false },
+  { label: 'Shop', href: '/shop', active: false },
+];
+---
+
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <span class="logo-icon">{logoIcon}</span>
+      {logo}
+    </a>
+
+    <nav class="nav-links">
+      {navLinks.map((link) => (
+        <a href={link.href} class:list={['nav-link', link.active && 'active']}>
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <button class="nav-play">
+      <span>▶</span> Chơi Ngay
+    </button>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: relative;
+    z-index: 10;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 0 32px;
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 22px;
+    background: var(--color-cream);
+    border: 2px solid var(--color-border);
+    border-radius: 10px;
+    padding: 6px 16px;
+    box-shadow: var(--shadow-sm);
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--color-ink);
+    transition: transform 0.15s;
+  }
+
+  .logo:hover {
+    transform: translate(-1px, -1px);
+  }
+
+  .logo-icon {
+    font-size: 18px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 10px;
+  }
+
+  .nav-link {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 16px;
+    border: 2px solid transparent;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.18s;
+    color: var(--color-muted);
+    letter-spacing: 0.3px;
+    text-decoration: none;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    background: var(--color-ink);
+    color: var(--color-cream);
+    border-color: var(--color-ink);
+  }
+
+  .nav-play {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 20px;
+    background: var(--color-butter);
+    border: 2px solid var(--color-border);
+    border-radius: 30px;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+    color: var(--color-ink);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-play:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--color-border);
+  }
+
+  .nav-play:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--color-border);
+  }
+
+  @media (max-width: 760px) {
+    .nav-links {
+      display: none;
+    }
+  }
+</style>

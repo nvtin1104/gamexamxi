@@ -1,0 +1,278 @@
+---
+interface Task {
+  text: string;
+  points: number;
+  completed?: boolean;
+}
+
+interface Props {
+  title?: string;
+  icon?: string;
+  name?: string;
+  subtitle?: string;
+  rewardMultiplier?: number;
+  timerValue?: string;
+  totalDots?: number;
+  activeDots?: number;
+  tasks?: Task[];
+  buttonText?: string;
+}
+
+const {
+  title = '🔥 Thử thách hôm nay',
+  icon = '⚡',
+  name = 'Speed Round Sunday',
+  subtitle = 'Chơi 3 game trong 10 phút',
+  rewardMultiplier = 2,
+  timerValue = '06 : 42 : 18',
+  totalDots = 8,
+  activeDots = 4,
+  tasks = [
+    { text: 'Chơi Word Twist 1 lần', points: 100, completed: true },
+    { text: 'Đạt combo × 3', points: 200, completed: true },
+    { text: 'Thắng 1 trận Trivia Blitz', points: 300, completed: false },
+  ],
+  buttonText = 'Tiếp tục thử thách →',
+} = Astro.props;
+---
+
+<div class="panel">
+  <div class="panel-title">{title}</div>
+
+  <div class="challenge-header">
+    <div class="challenge-icon">{icon}</div>
+    <div class="challenge-info">
+      <div class="challenge-name">{name}</div>
+      <div class="challenge-sub">{subtitle}</div>
+    </div>
+    <div class="challenge-reward">
+      <div class="reward-num">×{rewardMultiplier}</div>
+      <div class="reward-lbl">Điểm thưởng</div>
+    </div>
+  </div>
+
+  <div class="timer-row">
+    <span class="timer-label">Còn lại hôm nay</span>
+    <span class="timer-value">{timerValue}</span>
+  </div>
+
+  <div class="timer-dots">
+    {Array.from({ length: totalDots }).map((_, i) => (
+      <div class={`timer-dot ${i < activeDots ? 'active' : ''}`} />
+    ))}
+  </div>
+
+  <div class="challenge-tasks">
+    {tasks.map((task) => (
+      <div class="task-row">
+        <div class={`task-check ${task.completed ? 'done' : ''}`}>
+          {task.completed ? '✓' : ''}
+        </div>
+        <div class={`task-text ${task.completed ? 'done' : ''}`}>{task.text}</div>
+        <div class="task-pts">+{task.points}</div>
+      </div>
+    ))}
+  </div>
+
+  <button class="btn btn-primary btn-full">
+    {buttonText}
+  </button>
+</div>
+
+<style>
+  .panel {
+    background: var(--color-cream);
+    border: 2px solid var(--color-border);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .panel-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 18px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .challenge-header {
+    background: var(--color-peach);
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .challenge-icon {
+    font-size: 36px;
+  }
+
+  .challenge-info {
+    flex: 1;
+  }
+
+  .challenge-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  .challenge-sub {
+    font-size: 12px;
+    color: var(--color-ink);
+    opacity: 0.7;
+  }
+
+  .challenge-reward {
+    background: var(--color-cream);
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .reward-num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .reward-lbl {
+    font-size: 9px;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .timer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .timer-label {
+    font-size: 12px;
+    color: var(--color-muted);
+    font-weight: 500;
+  }
+
+  .timer-value {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .timer-dots {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .timer-dot {    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-sand);
+    border: 1.5px solid var(--color-border);
+  }
+
+  .timer-dot.active {
+    background: var(--color-peach-dark);
+  }
+
+  .challenge-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .task-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--color-warm);
+    border: 1.5px solid var(--color-border);
+    border-radius: 10px;
+  }
+
+  .task-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .task-check.done {
+    background: var(--color-sage);
+  }
+
+  .task-text {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .task-text.done {
+    text-decoration: line-through;
+    color: var(--color-muted);
+  }
+
+  .task-pts {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-muted);
+  }
+
+  .btn {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 13px 28px;
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: var(--color-ink);
+    color: var(--color-cream);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-primary:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .btn-primary:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+
+  .btn-full {
+    width: 100%;
+    border-radius: 10px;
+  }
+</style>
