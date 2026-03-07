@@ -1,0 +1,86 @@
+---
+interface Props {
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  shape?: 'default' | 'round';
+  status?: 'none' | 'online' | 'offline' | 'busy';
+  background?: 'sage' | 'peach' | 'sky' | 'butter' | 'lilac' | 'rose' | 'cream';
+  class?: string;
+}
+
+const {
+  size = 'md',
+  shape = 'default',
+  status = 'none',
+  background = 'sage',
+  class: className = '',
+} = Astro.props;
+
+const baseStyles = `
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-family: var(--font-display);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+`;
+
+const sizeStyles = {
+  xs: 'width: 28px; height: 28px; border-radius: 8px; font-size: 12px;',
+  sm: 'width: 36px; height: 36px; border-radius: 10px; font-size: 14px;',
+  md: 'width: 48px; height: 48px; border-radius: 12px; font-size: 18px;',
+  lg: 'width: 64px; height: 64px; border-radius: 16px; font-size: 26px;',
+  xl: 'width: 84px; height: 84px; border-radius: 20px; font-size: 36px;',
+};
+
+const shapeStyles = {
+  default: '',
+  round: 'border-radius: 50% !important;',
+};
+
+const bgStyles = {
+  sage: 'background: var(--color-sage);',
+  peach: 'background: var(--color-peach);',
+  sky: 'background: var(--color-sky);',
+  butter: 'background: var(--color-butter);',
+  lilac: 'background: var(--color-lilac);',
+  rose: 'background: var(--color-rose);',
+  cream: 'background: var(--color-cream);',
+};
+
+const statusColors = {
+  online: 'var(--color-sage-dark)',
+  offline: 'var(--color-subtle)',
+  busy: 'var(--color-peach-dark)',
+};
+---
+
+<div
+  class:list={['avatar', `av-${size}`, shape === 'round' && 'av-round', status !== 'none' && 'av-status', status !== 'none' && `status-${status}`, className]}
+  style={`${baseStyles} ${sizeStyles[size]} ${shapeStyles[shape]} ${bgStyles[background]}`}
+>
+  <slot />
+</div>
+
+{status !== 'none' && (
+  <style define:vars={{ statusColor: statusColors[status] }}>
+    .av-status::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--statusColor);
+      border: 2px solid var(--color-cream);
+    }
+  </style>
+)}
+
+<style>
+  .avatar {
+    position: relative;
+  }
+</style>

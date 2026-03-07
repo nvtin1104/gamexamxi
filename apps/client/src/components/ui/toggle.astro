@@ -1,0 +1,102 @@
+---
+interface Props {
+  name: string;
+  id?: string;
+  label?: string;
+  checked?: boolean;
+  variant?: 'default' | 'sage' | 'peach' | 'butter' | 'sky';
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  name,
+  id,
+  label,
+  checked = false,
+  variant = 'default',
+  disabled = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<label class:list={['toggle-wrap', disabled && 'disabled', className]}>
+  <input
+    type="checkbox"
+    name={name}
+    id={id || name}
+    class:list={['toggle', variant !== 'default' && variant]}
+    checked={checked}
+    disabled={disabled}
+  />
+  {label && <span class="toggle-label">{label}</span>}
+</label>
+
+<style>
+  .toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .toggle-wrap.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .toggle {
+    width: 44px;
+    height: 24px;
+    background: var(--color-sand);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    appearance: none;
+    flex-shrink: 0;
+  }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-cream);
+    border: 2px solid var(--color-border);
+    top: 2px;
+    left: 2px;
+    transition: left 0.2s;
+  }
+
+  .toggle:checked {
+    background: var(--color-sage);
+  }
+
+  .toggle:checked::after {
+    left: 22px;
+  }
+
+  .toggle.sage:checked {
+    background: var(--color-sage);
+  }
+
+  .toggle.peach:checked {
+    background: var(--color-peach);
+  }
+
+  .toggle.butter:checked {
+    background: var(--color-butter);
+  }
+
+  .toggle.sky:checked {
+    background: var(--color-sky);
+  }
+
+  .toggle-label {
+    font-size: 13px;
+    font-weight: 500;
+  }
+</style>

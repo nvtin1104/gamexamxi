@@ -1,0 +1,71 @@
+---
+interface Props {
+  icon?: string;
+  value: string | number;
+  label: string;
+  background?: 'sage' | 'peach' | 'sky' | 'butter' | 'lilac' | 'rose';
+  class?: string;
+}
+
+const {
+  icon,
+  value,
+  label,
+  background = 'sage',
+  class: className = '',
+} = Astro.props;
+
+const bgStyles = {
+  sage: 'background: var(--color-sage);',
+  peach: 'background: var(--color-peach);',
+  sky: 'background: var(--color-sky);',
+  butter: 'background: var(--color-butter);',
+  lilac: 'background: var(--color-lilac);',
+  rose: 'background: var(--color-rose);',
+};
+---
+
+<div class:list={['stat-tile', className]} style={bgStyles[background]}>
+  {icon && <div class="stat-icon">{icon}</div>}
+  <div class="stat-value">{value}</div>
+  <div class="stat-label">{label}</div>
+</div>
+
+<style>
+  .stat-tile {
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    cursor: default;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .stat-tile:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .stat-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--color-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+</style>

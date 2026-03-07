@@ -1,0 +1,58 @@
+---
+interface Props {
+  variant?: 'sage' | 'peach' | 'butter' | 'sky' | 'lilac' | 'rose' | 'ink' | 'outline';
+  size?: 'sm' | 'default' | 'lg';
+  dot?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'sage',
+  size = 'default',
+  dot = false,
+  class: className = '',
+} = Astro.props;
+
+const baseStyles = `
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  box-shadow: var(--shadow-xs);
+`;
+
+const sizeStyles = {
+  sm: 'font-size: 10px; padding: 2px 9px;',
+  default: 'font-size: 11px; padding: 3px 12px;',
+  lg: 'font-size: 13px; padding: 5px 16px;',
+};
+
+const variantStyles = {
+  sage: 'background: var(--color-sage);',
+  peach: 'background: var(--color-peach);',
+  butter: 'background: var(--color-butter);',
+  sky: 'background: var(--color-sky);',
+  lilac: 'background: var(--color-lilac);',
+  rose: 'background: var(--color-rose);',
+  ink: 'background: var(--color-ink); color: var(--color-cream);',
+  outline: 'background: transparent;',
+};
+---
+
+<span
+  class:list={['badge', `badge-${size}`, className]}
+  style={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]}`}
+>
+  {dot && <span class="badge-dot">●</span>}
+  <slot />
+</span>
+
+<style>
+  .badge-dot {
+    font-size: 7px;
+  }
+</style>
