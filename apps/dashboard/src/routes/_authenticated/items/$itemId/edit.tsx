@@ -47,7 +47,7 @@ function EditItemPage() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          <Card className="max-w-2xl">
+          <Card>
             <CardHeader>
               <Skeleton className="h-6 w-48" />
             </CardHeader>
@@ -98,7 +98,7 @@ function EditItemPage() {
       </header>
 
       <div className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-        <Card className="max-w-2xl">
+        <Card>
           <CardHeader>
             <CardTitle>Chỉnh sửa item</CardTitle>
             <CardDescription>

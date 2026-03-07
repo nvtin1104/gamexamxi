@@ -46,7 +46,7 @@ function NewItemPage() {
       </header>
 
       <div className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-        <Card className="max-w-2xl">
+        <Card>
           <CardHeader>
             <CardTitle>Tạo item mới</CardTitle>
             <CardDescription>

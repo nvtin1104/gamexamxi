@@ -2,8 +2,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { toast } from 'sonner'
-import { ArrowLeftIcon, PencilIcon, TrashIcon, Loader2Icon } from 'lucide-react'
-import { getItem, deleteItem } from '@/lib/api/items'
+import { ArrowLeftIcon, PencilIcon, TrashIcon, Loader2Icon, UserIcon, LinkIcon } from 'lucide-react'
+import { getItemDetail, deleteItem } from '@/lib/api/items'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { SidebarTrigger } from '@/components/ui/sidebar'
@@ -28,14 +28,31 @@ export const Route = createFileRoute('/_authenticated/items/$itemId/')({
   component: ItemDetailPage,
 })
 
+type ItemDetail = {
+  id: string
+  name: string
+  logo: string
+  description: string
+  linkSocial: { type: string; url?: string; handle?: string; isPublic: boolean }[]
+  level: number
+  parentId: string | null
+  type: 'player' | 'team' | 'tournament'
+  createdBy: string
+  createdAt: string
+  updatedAt: string
+  creator: { id: string; name: string; email: string } | null
+  parent: { id: string; name: string; logo: string; type: string } | null
+  children: { id: string; name: string; logo: string; type: string; level: number }[]
+}
+
 function ItemDetailPage() {
   const { itemId } = Route.useParams()
   const queryClient = useQueryClient()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const { data: res, isLoading, error } = useQuery({
-    queryKey: ['items', itemId],
-    queryFn: () => getItem(itemId),
+    queryKey: ['items', itemId, 'detail'],
+    queryFn: () => getItemDetail(itemId),
   })
 
   const deleteMutation = useMutation({
@@ -96,7 +113,7 @@ function ItemDetailPage() {
     )
   }
 
-  const item = res.data
+  const item = res.data as unknown as ItemDetail
   return (
     <>
       <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">
@@ -124,7 +141,10 @@ function ItemDetailPage() {
             </Avatar>
             <div>
               <h1 className="text-2xl font-bold">{item.name}</h1>
-              <p className="text-sm text-muted-foreground">{item.id}</p>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Badge>{ITEM_TYPE_LABELS[item.type] ?? item.type}</Badge>
+                <span>Lv.{item.level}</span>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -144,35 +164,97 @@ function ItemDetailPage() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Thông tin cơ bản</CardTitle>
+              <CardTitle className="text-base">Người tạo</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <InfoRow label="Loại" value={<Badge>{ITEM_TYPE_LABELS[item.type] ?? item.type}</Badge>} />
-              <InfoRow label="Level" value={`Lv.${item.level}`} />
+            <CardContent>
+              {item.creator ? (
+                <div className="flex items-center gap-3">
+                  <Avatar className="size-10">
+                    <AvatarFallback><UserIcon className="size-4" /></AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{item.creator.name}</p>
+                    <p className="text-xs text-muted-foreground">{item.creator.email}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Không có thông tin</p>
+              )}
+              <Separator className="my-3" />
               <InfoRow label="Ngày tạo" value={new Date(item.createdAt).toLocaleDateString('vi-VN')} />
               <InfoRow label="Cập nhật" value={new Date(item.updatedAt).toLocaleDateString('vi-VN')} />
             </CardContent>
           </Card>
 
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-base">Mô tả</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm whitespace-pre-wrap">{item.description}</p>
-            </CardContent>
-          </Card>
+          {item.parent && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Parent</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Link to="/items/$itemId" params={{ itemId: item.parent.id }} className="flex items-center gap-3 hover:underline">
+                  <Avatar className="size-10">
+                    <AvatarImage src={item.parent.logo} alt={item.parent.name} />
+                    <AvatarFallback><LinkIcon className="size-4" /></AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{item.parent.name}</p>
+                    <p className="text-xs text-muted-foreground">{ITEM_TYPE_LABELS[item.parent.type] ?? item.parent.type}</p>
+                  </div>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
 
-          {item.linkSocial && (
+          {item.level === 0 && item.children && item.children.length > 0 && (
+            <Card className={item.parent ? undefined : 'md:col-span-2'}>
+              <CardHeader>
+                <CardTitle className="text-base">Children ({item.children.length})</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {item.children.map((child) => (
+                  <Link key={child.id} to="/items/$itemId" params={{ itemId: child.id }} className="flex items-center gap-3 hover:underline">
+                    <Avatar className="size-8">
+                      <AvatarImage src={child.logo} alt={child.name} />
+                      <AvatarFallback className="text-xs">{child.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{child.name}</p>
+                      <p className="text-xs text-muted-foreground">{ITEM_TYPE_LABELS[child.type] ?? child.type}</p>
+                    </div>
+                    <Badge variant="outline" className="text-xs">Lv.{child.level}</Badge>
+                  </Link>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {item.description && (
+            <Card className={item.parent ? undefined : 'md:col-span-2'}>
+              <CardHeader>
+                <CardTitle className="text-base">Mô tả</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm whitespace-pre-wrap">{item.description}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {item.linkSocial && item.linkSocial.length > 0 && (
             <Card className="md:col-span-3">
               <CardHeader>
                 <CardTitle className="text-base">Liên kết mạng xã hội</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <InfoRow label="Mạng" value={item.linkSocial.type} />
-                <InfoRow label="URL" value={item.linkSocial.url || '-'} />
-                <InfoRow label="Handle" value={item.linkSocial.handle || '-'} />
-                <InfoRow label="Công khai" value={item.linkSocial.isPublic ? 'Có' : 'Không'} />
+                {item.linkSocial.map((link, index) => (
+                  <div key={index} className="space-y-1">
+                    <InfoRow label="Mạng" value={link.type} />
+                    <InfoRow label="URL" value={link.url || '-'} />
+                    <InfoRow label="Handle" value={link.handle || '-'} />
+                    <InfoRow label="Công khai" value={link.isPublic ? 'Có' : 'Không'} />
+                    {index < item.linkSocial.length - 1 && <Separator className="my-2" />}
+                  </div>
+                ))}
               </CardContent>
             </Card>
           )}

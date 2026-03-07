@@ -1,6 +1,7 @@
+import { useState, useEffect } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { createItemSchema } from '@gamexamxi/shared'
-import type { CreateItemFormData, UpdateItemFormData, LinkSocialInput } from '@gamexamxi/shared'
+import type { CreateItemFormData, UpdateItemFormData, LinkSocialInput, ItemEvent } from '@gamexamxi/shared'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,7 +13,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { LoaderCircleIcon } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import { LoaderCircleIcon, PlusIcon, XIcon, LinkIcon } from 'lucide-react'
+import { listItems } from '@/lib/api/items'
 
 interface CreateModeProps {
   mode: 'create'
@@ -30,15 +41,199 @@ interface EditModeProps {
 
 type ItemFormProps = CreateModeProps | EditModeProps
 
-const defaultLinkSocial: LinkSocialInput = {
-  type: 'twitter',
-  url: '',
-  handle: '',
-  isPublic: true,
+const SOCIAL_TYPES = [
+  { value: 'twitter', label: 'Twitter' },
+  { value: 'facebook', label: 'Facebook' },
+  { value: 'instagram', label: 'Instagram' },
+  { value: 'tiktok', label: 'TikTok' },
+  { value: 'youtube', label: 'YouTube' },
+  { value: 'other', label: 'Khác' },
+] as const
+
+function LinkSocialModal({
+  open,
+  onOpenChange,
+  links,
+  onSave,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  links: LinkSocialInput[]
+  onSave: (links: LinkSocialInput[]) => void
+}) {
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const [currentLink, setCurrentLink] = useState<LinkSocialInput>(() => ({
+    type: 'twitter',
+    url: '',
+    handle: '',
+    isPublic: true,
+  }))
+
+  const resetForm = () => {
+    setEditingIndex(null)
+    setCurrentLink({ type: 'twitter', url: '', handle: '', isPublic: true })
+  }
+
+  const handleAddOrUpdate = () => {
+    if (editingIndex !== null) {
+      const newLinks = [...links]
+      newLinks[editingIndex] = currentLink
+      onSave(newLinks)
+      setEditingIndex(null)
+    } else {
+      onSave([...links, currentLink])
+    }
+    setCurrentLink({ type: 'twitter', url: '', handle: '', isPublic: true })
+  }
+
+  const handleEdit = (index: number) => {
+    setEditingIndex(index)
+    setCurrentLink(links[index])
+  }
+
+  const handleDelete = (index: number) => {
+    onSave(links.filter((_, i) => i !== index))
+    if (editingIndex === index) {
+      setEditingIndex(null)
+      setCurrentLink({ type: 'twitter', url: '', handle: '', isPublic: true })
+    }
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (isOpen) resetForm()
+        onOpenChange(isOpen)
+      }}
+    >
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Quản lý liên kết mạng xã hội</DialogTitle>
+          <DialogDescription>
+            Thêm các liên kết mạng xã hội của player/team/tournament
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-4">
+          {links.length > 0 && (
+            <div className="space-y-2">
+              <Label>Danh sách liên kết</Label>
+              <div className="flex flex-wrap gap-2">
+                {links.map((link, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-1 rounded-md border bg-muted px-2 py-1 text-sm"
+                  >
+                    <LinkIcon className="size-3" />
+                    <span>{link.type}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleEdit(index)}
+                      className="hover:text-primary"
+                    >
+                      Sửa
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(index)}
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <XIcon className="size-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-3 rounded-md border p-4">
+            <div className="flex flex-col gap-1.5">
+              <Label>Mạng xã hội</Label>
+              <Select
+                value={currentLink.type}
+                onValueChange={(val) => setCurrentLink({ ...currentLink, type: val as LinkSocialInput['type'] })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Chọn mạng" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SOCIAL_TYPES.map((social) => (
+                    <SelectItem key={social.value} value={social.value}>
+                      {social.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label>URL</Label>
+              <Input
+                type="url"
+                placeholder="https://twitter.com/..."
+                value={currentLink.url ?? ''}
+                onChange={(e) => setCurrentLink({ ...currentLink, url: e.target.value })}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label>Handle</Label>
+              <Input
+                type="text"
+                placeholder="@handle"
+                value={currentLink.handle ?? ''}
+                onChange={(e) => setCurrentLink({ ...currentLink, handle: e.target.value })}
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="linkIsPublic"
+                checked={currentLink.isPublic ?? false}
+                onChange={(e) => setCurrentLink({ ...currentLink, isPublic: e.target.checked })}
+                className="size-4"
+              />
+              <Label htmlFor="linkIsPublic" className="font-normal">
+                Hiển thị công khai
+              </Label>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleAddOrUpdate}
+              className="w-full"
+            >
+              {editingIndex !== null ? 'Cập nhật' : 'Thêm'}
+            </Button>
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Đóng
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
 }
 
 export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormProps) {
   const isCreate = mode === 'create'
+  const [linkSocialModalOpen, setLinkSocialModalOpen] = useState(false)
+  const [parentOptions, setParentOptions] = useState<ItemEvent[]>([])
+
+  useEffect(() => {
+    if (isCreate) {
+      listItems({ pageSize: 100, level: 0 }).then((res) => {
+        setParentOptions(res.data)
+      }).catch(console.error)
+    }
+  }, [isCreate])
 
   const form = useForm({
     defaultValues: isCreate
@@ -46,7 +241,7 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
           name: defaultValues?.name ?? '',
           logo: defaultValues?.logo ?? '',
           description: defaultValues?.description ?? '',
-          linkSocial: defaultValues?.linkSocial ?? defaultLinkSocial,
+          linkSocial: defaultValues?.linkSocial ?? [],
           level: defaultValues?.level ?? 0,
           parentId: defaultValues?.parentId ?? null,
           type: defaultValues?.type ?? 'player',
@@ -55,7 +250,7 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
           name: defaultValues?.name ?? '',
           logo: defaultValues?.logo ?? '',
           description: defaultValues?.description ?? '',
-          linkSocial: defaultValues?.linkSocial ?? defaultLinkSocial,
+          linkSocial: defaultValues?.linkSocial ?? [],
           level: defaultValues?.level ?? 0,
           parentId: defaultValues?.parentId ?? null,
         },
@@ -63,6 +258,10 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
       await onSubmit(value as CreateItemFormData)
     },
   })
+
+  const [level, setLevel] = useState(0)
+
+  const showParentId = isCreate && level === 1
 
   return (
     <form
@@ -125,7 +324,7 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
                 value={field.state.value as string}
                 onValueChange={(val) => field.handleChange(val as 'player' | 'team' | 'tournament')}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Chọn loại" />
                 </SelectTrigger>
                 <SelectContent>
@@ -142,66 +341,32 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
         </form.Field>
       )}
 
-      <form.Field
-        name="logo"
-        validators={{
-          onBlur: ({ value }) => {
-            if (isCreate) {
-              const result = createItemSchema.shape.logo.safeParse(value)
-              if (!result.success) return result.error.issues[0]?.message
-            }
-            return undefined
-          },
-        }}
-      >
+      <form.Field name="logo">
         {(field) => (
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor={field.name}>
-              Logo URL {isCreate && <span className="text-destructive">*</span>}
-            </Label>
+            <Label htmlFor={field.name}>Logo URL</Label>
             <Input
               id={field.name}
               type="url"
               placeholder="https://example.com/logo.jpg"
               value={field.state.value as string}
               onChange={(e) => field.handleChange(e.target.value)}
-              onBlur={field.handleBlur}
             />
-            {field.state.meta.errors.length > 0 && (
-              <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
-            )}
           </div>
         )}
       </form.Field>
 
-      <form.Field
-        name="description"
-        validators={{
-          onBlur: ({ value }) => {
-            if (isCreate) {
-              const result = createItemSchema.shape.description.safeParse(value)
-              if (!result.success) return result.error.issues[0]?.message
-            }
-            return undefined
-          },
-        }}
-      >
+      <form.Field name="description">
         {(field) => (
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor={field.name}>
-              Mô tả {isCreate && <span className="text-destructive">*</span>}
-            </Label>
+            <Label htmlFor={field.name}>Mô tả</Label>
             <Textarea
               id={field.name}
               placeholder="Mô tả về player/team/tournament..."
               value={field.state.value as string}
               onChange={(e) => field.handleChange(e.target.value)}
-              onBlur={field.handleBlur}
               rows={4}
             />
-            {field.state.meta.errors.length > 0 && (
-              <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
-            )}
           </div>
         )}
       </form.Field>
@@ -210,103 +375,88 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
         {(field) => (
           <div className="flex flex-col gap-1.5">
             <Label htmlFor={field.name}>Level</Label>
-            <Input
-              id={field.name}
-              type="number"
-              min={0}
-              max={100}
-              value={field.state.value as number}
-              onChange={(e) => field.handleChange(parseInt(e.target.value) || 0)}
-            />
+            <Select
+              value={String(field.state.value)}
+              onValueChange={(val) => {
+                const newLevel = parseInt(val)
+                setLevel(newLevel)
+                field.handleChange(newLevel)
+              }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Chọn level" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">Level 0</SelectItem>
+                <SelectItem value="1">Level 1</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         )}
       </form.Field>
 
+      {showParentId && (
+        <form.Field name="parentId">
+          {(field) => (
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor={field.name}>Parent (Level 0)</Label>
+              <Select
+                value={field.state.value ?? ''}
+                onValueChange={(val) => field.handleChange(val || null)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Chọn parent" />
+                </SelectTrigger>
+                <SelectContent>
+                  {parentOptions.map((item) => (
+                    <SelectItem key={item.id} value={item.id}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </form.Field>
+      )}
+
       <div className="rounded-md border p-4">
-        <h3 className="mb-4 text-sm font-medium">Liên kết mạng xã hội</h3>
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-sm font-medium">Liên kết mạng xã hội</h3>
+          <Dialog open={linkSocialModalOpen} onOpenChange={setLinkSocialModalOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" type="button">
+                <PlusIcon className="mr-1 size-4" />
+                Thêm liên kết
+              </Button>
+            </DialogTrigger>
+            <LinkSocialModal
+              open={linkSocialModalOpen}
+              onOpenChange={setLinkSocialModalOpen}
+              links={form.getFieldValue('linkSocial')}
+              onSave={(links) => form.setFieldValue('linkSocial', links)}
+            />
+          </Dialog>
+        </div>
 
-        <form.Field
-          name="linkSocial"
-          validators={{
-            onBlur: ({ value }) => {
-              if (isCreate && value) {
-                const result = createItemSchema.shape.linkSocial.safeParse(value)
-                if (!result.success) return result.error.issues[0]?.message
-              }
-              return undefined
-            },
-          }}
-        >
+        <form.Field name="linkSocial">
           {(field) => {
-            const social = field.state.value as LinkSocialInput
+            const links = field.state.value as LinkSocialInput[]
+            if (links.length === 0) {
+              return <p className="text-sm text-muted-foreground">Chưa có liên kết nào</p>
+            }
             return (
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <Label>Mạng xã hội</Label>
-                  <Select
-                    value={social?.type ?? 'twitter'}
-                    onValueChange={(val) =>
-                      field.handleChange({ ...social, type: val as LinkSocialInput['type'] })
-                    }
+              <div className="flex flex-wrap gap-2">
+                {links.map((link, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-1 rounded-md border bg-muted px-2 py-1 text-sm"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn mạng" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="twitter">Twitter</SelectItem>
-                      <SelectItem value="facebook">Facebook</SelectItem>
-                      <SelectItem value="instagram">Instagram</SelectItem>
-                      <SelectItem value="tiktok">TikTok</SelectItem>
-                      <SelectItem value="youtube">YouTube</SelectItem>
-                      <SelectItem value="other">Khác</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <Label>URL</Label>
-                  <Input
-                    type="url"
-                    placeholder="https://twitter.com/..."
-                    value={social?.url ?? ''}
-                    onChange={(e) =>
-                      field.handleChange({ ...social, url: e.target.value })
-                    }
-                  />
-                  {field.state.meta.errors.length > 0 && (
-                    <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <Label>Handle</Label>
-                  <Input
-                    type="text"
-                    placeholder="@handle"
-                    value={social?.handle ?? ''}
-                    onChange={(e) =>
-                      field.handleChange({ ...social, handle: e.target.value })
-                    }
-                  />
-                  {field.state.meta.errors.length > 0 && (
-                    <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="isPublic"
-                    checked={social?.isPublic ?? false}
-                    onChange={(e) =>
-                      field.handleChange({ ...social, isPublic: e.target.checked })
-                    }
-                    className="size-4"
-                  />
-                  <Label htmlFor="isPublic" className="font-normal">
-                    Hiển thị công khai
-                  </Label>
-                </div>
+                    <LinkIcon className="size-3" />
+                    <span className="capitalize">{link.type}</span>
+                    {link.handle && <span className="text-muted-foreground">@{link.handle}</span>}
+                  </div>
+                ))}
               </div>
             )
           }}

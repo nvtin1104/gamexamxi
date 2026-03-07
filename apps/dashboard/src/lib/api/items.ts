@@ -6,6 +6,7 @@ export interface ListItemsParams {
   pageSize?: number
   search?: string
   type?: ItemEventType
+  level?: number
   parentId?: string | null
   sortBy?: 'name' | 'createdAt' | 'level'
   sortOrder?: 'asc' | 'desc'
@@ -17,6 +18,7 @@ function buildQuery(params: ListItemsParams): string {
   if (params.pageSize) q.set('pageSize', String(params.pageSize))
   if (params.search) q.set('search', params.search)
   if (params.type) q.set('type', params.type)
+  if (params.level !== undefined) q.set('level', String(params.level))
   if (params.parentId !== undefined) q.set('parentId', params.parentId ?? '')
   if (params.sortBy) q.set('sortBy', params.sortBy)
   if (params.sortOrder) q.set('sortOrder', params.sortOrder)
@@ -30,6 +32,10 @@ export function listItems(params: ListItemsParams = {}) {
 
 export function getItem(id: string) {
   return api.get<ApiResponse<ItemEvent>>(`/items/${id}`)
+}
+
+export function getItemDetail(id: string) {
+  return api.get<ApiResponse<ItemEvent & { creator: { id: string; name: string; email: string } | null; parent: { id: string; name: string; logo: string; type: string } | null; children: { id: string; name: string; logo: string; type: string; level: number }[] }>>(`/items/${id}/detail`)
 }
 
 export function getItemChildren(id: string) {
