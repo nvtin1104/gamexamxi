@@ -9,6 +9,7 @@ import { permissionsRoute } from './routes/permissions'
 import { pointsRoute } from './routes/points'
 import { xpRoute } from './routes/xp'
 import { itemsRoute } from './routes/item-events'
+import { pickemEventsRoute } from './routes/pickem-events'
 import type { Bindings } from './types'
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -43,6 +44,7 @@ app.route('/api/v1/permissions', permissionsRoute)
 app.route('/api/v1/points', pointsRoute)
 app.route('/api/v1/xp', xpRoute)
 app.route('/api/v1/items', itemsRoute)
+app.route('/api/v1/pickem-events', pickemEventsRoute)
 
 // ── 404 Handler ──────────────────────────────────────
 app.notFound((c) => c.json({ error: 'Not found' }, 404))
