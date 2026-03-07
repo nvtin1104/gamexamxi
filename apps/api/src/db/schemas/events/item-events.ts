@@ -7,16 +7,16 @@ export const itemEvents = sqliteTable(
     {
         id: text('id').notNull().primaryKey(),
         name: text('name').notNull(),
-        logo: text('logo').notNull(),
-        description: text('description').notNull(),
+        logo: text('logo'),
+        description: text('description'),
         linkSocial: text('link_social', { mode: 'json' })
             .$type<{
                 type: 'twitter' | 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'other';
-                url: string;
-                handle: string;
+                url?: string;
+                handle?: string;
                 isPublic: boolean
-            }>()
-            .notNull(),
+            }[]>()
+            .default(sql`('[]')`),
         level: integer('level').default(0),
         parentId: text('parent_id'),
         type: text('type', {

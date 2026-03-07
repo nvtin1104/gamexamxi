@@ -10,8 +10,8 @@ export interface ItemEventType {
 
 export interface LinkSocial {
   type: 'twitter' | 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'other'
-  url: string
-  handle: string
+  url?: string
+  handle?: string
   isPublic: boolean
 }
 
@@ -20,6 +20,7 @@ export interface FindAllItemEventsParams {
   pageSize?: number
   search?: string
   type?: ItemEventType['type']
+  level?: number
   parentId?: string | null
   sortBy?: 'name' | 'createdAt' | 'level'
   sortOrder?: 'asc' | 'desc'
@@ -34,9 +35,9 @@ export interface PaginatedItemEvents {
 
 export interface CreateItemEventData {
   name: string
-  logo: string
-  description: string
-  linkSocial: LinkSocial
+  logo?: string
+  description?: string
+  linkSocial?: LinkSocial[]
   level?: number
   parentId?: string | null
   type: ItemEventType['type']
@@ -46,7 +47,7 @@ export interface UpdateItemEventData {
   name?: string
   logo?: string
   description?: string
-  linkSocial?: LinkSocial
+  linkSocial?: LinkSocial[]
   level?: number
   parentId?: string | null
 }
@@ -162,6 +163,41 @@ export class ItemEventService {
       .from(itemEvents)
       .where(eq(itemEvents.parentId, parentId))
       .all()
+  }
+
+  async findByIdWithDetails(id: string) {
+    const item = await this.findById(id)
+    if (!item) return null
+
+    const { users } = await import('../db/schemas')
+    
+    const [creator, parent, children] = await Promise.all([
+      item.createdBy ? this.db.select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+      }).from(users).where(eq(users.id, item.createdBy)).get() : Promise.resolve(null),
+      item.parentId ? this.db.select({
+        id: itemEvents.id,
+        name: itemEvents.name,
+        logo: itemEvents.logo,
+        type: itemEvents.type,
+      }).from(itemEvents).where(eq(itemEvents.id, item.parentId)).get() : Promise.resolve(null),
+      item.level === 0 ? this.db.select({
+        id: itemEvents.id,
+        name: itemEvents.name,
+        logo: itemEvents.logo,
+        type: itemEvents.type,
+        level: itemEvents.level,
+      }).from(itemEvents).where(eq(itemEvents.parentId, item.id)).all() : Promise.resolve([]),
+    ])
+
+    return {
+      ...item,
+      creator: creator ? { id: creator.id, name: creator.name, email: creator.email } : null,
+      parent: parent ? { id: parent.id, name: parent.name, logo: parent.logo, type: parent.type } : null,
+      children: item.level === 0 ? children.map(c => ({ id: c.id, name: c.name, logo: c.logo, type: c.type, level: c.level })) : [],
+    }
   }
 
   async create(data: CreateItemEventData, createdBy: string) {
