@@ -188,6 +188,62 @@ Environment variables available in API:
 - `STORAGE` — R2
 - `JOB_QUEUE` — Queue
 
+### Google OAuth (Login with Google)
+
+**Setup Google Cloud Project:**
+1. Go to https://console.cloud.google.com/
+2. Create a new project or select existing
+3. Go to **APIs & Services** → **Credentials**
+4. Click **Create Credentials** → **OAuth client ID**
+5. Choose **Web application**
+6. Add authorized JavaScript origins:
+   - `http://localhost:8787` (dev)
+   - `https://your-domain.com` (prod)
+7. Copy the **Client ID**
+
+**Configure in Cloudflare:**
+```bash
+cd apps/api
+wrangler secret put GOOGLE_CLIENT_ID
+# Paste your Google OAuth Client ID when prompted
+```
+
+**API Endpoint:**
+```
+POST /api/v1/auth/google
+Content-Type: application/json
+
+{
+  "idToken": "<Google ID token from client>"
+}
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "user": {
+      "id": "...",
+      "email": "user@gmail.com",
+      "name": "Full Name",
+      "accountRole": "user",
+      "role": "user"
+    },
+    "accessToken": "...",
+    "refreshToken": "..."
+  }
+}
+```
+
+**Cookie Settings:**
+- Access token: HttpOnly cookie, 1 hour expiry
+- Refresh token: HttpOnly cookie, 7 days expiry
+
+**Client Implementation:**
+- Use Google Identity Services SDK (`google.accounts.id.initialize` + `requestIdToken`)
+- Send `idToken` to `/api/v1/auth/google`
+- For cross-origin requests, set `credentials: 'include'` in fetch options
+
 ---
 
 ## Existing Copilot Rules
@@ -219,4 +275,39 @@ wrangler pages deploy dist/
 ```bash
 cd apps/api
 pnpm deploy
+```
+
+## Client App (Astro)
+
+### Google OAuth Configuration
+
+Tạo file `.env` trong `apps/client/`:
+
+```bash
+# Google OAuth Client ID (public, không cần bí mật)
+PUBLIC_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+
+# API URL
+PUBLIC_API_URL=http://localhost:8787
+```
+
+### Login Modal
+
+Client sử dụng Google Identity Services SDK để hiển thị nút đăng nhập Google trong modal.
+
+**Flow:**
+1. User click "Đăng nhập" trong header
+2. Modal hiện ra với Google Sign-In button + form email/password
+3. Khi đăng nhập bằng Google:
+   - Google trả về `idToken`
+   - Client gửi `idToken` lên `/api/v1/auth/google`
+   - API trả về user + tokens + set cookies
+4. Tokens được lưu vào localStorage + cookies (HttpOnly)
+
+### Running Client
+
+```bash
+cd apps/client
+pnpm dev     # Astro dev server
+pnpm build   # Build for production
 ```
