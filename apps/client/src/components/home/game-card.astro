@@ -1,0 +1,160 @@
+---
+interface Props {
+  title: string;
+  icon: string;
+  players?: number;
+  difficulty?: 'easy' | 'medium' | 'hard';
+  thumbnail?: 'sage' | 'peach' | 'sky' | 'butter' | 'lilac' | 'warm';
+  href?: string;
+}
+
+const {
+  title,
+  icon,
+  players = 0,
+  difficulty = 'easy',
+  thumbnail = 'sage',
+  href = '#',
+} = Astro.props;
+
+const difficultyLabels = {
+  easy: 'Dễ',
+  medium: 'Vừa',
+  hard: 'Khó',
+};
+
+const difficultyClasses = {
+  easy: 'diff-easy',
+  medium: 'diff-medium',
+  hard: 'diff-hard',
+};
+---
+
+<a href={href} class="game-card">
+  <div class={`game-thumb thumb-${thumbnail}`}>
+    {icon}
+  </div>
+  <div class="game-body">
+    <div class="game-title">{title}</div>
+    <div class="game-meta">
+      <span class="game-players">👤 {players.toLocaleString()} người</span>
+      <span class={`game-diff ${difficultyClasses[difficulty]}`}>
+        {difficultyLabels[difficulty]}
+      </span>
+    </div>
+  </div>
+</a>
+
+<style>
+  .game-card {
+    background: var(--color-cream);
+    border: 2px solid var(--color-border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .game-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .game-card:active {
+    transform: translate(1px, 1px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .game-thumb {
+    height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .game-thumb::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--color-border);
+  }
+
+  .thumb-sage {
+    background: var(--color-sage);
+  }
+
+  .thumb-peach {
+    background: var(--color-peach);
+  }
+
+  .thumb-sky {
+    background: var(--color-sky);
+  }
+
+  .thumb-butter {
+    background: var(--color-butter);
+  }
+
+  .thumb-lilac {
+    background: var(--color-lilac);
+  }
+
+  .thumb-warm {
+    background: var(--color-warm);
+    border: none;
+  }
+
+  .game-body {
+    padding: 16px 18px 18px;
+  }
+
+  .game-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+
+  .game-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .game-players {
+    font-size: 12px;
+    color: var(--color-muted);
+  }
+
+  .game-diff {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border: 1.5px solid var(--color-border);
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .diff-easy {
+    background: var(--color-sage);
+  }
+
+  .diff-medium {
+    background: var(--color-butter);
+  }
+
+  .diff-hard {
+    background: var(--color-peach);
+  }
+</style>

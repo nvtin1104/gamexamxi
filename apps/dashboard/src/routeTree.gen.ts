@@ -13,10 +13,18 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
+import { Route as AuthenticatedPickemEventsIndexRouteImport } from './routes/_authenticated/pickem-events/index'
 import { Route as AuthenticatedPermissionsIndexRouteImport } from './routes/_authenticated/permissions/index'
+import { Route as AuthenticatedItemsIndexRouteImport } from './routes/_authenticated/items/index'
 import { Route as AuthenticatedUsersNewRouteImport } from './routes/_authenticated/users/new'
+import { Route as AuthenticatedPickemEventsNewRouteImport } from './routes/_authenticated/pickem-events/new'
+import { Route as AuthenticatedItemsNewRouteImport } from './routes/_authenticated/items/new'
 import { Route as AuthenticatedUsersUserIdIndexRouteImport } from './routes/_authenticated/users/$userId/index'
+import { Route as AuthenticatedPickemEventsEventIdIndexRouteImport } from './routes/_authenticated/pickem-events/$eventId/index'
+import { Route as AuthenticatedItemsItemIdIndexRouteImport } from './routes/_authenticated/items/$itemId/index'
 import { Route as AuthenticatedUsersUserIdEditRouteImport } from './routes/_authenticated/users/$userId/edit'
+import { Route as AuthenticatedPickemEventsEventIdEditRouteImport } from './routes/_authenticated/pickem-events/$eventId/edit'
+import { Route as AuthenticatedItemsItemIdEditRouteImport } from './routes/_authenticated/items/$itemId/edit'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -37,15 +45,37 @@ const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
   path: '/users/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPickemEventsIndexRoute =
+  AuthenticatedPickemEventsIndexRouteImport.update({
+    id: '/pickem-events/',
+    path: '/pickem-events/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedPermissionsIndexRoute =
   AuthenticatedPermissionsIndexRouteImport.update({
     id: '/permissions/',
     path: '/permissions/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedItemsIndexRoute = AuthenticatedItemsIndexRouteImport.update({
+  id: '/items/',
+  path: '/items/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedUsersNewRoute = AuthenticatedUsersNewRouteImport.update({
   id: '/users/new',
   path: '/users/new',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPickemEventsNewRoute =
+  AuthenticatedPickemEventsNewRouteImport.update({
+    id: '/pickem-events/new',
+    path: '/pickem-events/new',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedItemsNewRoute = AuthenticatedItemsNewRouteImport.update({
+  id: '/items/new',
+  path: '/items/new',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedUsersUserIdIndexRoute =
@@ -54,29 +84,69 @@ const AuthenticatedUsersUserIdIndexRoute =
     path: '/users/$userId/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedPickemEventsEventIdIndexRoute =
+  AuthenticatedPickemEventsEventIdIndexRouteImport.update({
+    id: '/pickem-events/$eventId/',
+    path: '/pickem-events/$eventId/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedItemsItemIdIndexRoute =
+  AuthenticatedItemsItemIdIndexRouteImport.update({
+    id: '/items/$itemId/',
+    path: '/items/$itemId/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedUsersUserIdEditRoute =
   AuthenticatedUsersUserIdEditRouteImport.update({
     id: '/users/$userId/edit',
     path: '/users/$userId/edit',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedPickemEventsEventIdEditRoute =
+  AuthenticatedPickemEventsEventIdEditRouteImport.update({
+    id: '/pickem-events/$eventId/edit',
+    path: '/pickem-events/$eventId/edit',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedItemsItemIdEditRoute =
+  AuthenticatedItemsItemIdEditRouteImport.update({
+    id: '/items/$itemId/edit',
+    path: '/items/$itemId/edit',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
+  '/items/new': typeof AuthenticatedItemsNewRoute
+  '/pickem-events/new': typeof AuthenticatedPickemEventsNewRoute
   '/users/new': typeof AuthenticatedUsersNewRoute
+  '/items/': typeof AuthenticatedItemsIndexRoute
   '/permissions/': typeof AuthenticatedPermissionsIndexRoute
+  '/pickem-events/': typeof AuthenticatedPickemEventsIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
+  '/items/$itemId/edit': typeof AuthenticatedItemsItemIdEditRoute
+  '/pickem-events/$eventId/edit': typeof AuthenticatedPickemEventsEventIdEditRoute
   '/users/$userId/edit': typeof AuthenticatedUsersUserIdEditRoute
+  '/items/$itemId/': typeof AuthenticatedItemsItemIdIndexRoute
+  '/pickem-events/$eventId/': typeof AuthenticatedPickemEventsEventIdIndexRoute
   '/users/$userId/': typeof AuthenticatedUsersUserIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/': typeof AuthenticatedIndexRoute
+  '/items/new': typeof AuthenticatedItemsNewRoute
+  '/pickem-events/new': typeof AuthenticatedPickemEventsNewRoute
   '/users/new': typeof AuthenticatedUsersNewRoute
+  '/items': typeof AuthenticatedItemsIndexRoute
   '/permissions': typeof AuthenticatedPermissionsIndexRoute
+  '/pickem-events': typeof AuthenticatedPickemEventsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/items/$itemId/edit': typeof AuthenticatedItemsItemIdEditRoute
+  '/pickem-events/$eventId/edit': typeof AuthenticatedPickemEventsEventIdEditRoute
   '/users/$userId/edit': typeof AuthenticatedUsersUserIdEditRoute
+  '/items/$itemId': typeof AuthenticatedItemsItemIdIndexRoute
+  '/pickem-events/$eventId': typeof AuthenticatedPickemEventsEventIdIndexRoute
   '/users/$userId': typeof AuthenticatedUsersUserIdIndexRoute
 }
 export interface FileRoutesById {
@@ -84,10 +154,18 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/items/new': typeof AuthenticatedItemsNewRoute
+  '/_authenticated/pickem-events/new': typeof AuthenticatedPickemEventsNewRoute
   '/_authenticated/users/new': typeof AuthenticatedUsersNewRoute
+  '/_authenticated/items/': typeof AuthenticatedItemsIndexRoute
   '/_authenticated/permissions/': typeof AuthenticatedPermissionsIndexRoute
+  '/_authenticated/pickem-events/': typeof AuthenticatedPickemEventsIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/items/$itemId/edit': typeof AuthenticatedItemsItemIdEditRoute
+  '/_authenticated/pickem-events/$eventId/edit': typeof AuthenticatedPickemEventsEventIdEditRoute
   '/_authenticated/users/$userId/edit': typeof AuthenticatedUsersUserIdEditRoute
+  '/_authenticated/items/$itemId/': typeof AuthenticatedItemsItemIdIndexRoute
+  '/_authenticated/pickem-events/$eventId/': typeof AuthenticatedPickemEventsEventIdIndexRoute
   '/_authenticated/users/$userId/': typeof AuthenticatedUsersUserIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -95,29 +173,53 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/items/new'
+    | '/pickem-events/new'
     | '/users/new'
+    | '/items/'
     | '/permissions/'
+    | '/pickem-events/'
     | '/users/'
+    | '/items/$itemId/edit'
+    | '/pickem-events/$eventId/edit'
     | '/users/$userId/edit'
+    | '/items/$itemId/'
+    | '/pickem-events/$eventId/'
     | '/users/$userId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/'
+    | '/items/new'
+    | '/pickem-events/new'
     | '/users/new'
+    | '/items'
     | '/permissions'
+    | '/pickem-events'
     | '/users'
+    | '/items/$itemId/edit'
+    | '/pickem-events/$eventId/edit'
     | '/users/$userId/edit'
+    | '/items/$itemId'
+    | '/pickem-events/$eventId'
     | '/users/$userId'
   id:
     | '__root__'
     | '/_authenticated'
     | '/login'
     | '/_authenticated/'
+    | '/_authenticated/items/new'
+    | '/_authenticated/pickem-events/new'
     | '/_authenticated/users/new'
+    | '/_authenticated/items/'
     | '/_authenticated/permissions/'
+    | '/_authenticated/pickem-events/'
     | '/_authenticated/users/'
+    | '/_authenticated/items/$itemId/edit'
+    | '/_authenticated/pickem-events/$eventId/edit'
     | '/_authenticated/users/$userId/edit'
+    | '/_authenticated/items/$itemId/'
+    | '/_authenticated/pickem-events/$eventId/'
     | '/_authenticated/users/$userId/'
   fileRoutesById: FileRoutesById
 }
@@ -156,11 +258,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUsersIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/pickem-events/': {
+      id: '/_authenticated/pickem-events/'
+      path: '/pickem-events'
+      fullPath: '/pickem-events/'
+      preLoaderRoute: typeof AuthenticatedPickemEventsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/permissions/': {
       id: '/_authenticated/permissions/'
       path: '/permissions'
       fullPath: '/permissions/'
       preLoaderRoute: typeof AuthenticatedPermissionsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/items/': {
+      id: '/_authenticated/items/'
+      path: '/items'
+      fullPath: '/items/'
+      preLoaderRoute: typeof AuthenticatedItemsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/users/new': {
@@ -170,11 +286,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUsersNewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/pickem-events/new': {
+      id: '/_authenticated/pickem-events/new'
+      path: '/pickem-events/new'
+      fullPath: '/pickem-events/new'
+      preLoaderRoute: typeof AuthenticatedPickemEventsNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/items/new': {
+      id: '/_authenticated/items/new'
+      path: '/items/new'
+      fullPath: '/items/new'
+      preLoaderRoute: typeof AuthenticatedItemsNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/users/$userId/': {
       id: '/_authenticated/users/$userId/'
       path: '/users/$userId'
       fullPath: '/users/$userId/'
       preLoaderRoute: typeof AuthenticatedUsersUserIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/pickem-events/$eventId/': {
+      id: '/_authenticated/pickem-events/$eventId/'
+      path: '/pickem-events/$eventId'
+      fullPath: '/pickem-events/$eventId/'
+      preLoaderRoute: typeof AuthenticatedPickemEventsEventIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/items/$itemId/': {
+      id: '/_authenticated/items/$itemId/'
+      path: '/items/$itemId'
+      fullPath: '/items/$itemId/'
+      preLoaderRoute: typeof AuthenticatedItemsItemIdIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/users/$userId/edit': {
@@ -184,24 +328,56 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUsersUserIdEditRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/pickem-events/$eventId/edit': {
+      id: '/_authenticated/pickem-events/$eventId/edit'
+      path: '/pickem-events/$eventId/edit'
+      fullPath: '/pickem-events/$eventId/edit'
+      preLoaderRoute: typeof AuthenticatedPickemEventsEventIdEditRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/items/$itemId/edit': {
+      id: '/_authenticated/items/$itemId/edit'
+      path: '/items/$itemId/edit'
+      fullPath: '/items/$itemId/edit'
+      preLoaderRoute: typeof AuthenticatedItemsItemIdEditRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedItemsNewRoute: typeof AuthenticatedItemsNewRoute
+  AuthenticatedPickemEventsNewRoute: typeof AuthenticatedPickemEventsNewRoute
   AuthenticatedUsersNewRoute: typeof AuthenticatedUsersNewRoute
+  AuthenticatedItemsIndexRoute: typeof AuthenticatedItemsIndexRoute
   AuthenticatedPermissionsIndexRoute: typeof AuthenticatedPermissionsIndexRoute
+  AuthenticatedPickemEventsIndexRoute: typeof AuthenticatedPickemEventsIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
+  AuthenticatedItemsItemIdEditRoute: typeof AuthenticatedItemsItemIdEditRoute
+  AuthenticatedPickemEventsEventIdEditRoute: typeof AuthenticatedPickemEventsEventIdEditRoute
   AuthenticatedUsersUserIdEditRoute: typeof AuthenticatedUsersUserIdEditRoute
+  AuthenticatedItemsItemIdIndexRoute: typeof AuthenticatedItemsItemIdIndexRoute
+  AuthenticatedPickemEventsEventIdIndexRoute: typeof AuthenticatedPickemEventsEventIdIndexRoute
   AuthenticatedUsersUserIdIndexRoute: typeof AuthenticatedUsersUserIdIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedItemsNewRoute: AuthenticatedItemsNewRoute,
+  AuthenticatedPickemEventsNewRoute: AuthenticatedPickemEventsNewRoute,
   AuthenticatedUsersNewRoute: AuthenticatedUsersNewRoute,
+  AuthenticatedItemsIndexRoute: AuthenticatedItemsIndexRoute,
   AuthenticatedPermissionsIndexRoute: AuthenticatedPermissionsIndexRoute,
+  AuthenticatedPickemEventsIndexRoute: AuthenticatedPickemEventsIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
+  AuthenticatedItemsItemIdEditRoute: AuthenticatedItemsItemIdEditRoute,
+  AuthenticatedPickemEventsEventIdEditRoute:
+    AuthenticatedPickemEventsEventIdEditRoute,
   AuthenticatedUsersUserIdEditRoute: AuthenticatedUsersUserIdEditRoute,
+  AuthenticatedItemsItemIdIndexRoute: AuthenticatedItemsItemIdIndexRoute,
+  AuthenticatedPickemEventsEventIdIndexRoute:
+    AuthenticatedPickemEventsEventIdIndexRoute,
   AuthenticatedUsersUserIdIndexRoute: AuthenticatedUsersUserIdIndexRoute,
 }
 

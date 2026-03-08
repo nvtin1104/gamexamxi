@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon, ShieldIcon } from "lucide-react"
+import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon, ShieldIcon, TargetIcon, TrophyIcon } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 
 const data = {
@@ -31,6 +31,8 @@ const data = {
       label: "Quản lý",
       items: [
         { title: "Người dùng", to: "/users", icon: <UsersIcon /> },
+        { title: "Items", to: "/items", icon: <TargetIcon /> },
+        { title: "Pickem Events", to: "/pickem-events", icon: <TrophyIcon /> },
         { title: "Phân quyền", to: "/permissions", icon: <ShieldIcon /> },
       ],
     },

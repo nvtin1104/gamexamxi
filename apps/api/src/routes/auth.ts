@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { verify } from 'hono/jwt'
+import { OAuth2Client } from 'google-auth-library'
 import { rateLimiter } from '../middleware/rate-limit'
 import { authMiddleware } from '../middleware/auth'
 import { UserService } from '../services/user.service'
@@ -23,6 +24,10 @@ const loginSchema = z.object({
 
 const refreshSchema = z.object({
   refreshToken: z.string(),
+})
+
+const googleSchema = z.object({
+  idToken: z.string(),
 })
 
 // Rate limit auth endpoints: 20 requests / 60 seconds
@@ -181,5 +186,99 @@ authRoute.post('/logout', authMiddleware, async (c) => {
   } catch (err) {
     console.error('Logout failed:', err)
     return c.json({ error: 'Đăng xuất thất bại' }, 500)
+  }
+})
+
+// POST /api/v1/auth/google — Login or register with Google
+authRoute.post('/google', zValidator('json', googleSchema), async (c) => {
+  try {
+    const { idToken } = c.req.valid('json')
+    const userService = new UserService(c.env.DB)
+    const authService = new AuthService(c.env.JWT_SECRET)
+
+    const client = new OAuth2Client(c.env.GOOGLE_CLIENT_ID)
+
+    let ticket
+    try {
+      ticket = await client.verifyIdToken({
+        idToken,
+        audience: c.env.GOOGLE_CLIENT_ID,
+      })
+    } catch {
+      return c.json({ error: 'Token Google không hợp lệ' }, 401)
+    }
+
+    const payload = ticket.getPayload()
+    if (!payload) {
+      return c.json({ error: 'Token Google không hợp lệ' }, 401)
+    }
+
+    const { sub: ggId, email, name, email_verified } = payload
+
+    if (!email) {
+      return c.json({ error: 'Không lấy được email từ Google' }, 400)
+    }
+
+    let user = await userService.findByGgId(ggId)
+
+    if (!user) {
+      user = await userService.findByEmail(email)
+      if (user) {
+        if (user.ggId) {
+          return c.json({ error: 'Email đã được liên kết với tài khoản Google khác' }, 409)
+        }
+        await userService.update(user.id, { ggId })
+      } else {
+        const userName = name ?? email.split('@')[0] ?? 'User'
+        user = await userService.create({
+          email,
+          name: userName,
+          ggId,
+          passwordHash: `google_oauth:${ggId}`,
+          accountRole: 'user',
+          role: 'user',
+          status: 'active',
+          emailVerifiedAt: email_verified ? new Date() : null,
+        })
+      }
+    }
+
+    if (user.status === 'banned') {
+      return c.json({ error: 'Tài khoản đã bị khóa vĩnh viễn' }, 403)
+    }
+
+    if (user.status === 'block' && user.blockExpiresAt && user.blockExpiresAt > new Date()) {
+      return c.json({ error: 'Tài khoản đang bị khóa tạm thời' }, 403)
+    }
+
+    const accessToken = await authService.generateAccessToken(user.id, user.accountRole)
+    const refreshToken = await authService.generateRefreshToken(user.id)
+
+    await c.env.SESSIONS.put(`refresh:${user.id}`, refreshToken, {
+      expirationTtl: 60 * 60 * 24 * 7,
+    })
+
+    const isProduction = process.env.NODE_ENV === 'production'
+    const cookieOptions = `HttpOnly; Secure=${isProduction}; SameSite=lax; Path=/`
+
+    c.header('Set-Cookie', `access_token=${accessToken}; Max-Age=${60 * 60}; ${cookieOptions}`)
+    c.header('Set-Cookie', `refresh_token=${refreshToken}; Max-Age=${60 * 60 * 24 * 7}; ${cookieOptions}`)
+
+    return c.json({
+      data: {
+        user: {
+          id: user.id,
+          email: user.email!,
+          name: user.name,
+          accountRole: user.accountRole,
+          role: user.role,
+        },
+        accessToken,
+        refreshToken,
+      },
+    })
+  } catch (err) {
+    console.error('Google login failed:', err)
+    return c.json({ error: 'Đăng nhập Google thất bại' }, 500)
   }
 })

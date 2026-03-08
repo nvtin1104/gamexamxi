@@ -14,8 +14,10 @@ import {
   PlusIcon,
   SearchIcon,
   ArrowUpDownIcon,
-  MoreHorizontalIcon,
   Loader2Icon,
+  PencilIcon,
+  TrashIcon,
+  EyeIcon,
 } from 'lucide-react'
 import type { User } from '@gamexamxi/shared'
 import { listUsers, deleteUser } from '@/lib/api/users'
@@ -38,13 +40,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -161,33 +156,29 @@ function UsersPage() {
       cell: ({ row }) => {
         const user = row.original
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="size-8">
-                <MoreHorizontalIcon className="size-4" />
-                <span className="sr-only">Tùy chọn</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link to="/users/$userId" params={{ userId: user.id }}>
-                  Xem chi tiết
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/users/$userId/edit" params={{ userId: user.id }}>
-                  Chỉnh sửa
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive"
-                onClick={() => setDeleteTargetId(user.id)}
-              >
-                Xóa
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="size-8" asChild>
+              <Link to="/users/$userId" params={{ userId: user.id }}>
+                <EyeIcon className="size-4" />
+                <span className="sr-only">Xem</span>
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" className="size-8" asChild>
+              <Link to="/users/$userId/edit" params={{ userId: user.id }}>
+                <PencilIcon className="size-4" />
+                <span className="sr-only">Sửa</span>
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 text-destructive hover:text-destructive"
+              onClick={() => setDeleteTargetId(user.id)}
+            >
+              <TrashIcon className="size-4" />
+              <span className="sr-only">Xóa</span>
+            </Button>
+          </div>
         )
       },
     },

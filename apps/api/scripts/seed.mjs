@@ -36,6 +36,9 @@ function seedId(label) {
     user: 'seed_user_001',
     group_creator: 'seed_grp_creator',
     group_supermod: 'seed_grp_supermod',
+    item_player_1: 'seed_player_001',
+    item_team_1: 'seed_team_001',
+    item_tournament_1: 'seed_tournament_001',
   }
   return ids[label]
 }
@@ -70,8 +73,8 @@ INSERT INTO users (id, email, name, account_role, role, password_hash, created_a
 -- Permission Groups
 -- ==================
 INSERT INTO permission_groups (id, name, permissions, created_at) VALUES
-  ('${seedId('group_creator')}',  'Standard Creator', '["game:create","game:edit"]', ${now}),
-  ('${seedId('group_supermod')}', 'Super Mod',        '["game:all","user:moderate","points:grant","xp:grant"]', ${now});
+  ('${seedId('group_creator')}',  'Standard Creator', '["game:create","game:edit","item:create","item:view","item:edit"]', ${now}),
+  ('${seedId('group_supermod')}', 'Super Mod',        '["game:all","user:moderate","points:grant","xp:grant","item:create","item:edit","item:delete","item:view","pickem:create","pickem:edit","pickem:delete","pickem:view"]', ${now});
 
 -- ==================
 -- User ↔ Group assignments
@@ -83,6 +86,14 @@ INSERT INTO user_to_groups (user_id, group_id) VALUES
 -- Regular user gets Standard Creator group
 INSERT INTO user_to_groups (user_id, group_id) VALUES
   ('${seedId('user')}', '${seedId('group_creator')}');
+
+-- ==================
+-- Item Events (Players, Teams, Tournaments)
+-- ==================
+INSERT INTO item_events (id, name, logo, description, link_social, level, parent_id, type, created_by, created_at, updated_at) VALUES
+  ('${seedId('item_player_1')}', 'Faker', 'https://example.com/faker.jpg', 'Lee Sang-hyeok - Professional gamer from South Korea', '{"type":"twitter","url":"https://twitter.com/faker","handle":"@faker","isPublic":true}', 100, NULL, 'player', '${seedId('admin')}', ${now}, ${now}),
+  ('${seedId('item_team_1')}', 'T1', 'https://example.com/t1.jpg', 'T1 Esports Organization', '{"type":"twitter","url":"https://twitter.com/T1","handle":"@T1","isPublic":true}', 50, NULL, 'team', '${seedId('admin')}', ${now}, ${now}),
+  ('${seedId('item_tournament_1')}', 'Worlds 2024', 'https://example.com/worlds2024.jpg', 'League of Legends World Championship 2024', '{"type":"youtube","url":"https://youtube.com/lol","handle":"@lol","isPublic":true}', 0, NULL, 'tournament', '${seedId('admin')}', ${now}, ${now});
 `.trim()
 
   console.log(sql)

@@ -1,0 +1,98 @@
+---
+interface Props {
+  label?: string;
+  value: number;
+  variant?: 'sage' | 'peach' | 'sky' | 'butter' | 'lilac' | 'ink';
+  size?: 'sm' | 'default' | 'lg';
+  striped?: boolean;
+  showValue?: boolean;
+  class?: string;
+}
+
+const {
+  label,
+  value,
+  variant = 'sage',
+  size = 'default',
+  striped = false,
+  showValue = true,
+  class: className = '',
+} = Astro.props;
+
+const sizeStyles = {
+  sm: 'height: 7px;',
+  default: 'height: 12px;',
+  lg: 'height: 18px;',
+};
+
+const variantStyles = {
+  sage: 'background: var(--color-sage-dark);',
+  peach: 'background: var(--color-peach-dark);',
+  sky: 'background: var(--color-sky-dark);',
+  butter: 'background: var(--color-butter-dark);',
+  lilac: 'background: var(--color-lilac-dark);',
+  ink: 'background: var(--color-ink);',
+};
+---
+
+<div class:list={['progress-wrapper', className]}>
+  {(label || showValue) && (
+    <div class="progress-header">
+      {label && <span class="progress-label">{label}</span>}
+      {showValue && <span class="progress-value">{value}%</span>}
+    </div>
+  )}
+  <div class:list={['progress-track', `track-${size}`]}>
+    <div
+      class:list={['progress-fill', variant, striped && 'striped']}
+      style={`width: ${value}%`}
+    />
+  </div>
+</div>
+
+<style>
+  .progress-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .progress-label {
+    /* label text */
+  }
+
+  .progress-value {
+    font-family: var(--font-mono);
+    color: var(--color-muted);
+  }
+
+  .progress-track {
+    background: var(--color-warm);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    transition: width 1s ease;
+  }
+
+  .progress-fill.striped {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--color-sage-dark),
+      var(--color-sage-dark) 6px,
+      var(--color-sage) 6px,
+      var(--color-sage) 12px
+    );
+  }
+</style>

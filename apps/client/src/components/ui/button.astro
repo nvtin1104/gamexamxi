@@ -1,0 +1,80 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'sage' | 'peach' | 'butter' | 'sky' | 'ghost';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  shape?: 'default' | 'square' | 'pill';
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  shape = 'default',
+  disabled = false,
+  class: className = '',
+} = Astro.props;
+
+const baseStyles = `
+  font-family: var(--font-display);
+  font-weight: 700;
+  border: 2px solid var(--color-border);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.2px;
+`;
+
+const sizeStyles = {
+  xs: 'font-size: 11px; padding: 5px 12px;',
+  sm: 'font-size: 12px; padding: 8px 16px;',
+  md: 'font-size: 14px; padding: 11px 22px;',
+  lg: 'font-size: 16px; padding: 14px 30px;',
+};
+
+const shapeStyles = {
+  default: '',
+  square: 'border-radius: var(--radius-sm);',
+  pill: 'border-radius: var(--radius-pill);',
+};
+
+const variantStyles = {
+  primary: `background: var(--color-ink); color: var(--color-cream); box-shadow: var(--shadow-md);`,
+  secondary: `background: var(--color-cream); color: var(--color-ink); box-shadow: var(--shadow-md);`,
+  sage: `background: var(--color-sage); color: var(--color-ink); box-shadow: var(--shadow-md);`,
+  peach: `background: var(--color-peach); color: var(--color-ink); box-shadow: var(--shadow-md);`,
+  butter: `background: var(--color-butter); color: var(--color-ink); box-shadow: var(--shadow-md);`,
+  sky: `background: var(--color-sky); color: var(--color-ink); box-shadow: var(--shadow-md);`,
+  ghost: `background: transparent; color: var(--color-ink); box-shadow: none;`,
+};
+
+const disabledStyles = disabled ? 'opacity: 0.4; cursor: not-allowed; pointer-events: none;' : '';
+---
+
+<button
+  class:list={['btn', `btn-${size}`, `btn-${variant}`, `btn-${shape}`, className]}
+  disabled={disabled}
+  style={`${baseStyles} ${sizeStyles[size]} ${shapeStyles[shape]} ${variantStyles[variant]} ${disabledStyles}`}
+>
+  <slot />
+</button>
+
+<style>
+  .btn:active:not(:disabled) {
+    transform: translate(2px, 2px) !important;
+    box-shadow: none !important;
+  }
+
+  .btn:not(:disabled):hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .btn-ghost:not(:disabled):hover {
+    background: var(--color-warm);
+    box-shadow: var(--shadow-sm);
+  }
+</style>

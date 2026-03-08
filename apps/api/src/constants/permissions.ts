@@ -14,6 +14,18 @@ export const APP_PERMISSIONS = {
   GAME_DELETE: 'game:delete',
   GAME_ALL: 'game:all',
 
+  // Item/Event permissions
+  ITEM_CREATE: 'item:create',
+  ITEM_EDIT: 'item:edit',
+  ITEM_DELETE: 'item:delete',
+  ITEM_VIEW: 'item:view',
+
+  // Pickem permissions
+  PICKEM_CREATE: 'pickem:create',
+  PICKEM_EDIT: 'pickem:edit',
+  PICKEM_DELETE: 'pickem:delete',
+  PICKEM_VIEW: 'pickem:view',
+
   // User management
   USER_MODERATE: 'user:moderate',
   USER_BAN: 'user:ban',
