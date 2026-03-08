@@ -1,26 +1,81 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* ── BASE ── */
+  --color-cream: #faf6ef;
+  --color-warm: #f2ebe0;
+  --color-sand: #e8dfd0;
+  --color-border: #2a2318;
+  --color-ink: #1e1a14;
+  --color-muted: #7a6e60;
+  --color-subtle: #b0a898;
+
+  /* ── PALETTE ── */
+  --color-sage: #b8c9a3;
+  --color-sage-dark: #8faa78;
+  --color-sage-light: #d8e8c8;
+  --color-peach: #f4b89a;
+  --color-peach-dark: #e8946e;
+  --color-peach-light: #fad8c8;
+  --color-sky: #a8cce0;
+  --color-sky-dark: #7db4d0;
+  --color-sky-light: #cce4f0;
+  --color-butter: #f5dc8a;
+  --color-butter-dark: #e8c84a;
+  --color-butter-light: #faedb8;
+  --color-lilac: #c9b8e8;
+  --color-lilac-dark: #aa8fd8;
+  --color-lilac-light: #e4d8f4;
+  --color-rose: #f0b0b8;
+  --color-rose-dark: #e08090;
+  --color-rose-light: #f8d4d8;
+
+  /* ── SHADOWS ── */
+  --shadow-xs: 1px 1px 0px var(--color-border);
+  --shadow-sm: 2px 2px 0px var(--color-border);
+  --shadow-md: 4px 4px 0px var(--color-border);
+  --shadow-lg: 6px 6px 0px var(--color-border);
+  --shadow-xl: 8px 8px 0px var(--color-border);
+
+  /* ── RADIUS ── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* ── FONTS ── */
+  --font-display: 'Be Vietnam Pro', sans-serif;
+  --font-body: 'Be Vietnam Pro', sans-serif;
+  --font-mono: 'DM Mono', monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle, rgba(42,35,24,0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
 }
