@@ -2,16 +2,30 @@
 interface Props {
   logo?: string;
   logoIcon?: string;
+  googleClientId?: string;
+  apiUrl?: string;
 }
 
-const { logo = 'PlaySoft', logoIcon = '🎮' } = Astro.props;
+const {
+  logo = "PlaySoft",
+  logoIcon = "🎮",
+  googleClientId = "YOUR_GOOGLE_CLIENT_ID", // Thay bằng ID của bạn
+  apiUrl = "http://localhost:8787",
+} = Astro.props;
+
+const currentPath = Astro.url.pathname;
 
 const navLinks = [
-  { label: 'Games', href: '/', active: true },
-  { label: 'Leaderboard', href: '/leaderboard', active: false },
-  { label: 'Profile', href: '/profile', active: false },
-  { label: 'Shop', href: '/shop', active: false },
+  { label: "Games", href: "/" },
+  { label: "Leaderboard", href: "/leaderboard" },
+  { label: "Profile", href: "/profile" },
+  { label: "Shop", href: "/shop" },
 ];
+
+const isActive = (href: string) => {
+  if (href === "/") return currentPath === "/";
+  return currentPath.startsWith(href);
+};
 ---
 
 <header class="header">
@@ -22,109 +36,434 @@ const navLinks = [
     </a>
 
     <nav class="nav-links">
-      {navLinks.map((link) => (
-        <a href={link.href} class:list={['nav-link', link.active && 'active']}>
-          {link.label}
-        </a>
-      ))}
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class:list={["nav-link", isActive(link.href) && "active"]}
+          >
+            {link.label}
+          </a>
+        ))
+      }
     </nav>
 
-    <button class="nav-play">
-      <span>▶</span> Chơi Ngay
-    </button>
+    <div class="header-actions">
+      <div
+        id="auth-section"
+        class="auth-section"
+        data-google-client-id={googleClientId}
+        data-api-url={apiUrl}
+      >
+      </div>
+
+      <button class="nav-play">
+        <span>▶</span> Chơi Ngay
+      </button>
+    </div>
   </div>
 </header>
 
-<style>
-  .header {
-    position: relative;
-    z-index: 10;
+<div id="login-modal-root"></div>
+
+<script>
+  declare global {
+    interface Window {
+      google?: any;
+      toast?: {
+        success: (msg: string) => void;
+        error: (msg: string) => void;
+      };
+    }
   }
 
+  const authSection = document.getElementById("auth-section");
+  const apiUrl = authSection?.dataset.apiUrl || "http://localhost:8787";
+
+  async function fetchUser() {
+    const token = localStorage.getItem("gamexamxi_access_token");
+    if (!token) return null;
+    try {
+      const res = await fetch(`${apiUrl}/api/v1/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      return data.data;
+    } catch {
+      localStorage.removeItem("gamexamxi_access_token");
+      return null;
+    }
+  }
+
+  function updateAuthUI(user = null) {
+    if (!authSection) return;
+
+    if (user && user.name) {
+      const userInitial = user.name.charAt(0).toUpperCase();
+      authSection.innerHTML = `
+        <div class="user-menu">
+          <button class="user-avatar-btn" id="avatar-toggle">
+            <div class="user-avatar">${userInitial}</div>
+            <span class="user-name">${user.name}</span>
+          </button>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-dropdown-header">
+              <div class="user-avatar-lg">${userInitial}</div>
+              <div class="user-info">
+                <div class="user-name-lg">${user.name}</div>
+                <div class="user-email">${user.email || ""}</div>
+              </div>
+            </div>
+            <div class="user-dropdown-divider"></div>
+            <a href="/profile" class="user-dropdown-item">👤 Hồ sơ</a>
+            <a href="/shop" class="user-dropdown-item">🛒 Cửa hàng</a>
+            <div class="user-dropdown-divider"></div>
+            <button id="logout-btn" class="user-dropdown-item logout">🚪 Đăng xuất</button>
+          </div>
+        </div>
+      `;
+
+      // Event Listeners
+      document
+        .getElementById("logout-btn")
+        ?.addEventListener("click", handleLogout);
+      document
+        .getElementById("avatar-toggle")
+        ?.addEventListener("click", (e) => {
+          e.stopPropagation();
+          authSection.classList.toggle("show-dropdown");
+        });
+    } else {
+      authSection.innerHTML = `<button id="login-btn" class="nav-login">Đăng nhập</button>`;
+      document
+        .getElementById("login-btn")
+        ?.addEventListener("click", openLoginModal);
+    }
+  }
+
+  async function handleLogout() {
+    localStorage.removeItem("gamexamxi_access_token");
+    window.toast?.success("Đăng xuất thành công!");
+    updateAuthUI(null);
+  }
+
+  // --- Login Modal Logic ---
+  function openLoginModal() {
+    const modalRoot = document.getElementById("login-modal-root");
+    if (!modalRoot) return;
+
+    modalRoot.innerHTML = `
+      <div id="login-modal" class="modal-overlay">
+        <div class="modal-content">
+          <button class="modal-close">&times;</button>
+          <div class="modal-header">
+            <h2 class="modal-title">Đăng nhập</h2>
+            <p class="modal-subtitle">Chào mừng bạn đến với PlaySoft</p>
+          </div>
+          <div class="modal-body">
+            <div id="google-signin-button"></div>
+            <div class="divider"><span>hoặc</span></div>
+            <form id="login-form" class="login-form">
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="email@example.com" required />
+              </div>
+              <div class="form-group">
+                <label>Mật khẩu</label>
+                <input type="password" name="password" placeholder="••••••••" required />
+              </div>
+              <button type="submit" class="btn-primary">Đăng nhập</button>
+            </form>
+            <div id="login-error" class="error-message hidden"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const modalEl = document.getElementById("login-modal");
+    modalEl
+      ?.querySelector(".modal-close")
+      ?.addEventListener("click", () => modalEl.remove());
+
+    // Google Init (Simplified)
+    if (window.google) {
+      window.google.accounts.id.initialize({
+        client_id: authSection?.dataset.googleClientId,
+        callback: async (response: any) => {
+          // Gửi response.credential lên server của bạn ở đây
+          console.log("Google Token:", response.credential);
+          modalEl?.remove();
+          updateAuthUI({ name: "User Demo" }); // Mock update
+        },
+      });
+      window.google.accounts.id.renderButton(
+        document.getElementById("google-signin-button"),
+        { width: 300 },
+      );
+    }
+  }
+
+  // Khởi tạo
+  (async () => {
+    const user = await fetchUser();
+    updateAuthUI(user);
+
+    document.addEventListener("click", () => {
+      authSection?.classList.remove("show-dropdown");
+    });
+  })();
+</script>
+
+<style>
+  :root {
+    --color-ink: #1a1a1a;
+    --color-cream: #faf7f2;
+    --color-butter: #f7d716;
+    --color-border: #1a1a1a;
+    --color-muted: #666;
+    --shadow-sm: 2px 2px 0 #1a1a1a;
+    --shadow-md: 4px 4px 0 #1a1a1a;
+    --font-display: "Inter", system-ui, sans-serif;
+  }
+
+  .header {
+    position: relative;
+    z-index: 100;
+  }
   .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 24px 0 32px;
+    padding: 24px 20px;
   }
 
   .logo {
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: 22px;
+    font-size: 20px;
     background: var(--color-cream);
     border: 2px solid var(--color-border);
     border-radius: 10px;
     padding: 6px 16px;
     box-shadow: var(--shadow-sm);
-    letter-spacing: -0.5px;
     display: flex;
     align-items: center;
     gap: 8px;
     text-decoration: none;
     color: var(--color-ink);
-    transition: transform 0.15s;
-  }
-
-  .logo:hover {
-    transform: translate(-1px, -1px);
-  }
-
-  .logo-icon {
-    font-size: 18px;
   }
 
   .nav-links {
     display: flex;
-    gap: 10px;
+    gap: 8px;
   }
-
   .nav-link {
     font-size: 13px;
     font-weight: 600;
-    padding: 7px 16px;
-    border: 2px solid transparent;
+    padding: 8px 16px;
     border-radius: 30px;
-    cursor: pointer;
-    transition: all 0.18s;
-    color: var(--color-muted);
-    letter-spacing: 0.3px;
     text-decoration: none;
+    color: var(--color-muted);
+    transition: 0.2s;
   }
-
-  .nav-link:hover,
-  .nav-link.active {
+  .nav-link.active,
+  .nav-link:hover {
     background: var(--color-ink);
-    color: var(--color-cream);
-    border-color: var(--color-ink);
+    color: white;
   }
 
-  .nav-play {
-    font-family: var(--font-display);
-    font-weight: 700;
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Auth UI & Dropdown Fix */
+  .auth-section {
+    position: relative;
+  }
+
+  .user-avatar-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-cream);
+    border: 2px solid var(--color-border);
+    border-radius: 30px;
+    padding: 4px 12px 4px 4px;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+    background: var(--color-butter);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--color-border);
+    font-size: 12px;
+  }
+
+  .user-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 220px;
+    background: var(--color-cream);
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    display: none; /* Ẩn mặc định */
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .auth-section.show-dropdown .user-dropdown {
+    display: flex; /* Hiện khi có class */
+  }
+
+  .user-dropdown-header {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 2px solid var(--color-border);
+    background: #fff;
+  }
+
+  .user-info {
+    overflow: hidden;
+  }
+  .user-name-lg {
+    font-weight: 800;
+    font-size: 14px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .user-email {
+    font-size: 11px;
+    color: var(--color-muted);
+  }
+
+  .user-dropdown-item {
+    padding: 12px 16px;
     font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--color-ink);
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background: none;
+    width: 100%;
+    cursor: pointer;
+  }
+  .user-dropdown-item:hover {
+    background: #eee;
+  }
+  .user-dropdown-item.logout {
+    color: #e11d48;
+    border-top: 1px solid #eee;
+  }
+
+  /* Nút Play */
+  .nav-play {
+    font-weight: 700;
     padding: 8px 20px;
     background: var(--color-butter);
     border: 2px solid var(--color-border);
     border-radius: 30px;
     box-shadow: var(--shadow-sm);
     cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 0.3px;
-    color: var(--color-ink);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .modal-content {
+    background: var(--color-cream);
+    border: 3px solid var(--color-border);
+    padding: 30px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 380px;
+    position: relative;
+    box-shadow: 8px 8px 0 #000;
+  }
+  .modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
   }
 
-  .nav-play:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0 var(--color-border);
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    outline: none;
+  }
+  .btn-primary {
+    background: var(--color-butter);
+    border: 2px solid var(--color-border);
+    padding: 12px;
+    font-weight: 800;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-primary:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
 
-  .nav-play:active {
-    transform: translate(1px, 1px);
-    box-shadow: 1px 1px 0 var(--color-border);
+  .divider {
+    text-align: center;
+    margin: 15px 0;
+    position: relative;
+  }
+  .divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #ccc;
+    z-index: 1;
+  }
+  .divider span {
+    background: var(--color-cream);
+    padding: 0 10px;
+    position: relative;
+    z-index: 2;
+    font-size: 12px;
+    color: var(--color-muted);
   }
 
   @media (max-width: 760px) {

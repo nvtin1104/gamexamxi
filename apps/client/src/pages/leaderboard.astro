@@ -1,8 +1,5 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Header from '../components/layout/header.astro';
-import Footer from '../components/layout/footer.astro';
-import '../styles/global.css';
+import PageLayout from '../layouts/PageLayout.astro';
 
 interface LeaderboardEntry {
   rank: number;
@@ -44,15 +41,12 @@ const tabs = [
 ];
 ---
 
-<Layout title="Bảng xếp hạng - PlaySoft">
-  <div class="page">
-    <Header />
-
-    <main class="leaderboard-page">
-      <div class="page-header">
-        <h1 class="page-title">🏆 Bảng xếp hạng</h1>
-        <p class="page-desc">So sánh điểm số của bạn với các người chơi khác</p>
-      </div>
+<PageLayout title="Bảng xếp hạng - PlaySoft">
+  <div class="leaderboard-page">
+    <div class="page-header">
+      <h1 class="page-title">🏆 Bảng xếp hạng</h1>
+      <p class="page-desc">So sánh điểm số của bạn với các người chơi khác</p>
+    </div>
 
       <div class="tabs">
         {tabs.map((tab) => (
@@ -113,21 +107,11 @@ const tabs = [
           </div>
         </div>
       </div>
-    </main>
-
-    <Footer />
+    </div>
   </div>
-</Layout>
+</PageLayout>
 
 <style>
-  .page {
-    position: relative;
-    z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 24px 80px;
-  }
-
   .leaderboard-page {
     display: flex;
     flex-direction: column;

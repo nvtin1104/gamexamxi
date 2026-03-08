@@ -1,13 +1,10 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Header from '../components/layout/header.astro';
-import Footer from '../components/layout/footer.astro';
+import PageLayout from '../layouts/PageLayout.astro';
 import Hero from '../components/home/hero.astro';
 import GameCard from '../components/home/game-card.astro';
 import StatsRow from '../components/home/stats-row.astro';
 import Leaderboard from '../components/home/leaderboard.astro';
 import DailyChallenge from '../components/home/daily-challenge.astro';
-import '../styles/global.css';
 
 const games = [
   {
@@ -55,57 +52,36 @@ const games = [
 const featuredGames = games.slice(0, 5);
 ---
 
-<Layout title="PlaySoft - Minigame cho mọi người">
-  <div class="page">
-    <Header />
+<PageLayout title="PlaySoft - Minigame cho mọi người">
+  <Hero />
 
-    <main>
-      <Hero />
+  <StatsRow />
 
-      <StatsRow />
-
-      <div class="section-header">
-        <div class="section-title">🕹️ Game nổi bật</div>
-        <a href="/games" class="section-link">Xem tất cả →</a>
-      </div>
-
-      <div class="games-grid">
-        {featuredGames.map((game) => (
-          <GameCard {...game} />
-        ))}
-        <div class="game-card game-card-coming">
-          <div class="coming-content">
-            <div class="coming-icon">✦</div>
-            <div class="coming-title">Sắp ra mắt</div>
-            <div class="coming-sub">+12 game mới</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bottom-grid">
-        <Leaderboard />
-        <DailyChallenge />
-      </div>
-    </main>
-
-    <Footer />
+  <div class="section-header">
+    <div class="section-title">🕹️ Game nổi bật</div>
+    <a href="/games" class="section-link">Xem tất cả →</a>
   </div>
-</Layout>
+
+  <div class="games-grid">
+    {featuredGames.map((game) => (
+      <GameCard {...game} />
+    ))}
+    <div class="game-card game-card-coming">
+      <div class="coming-content">
+        <div class="coming-icon">✦</div>
+        <div class="coming-title">Sắp ra mắt</div>
+        <div class="coming-sub">+12 game mới</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-grid">
+    <Leaderboard />
+    <DailyChallenge />
+  </div>
+</PageLayout>
 
 <style>
-  .page {
-    position: relative;
-    z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 24px 80px;
-  }
-
-  main {
-    display: flex;
-    flex-direction: column;
-  }
-
   .section-header {
     display: flex;
     align-items: baseline;

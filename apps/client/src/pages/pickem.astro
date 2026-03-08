@@ -1,8 +1,5 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Header from '../components/layout/header.astro';
-import Footer from '../components/layout/footer.astro';
-import '../styles/global.css';
+import PageLayout from '../layouts/PageLayout.astro';
 
 interface PickemEvent {
   id: string;
@@ -156,25 +153,22 @@ const statusBg = {
 };
 ---
 
-<Layout title="Pickem - PlaySoft">
-  <div class="page">
-    <Header />
+<PageLayout title="Pickem - PlaySoft">
+  <div class="pickem-page">
+    <div class="page-header">
+      <h1 class="page-title">🎯 Pickem</h1>
+      <p class="page-desc">Dự đoán kết quả các sự kiện thể thao, esports và giải trí để nhận thưởng</p>
+    </div>
 
-    <main class="pickem-page">
-      <div class="page-header">
-        <h1 class="page-title">🎯 Pickem</h1>
-        <p class="page-desc">Dự đoán kết quả các sự kiện thể thao, esports và giải trí để nhận thưởng</p>
-      </div>
+    <div class="filter-tabs">
+      <button class="filter-tab active">Tất cả</button>
+      <button class="filter-tab">Đang diễn ra</button>
+      <button class="filter-tab">Sắp diễn ra</button>
+      <button class="filter-tab">Đã kết thúc</button>
+    </div>
 
-      <div class="filter-tabs">
-        <button class="filter-tab active">Tất cả</button>
-        <button class="filter-tab">Đang diễn ra</button>
-        <button class="filter-tab">Sắp diễn ra</button>
-        <button class="filter-tab">Đã kết thúc</button>
-      </div>
-
-      <div class="pickem-grid">
-        {pickemEvents.map((event) => (
+    <div class="pickem-grid">
+      {pickemEvents.map((event) => (
           <a href={`/pickem/${event.id}`} class="pickem-card">
             <div class="pickem-thumb" style={`background: ${statusBg[event.status]}`}>
               <span class="pickem-icon">{event.thumbnail}</span>
@@ -228,21 +222,11 @@ const statusBg = {
           </a>
         ))}
       </div>
-    </main>
-
-    <Footer />
+    </div>
   </div>
-</Layout>
+</PageLayout>
 
 <style>
-  .page {
-    position: relative;
-    z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 24px 80px;
-  }
-
   .pickem-page {
     display: flex;
     flex-direction: column;
