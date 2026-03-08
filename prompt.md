@@ -1,3 +1,3 @@
-pnpm create next-app@latest website --yes
-cd website
-pnpm dev
+npx create-next-app@latest website --yes
+cd my-app
+npm run dev
