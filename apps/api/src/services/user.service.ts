@@ -115,6 +115,16 @@ export class UserService {
     return result
   }
 
+  /** Find a user by Google ID */
+  async findByGgId(ggId: string): Promise<UserRow | undefined> {
+    const result = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.ggId, ggId))
+      .get()
+    return result
+  }
+
   /** Create a new user */
   async create(data: typeof users.$inferInsert): Promise<UserRow> {
     const result = await this.db.insert(users).values(data).returning().get()

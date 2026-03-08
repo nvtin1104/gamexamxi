@@ -14,6 +14,8 @@ export type Bindings = {
   JWT_SECRET: string
   /** Allowed CORS origins */
   ALLOWED_ORIGINS: string
+  /** Google OAuth Client ID */
+  GOOGLE_CLIENT_ID: string
 }
 
 /** Context variables set by middleware */
