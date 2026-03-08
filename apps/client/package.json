@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "@gamexamxi/client",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
