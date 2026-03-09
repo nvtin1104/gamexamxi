@@ -8,8 +8,21 @@ import { authMiddleware } from '../middleware/auth'
 import { UserService } from '../services/user.service'
 import { AuthService } from '../services/auth.service'
 import type { Bindings, Variables } from '../types'
+import type { users } from '../db/schemas'
 
 export const authRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
+
+function stripSensitive(user: typeof users.$inferSelect) {
+  const { passwordHash, ggId, lastLoginIp, ...rest } = user
+  return rest
+}
+
+function setAuthCookies(c: any, accessToken: string, refreshToken: string) {
+  const isLocal = c.req.header('host')?.includes('localhost')
+  const cookieOptions = `HttpOnly; ${!isLocal ? 'Secure; ' : ''}SameSite=lax; Path=/`
+  c.header('Set-Cookie', `access_token=${accessToken}; Max-Age=${60 * 60}; ${cookieOptions}`)
+  c.header('Set-Cookie', `refresh_token=${refreshToken}; Max-Age=${60 * 60 * 24 * 7}; ${cookieOptions}`)
+}
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -55,24 +68,16 @@ authRoute.post('/register', zValidator('json', registerSchema), async (c) => {
     })
 
     // Generate tokens
-    const accessToken = await authService.generateAccessToken(user.id, user.accountRole)
+    const accessToken = await authService.generateAccessToken(user.id, user.role, user.accountRole)
     const refreshToken = await authService.generateRefreshToken(user.id)
 
-    // Store refresh token in KV
     await c.env.SESSIONS.put(`refresh:${user.id}`, refreshToken, {
-      expirationTtl: 60 * 60 * 24 * 7, // 7 days
+      expirationTtl: 60 * 60 * 24 * 7,
     })
 
-    return c.json(
-      {
-        data: {
-          user: { id: user.id, email: user.email, name: user.name, accountRole: user.accountRole, role: user.role },
-          accessToken,
-          refreshToken,
-        },
-      },
-      201
-    )
+    setAuthCookies(c, accessToken, refreshToken)
+
+    return c.json(stripSensitive(user), 201)
   } catch (err) {
     console.error('Registration failed:', err)
     return c.json({ error: 'Đăng ký thất bại' }, 500)
@@ -96,20 +101,20 @@ authRoute.post('/login', zValidator('json', loginSchema), async (c) => {
       return c.json({ error: 'Thông tin đăng nhập không đúng' }, 401)
     }
 
-    const accessToken = await authService.generateAccessToken(user.id, user.accountRole)
+    const accessToken = await authService.generateAccessToken(user.id, user.role, user.accountRole)
     const refreshToken = await authService.generateRefreshToken(user.id)
 
     await c.env.SESSIONS.put(`refresh:${user.id}`, refreshToken, {
       expirationTtl: 60 * 60 * 24 * 7,
     })
 
-    return c.json({
-      data: {
-        user: { id: user.id, email: user.email, name: user.name, accountRole: user.accountRole, role: user.role },
-        accessToken,
-        refreshToken,
-      },
-    })
+    const isLocal = c.req.header('host')?.includes('localhost')
+    const cookieOptions = `HttpOnly; ${!isLocal ? 'Secure; ' : ''}SameSite=lax; Path=/`
+
+    c.header('Set-Cookie', `access_token=${accessToken}; Max-Age=${60 * 60}; ${cookieOptions}`)
+    c.header('Set-Cookie', `refresh_token=${refreshToken}; Max-Age=${60 * 60 * 24 * 7}; ${cookieOptions}`)
+
+    return c.json(stripSensitive(user))
   } catch (err) {
     console.error('Login failed:', err)
     return c.json({ error: 'Đăng nhập thất bại' }, 500)
@@ -140,19 +145,16 @@ authRoute.post('/refresh', zValidator('json', refreshSchema), async (c) => {
       return c.json({ error: 'Không tìm thấy người dùng' }, 404)
     }
 
-    const newAccessToken = await authService.generateAccessToken(user.id, user.accountRole)
+    const newAccessToken = await authService.generateAccessToken(user.id, user.role, user.accountRole)
     const newRefreshToken = await authService.generateRefreshToken(user.id)
 
     await c.env.SESSIONS.put(`refresh:${user.id}`, newRefreshToken, {
       expirationTtl: 60 * 60 * 24 * 7,
     })
 
-    return c.json({
-      data: {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-      },
-    })
+    setAuthCookies(c, newAccessToken, newRefreshToken)
+
+    return c.json(stripSensitive(user))
   } catch (err) {
     console.error('Token refresh failed:', err)
     return c.json({ error: 'Refresh token không hợp lệ' }, 401)
@@ -168,9 +170,7 @@ authRoute.get('/me', authMiddleware, async (c) => {
     if (!user) {
       return c.json({ error: 'Không tìm thấy người dùng' }, 404)
     }
-    return c.json({
-      data: { id: user.id, email: user.email, name: user.name, accountRole: user.accountRole, role: user.role },
-    })
+    return c.json(stripSensitive(user))
   } catch (err) {
     console.error('Get me failed:', err)
     return c.json({ error: 'Lỗi máy chủ nội bộ' }, 500)
@@ -251,32 +251,16 @@ authRoute.post('/google', zValidator('json', googleSchema), async (c) => {
       return c.json({ error: 'Tài khoản đang bị khóa tạm thời' }, 403)
     }
 
-    const accessToken = await authService.generateAccessToken(user.id, user.accountRole)
+    const accessToken = await authService.generateAccessToken(user.id, user.role, user.accountRole)
     const refreshToken = await authService.generateRefreshToken(user.id)
 
     await c.env.SESSIONS.put(`refresh:${user.id}`, refreshToken, {
       expirationTtl: 60 * 60 * 24 * 7,
     })
 
-    const isProduction = process.env.NODE_ENV === 'production'
-    const cookieOptions = `HttpOnly; Secure=${isProduction}; SameSite=lax; Path=/`
+    setAuthCookies(c, accessToken, refreshToken)
 
-    c.header('Set-Cookie', `access_token=${accessToken}; Max-Age=${60 * 60}; ${cookieOptions}`)
-    c.header('Set-Cookie', `refresh_token=${refreshToken}; Max-Age=${60 * 60 * 24 * 7}; ${cookieOptions}`)
-
-    return c.json({
-      data: {
-        user: {
-          id: user.id,
-          email: user.email!,
-          name: user.name,
-          accountRole: user.accountRole,
-          role: user.role,
-        },
-        accessToken,
-        refreshToken,
-      },
-    })
+    return c.json(stripSensitive(user))
   } catch (err) {
     console.error('Google login failed:', err)
     return c.json({ error: 'Đăng nhập Google thất bại' }, 500)

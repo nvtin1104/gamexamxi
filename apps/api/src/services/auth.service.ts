@@ -75,13 +75,15 @@ export class AuthService {
   /** Generate a JWT access token */
   async generateAccessToken(
     userId: string,
-    role: string
+    role: string,
+    accountRole: string
   ): Promise<string> {
     const now = Math.floor(Date.now() / 1000)
     return sign(
       {
         sub: userId,
         role,
+        accountRole,
         iat: now,
         exp: now + 60 * 60, // 1 hour
       },

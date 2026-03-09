@@ -26,6 +26,7 @@ export const authMiddleware = createMiddleware<{
     const payload = await verify(token, c.env.JWT_SECRET, 'HS256')
     c.set('userId', payload.sub as string)
     c.set('role', payload.role as string)
+    c.set('accountRole', payload.accountRole as string)
     await next()
   } catch {
     return c.json({ error: 'Token không hợp lệ hoặc đã hết hạn' }, 401)
@@ -51,7 +52,7 @@ export const requireRole = (...allowedRoles: string[]) =>
 /**
  * Permission-based access guard.
  * Resolves user's merged permissions from groups, caches in context.
- * Admins always pass.
+ * Admins (accountRole) and root bypass all permission checks.
  * Usage: `route.use(requirePermission('game:create'))`
  */
 export const requirePermission = (...requiredPermissions: string[]) =>
@@ -60,7 +61,10 @@ export const requirePermission = (...requiredPermissions: string[]) =>
     Variables: Variables
   }>(async (c, next) => {
     const role = c.get('role')
-    if (role === 'admin') {
+    const accountRole = c.get('accountRole')
+
+    // Admins and root bypass all permission checks
+    if (accountRole === 'admin' || role === 'root') {
       await next()
       return
     }
