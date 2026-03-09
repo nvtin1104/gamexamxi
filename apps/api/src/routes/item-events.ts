@@ -13,7 +13,7 @@ export const itemsRoute = new Hono<{
 
 const linkSocialSchema = z.object({
   type: z.enum(['twitter', 'facebook', 'instagram', 'tiktok', 'youtube', 'other']),
-  url: z.string().url().optional().or(z.literal('')),
+  url: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
   handle: z.string().optional(),
   isPublic: z.boolean().default(true),
 })
@@ -30,9 +30,9 @@ const listQuerySchema = z.object({
 })
 
 const createItemSchema = z.object({
-  name: z.string().min(2).max(200),
-  logo: z.string().url().optional().or(z.literal('')),
-  description: z.string().max(2000).optional(),
+  name: z.string().min(2, 'Tên tối thiểu 2 ký tự').max(200, 'Tên tối đa 200 ký tự'),
+  logo: z.string().url('URL logo không hợp lệ').optional().or(z.literal('')),
+  description: z.string().max(2000, 'Mô tả tối đa 2000 ký tự').optional(),
   linkSocial: z.array(linkSocialSchema).default([]),
   level: z.number().int().min(0).max(1).default(0),
   parentId: z.literal('').optional().nullable(),
@@ -47,9 +47,9 @@ const createItemSchema = z.object({
 })
 
 const updateItemSchema = z.object({
-  name: z.string().min(2).max(200).optional(),
-  logo: z.string().url().optional(),
-  description: z.string().max(2000).optional(),
+  name: z.string().min(2, 'Tên tối thiểu 2 ký tự').max(200, 'Tên tối đa 200 ký tự').optional(),
+  logo: z.string().url('URL logo không hợp lệ').optional(),
+  description: z.string().max(2000, 'Mô tả tối đa 2000 ký tự').optional(),
   linkSocial: z.array(linkSocialSchema).optional(),
   level: z.number().int().min(0).max(1).optional(),
   parentId: z.string().optional().nullable(),
