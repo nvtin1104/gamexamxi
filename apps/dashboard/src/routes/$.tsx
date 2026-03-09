@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { HomeIcon, ArrowLeftIcon } from 'lucide-react'
+import { HomeIcon, ArrowLeftIcon, TriangleAlertIcon } from 'lucide-react'
 
 export const Route = createFileRoute('/$')({
   component: NotFoundPage,
@@ -12,17 +11,24 @@ export const Route = createFileRoute('/$')({
 
 function NotFoundPage() {
   return (
-    <div className="flex min-h-svh items-center justify-center bg-muted p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-6xl font-bold text-primary">404</CardTitle>
-          <h2 className="mt-4 text-xl font-semibold">Không tìm thấy trang</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
+    <div className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-background p-6">
+      <div className="flex flex-col items-center gap-6 text-center">
+        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
+          <TriangleAlertIcon className="h-12 w-12 text-primary" />
+        </div>
+        
+        <div className="flex flex-col gap-2">
+          <h1 className="text-8xl font-bold tracking-wider text-primary">404</h1>
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Không tìm thấy trang
+          </h2>
+          <p className="max-w-md text-muted-foreground">
             Trang bạn đang tìm kiếm không tồn tại hoặc đã bị di chuyển.
           </p>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-2">
-          <Button asChild className="w-full">
+        </div>
+
+        <div className="mt-4 flex gap-3">
+          <Button asChild size="lg">
             <Link to="/">
               <HomeIcon className="mr-2 h-4 w-4" />
               Về trang chủ
@@ -30,14 +36,14 @@ function NotFoundPage() {
           </Button>
           <Button
             variant="outline"
-            className="w-full"
+            size="lg"
             onClick={() => window.history.back()}
           >
             <ArrowLeftIcon className="mr-2 h-4 w-4" />
             Quay lại
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

@@ -16,6 +16,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedPickemEventsIndexRouteImport } from './routes/_authenticated/pickem-events/index'
 import { Route as AuthenticatedPermissionsIndexRouteImport } from './routes/_authenticated/permissions/index'
+import { Route as AuthenticatedMediaIndexRouteImport } from './routes/_authenticated/media/index'
 import { Route as AuthenticatedItemsIndexRouteImport } from './routes/_authenticated/items/index'
 import { Route as AuthenticatedUsersNewRouteImport } from './routes/_authenticated/users/new'
 import { Route as AuthenticatedPickemEventsNewRouteImport } from './routes/_authenticated/pickem-events/new'
@@ -63,6 +64,11 @@ const AuthenticatedPermissionsIndexRoute =
     path: '/permissions/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedMediaIndexRoute = AuthenticatedMediaIndexRouteImport.update({
+  id: '/media/',
+  path: '/media/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedItemsIndexRoute = AuthenticatedItemsIndexRouteImport.update({
   id: '/items/',
   path: '/items/',
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/pickem-events/new': typeof AuthenticatedPickemEventsNewRoute
   '/users/new': typeof AuthenticatedUsersNewRoute
   '/items/': typeof AuthenticatedItemsIndexRoute
+  '/media/': typeof AuthenticatedMediaIndexRoute
   '/permissions/': typeof AuthenticatedPermissionsIndexRoute
   '/pickem-events/': typeof AuthenticatedPickemEventsIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/pickem-events/new': typeof AuthenticatedPickemEventsNewRoute
   '/users/new': typeof AuthenticatedUsersNewRoute
   '/items': typeof AuthenticatedItemsIndexRoute
+  '/media': typeof AuthenticatedMediaIndexRoute
   '/permissions': typeof AuthenticatedPermissionsIndexRoute
   '/pickem-events': typeof AuthenticatedPickemEventsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/_authenticated/pickem-events/new': typeof AuthenticatedPickemEventsNewRoute
   '/_authenticated/users/new': typeof AuthenticatedUsersNewRoute
   '/_authenticated/items/': typeof AuthenticatedItemsIndexRoute
+  '/_authenticated/media/': typeof AuthenticatedMediaIndexRoute
   '/_authenticated/permissions/': typeof AuthenticatedPermissionsIndexRoute
   '/_authenticated/pickem-events/': typeof AuthenticatedPickemEventsIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/pickem-events/new'
     | '/users/new'
     | '/items/'
+    | '/media/'
     | '/permissions/'
     | '/pickem-events/'
     | '/users/'
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/pickem-events/new'
     | '/users/new'
     | '/items'
+    | '/media'
     | '/permissions'
     | '/pickem-events'
     | '/users'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pickem-events/new'
     | '/_authenticated/users/new'
     | '/_authenticated/items/'
+    | '/_authenticated/media/'
     | '/_authenticated/permissions/'
     | '/_authenticated/pickem-events/'
     | '/_authenticated/users/'
@@ -290,6 +302,13 @@ declare module '@tanstack/react-router' {
       path: '/permissions'
       fullPath: '/permissions/'
       preLoaderRoute: typeof AuthenticatedPermissionsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/media/': {
+      id: '/_authenticated/media/'
+      path: '/media'
+      fullPath: '/media/'
+      preLoaderRoute: typeof AuthenticatedMediaIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/items/': {
@@ -371,6 +390,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPickemEventsNewRoute: typeof AuthenticatedPickemEventsNewRoute
   AuthenticatedUsersNewRoute: typeof AuthenticatedUsersNewRoute
   AuthenticatedItemsIndexRoute: typeof AuthenticatedItemsIndexRoute
+  AuthenticatedMediaIndexRoute: typeof AuthenticatedMediaIndexRoute
   AuthenticatedPermissionsIndexRoute: typeof AuthenticatedPermissionsIndexRoute
   AuthenticatedPickemEventsIndexRoute: typeof AuthenticatedPickemEventsIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
@@ -388,6 +408,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPickemEventsNewRoute: AuthenticatedPickemEventsNewRoute,
   AuthenticatedUsersNewRoute: AuthenticatedUsersNewRoute,
   AuthenticatedItemsIndexRoute: AuthenticatedItemsIndexRoute,
+  AuthenticatedMediaIndexRoute: AuthenticatedMediaIndexRoute,
   AuthenticatedPermissionsIndexRoute: AuthenticatedPermissionsIndexRoute,
   AuthenticatedPickemEventsIndexRoute: AuthenticatedPickemEventsIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
