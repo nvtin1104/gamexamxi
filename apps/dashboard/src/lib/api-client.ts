@@ -6,6 +6,7 @@ import {
   setRefreshToken,
   clearAuth,
 } from './auth'
+import { isZodError, mapZodError } from './utils/zod-error'
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '/api/v1'
 
@@ -78,8 +79,11 @@ async function request<T>(
   }
 
   if (!res.ok) {
-    const error = (await res.json().catch(() => ({ error: 'Lỗi không xác định' }))) as ApiError
-    throw new Error(error.error)
+    const errorData = await res.json().catch(() => ({ error: 'Lỗi không xác định' }))
+    const errorMessage = isZodError(errorData) 
+      ? mapZodError(errorData) 
+      : (errorData as ApiError).error
+    throw new Error(errorMessage)
   }
 
   return res.json() as Promise<T>
