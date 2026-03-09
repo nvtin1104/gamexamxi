@@ -1,28 +1,28 @@
-const ACCESS_TOKEN_KEY = 'gamexamxi_access_token'
-const REFRESH_TOKEN_KEY = 'gamexamxi_refresh_token'
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null
+  const match = document.cookie.match(new RegExp('(^|; )' + name + '=([^;]+)'))
+  return match ? decodeURIComponent(match[2]) : null
+}
+
+function removeCookie(name: string): void {
+  if (typeof document === 'undefined') return
+  document.cookie = `${name}=; Max-Age=0; Path=/; HttpOnly`
+}
 
 export function getAccessToken(): string | null {
-  return localStorage.getItem(ACCESS_TOKEN_KEY)
-}
-
-export function setAccessToken(token: string): void {
-  localStorage.setItem(ACCESS_TOKEN_KEY, token)
-}
-
-export function removeAccessToken(): void {
-  localStorage.removeItem(ACCESS_TOKEN_KEY)
+  return getCookie('access_token')
 }
 
 export function getRefreshToken(): string | null {
-  return localStorage.getItem(REFRESH_TOKEN_KEY)
+  return getCookie('refresh_token')
 }
 
-export function setRefreshToken(token: string): void {
-  localStorage.setItem(REFRESH_TOKEN_KEY, token)
+export function removeAccessToken(): void {
+  removeCookie('access_token')
 }
 
 export function removeRefreshToken(): void {
-  localStorage.removeItem(REFRESH_TOKEN_KEY)
+  removeCookie('refresh_token')
 }
 
 export function clearAuth(): void {
@@ -30,11 +30,20 @@ export function clearAuth(): void {
   removeRefreshToken()
 }
 
-export function isAuthenticated(): boolean {
-  return getAccessToken() !== null
+export function getTokenAccountRole(): string | null {
+  const token = getAccessToken()
+  if (!token) return null
+  try {
+    const payload = token.split('.')[1]
+    if (!payload) return null
+    const decoded = JSON.parse(atob(payload)) as Record<string, unknown>
+    return typeof decoded['accountRole'] === 'string' ? decoded['accountRole'] : null
+  } catch {
+    return null
+  }
 }
 
-export function getTokenAccountRole(): string | null {
+export function getTokenRole(): string | null {
   const token = getAccessToken()
   if (!token) return null
   try {
@@ -49,4 +58,8 @@ export function getTokenAccountRole(): string | null {
 
 export function isAdmin(): boolean {
   return getTokenAccountRole() === 'admin'
+}
+
+export function isRoot(): boolean {
+  return getTokenRole() === 'root'
 }

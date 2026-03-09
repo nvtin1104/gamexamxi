@@ -1,9 +1,7 @@
-import type { ApiError, ApiResponse } from '@gamexamxi/shared'
+import type { ApiError } from '@gamexamxi/shared'
 import {
   getAccessToken,
   getRefreshToken,
-  setAccessToken,
-  setRefreshToken,
   clearAuth,
 } from './auth'
 import { isZodError, mapZodError } from './utils/zod-error'
@@ -22,16 +20,11 @@ async function refreshAccessToken(): Promise<boolean> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken }),
+      credentials: 'include',
     })
 
     if (!res.ok) return false
 
-    const json = (await res.json()) as ApiResponse<{
-      accessToken: string
-      refreshToken: string
-    }>
-    setAccessToken(json.data.accessToken)
-    setRefreshToken(json.data.refreshToken)
     return true
   } catch {
     return false
@@ -52,7 +45,11 @@ async function request<T>(
     headers.set('Content-Type', 'application/json')
   }
 
-  let res = await fetch(`${API_BASE}${path}`, { ...options, headers })
+  let res = await fetch(`${API_BASE}${path}`, { 
+    ...options, 
+    headers,
+    credentials: 'include',
+  })
 
   if (res.status === 401 && getRefreshToken()) {
     if (!isRefreshing) {
@@ -70,7 +67,11 @@ async function request<T>(
       if (!retryHeaders.has('Content-Type') && options.body) {
         retryHeaders.set('Content-Type', 'application/json')
       }
-      res = await fetch(`${API_BASE}${path}`, { ...options, headers: retryHeaders })
+      res = await fetch(`${API_BASE}${path}`, { 
+        ...options, 
+        headers: retryHeaders,
+        credentials: 'include',
+      })
     } else {
       clearAuth()
       window.location.href = '/login'
@@ -97,6 +98,12 @@ export const api = {
     return request<T>(path, {
       method: 'POST',
       body: body ? JSON.stringify(body) : undefined,
+    })
+  },
+  postFormData<T>(path: string, body: FormData): Promise<T> {
+    return request<T>(path, {
+      method: 'POST',
+      body,
     })
   },
   put<T>(path: string, body?: unknown): Promise<T> {
