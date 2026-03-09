@@ -9,6 +9,9 @@ export const APP_PERMISSIONS = {
   POINTS_GRANT: 'points:grant',
   POINTS_DEDUCT: 'points:deduct',
   XP_GRANT: 'xp:grant',
+  MEDIA_UPLOAD: 'media:upload',
+  MEDIA_DELETE: 'media:delete',
+  MEDIA_ALL: 'media:all',
 } as const
 
 export type AppPermission = (typeof APP_PERMISSIONS)[keyof typeof APP_PERMISSIONS]
@@ -25,4 +28,7 @@ export const PERMISSION_LABELS: Record<AppPermission, string> = {
   'points:grant': 'Cấp điểm',
   'points:deduct': 'Trừ điểm',
   'xp:grant': 'Cấp XP',
+  'media:upload': 'Upload media',
+  'media:delete': 'Xóa media',
+  'media:all': 'Toàn quyền media',
 }
