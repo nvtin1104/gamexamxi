@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useForm } from '@tanstack/react-form'
-import { createItemSchema } from '@gamexamxi/shared'
+import { createItemSchema, updateItemSchema } from '@gamexamxi/shared'
 import type { CreateItemFormData, UpdateItemFormData, LinkSocialInput, ItemEvent } from '@gamexamxi/shared'
+import { getFieldValidator, getFormValidator } from '@/lib/utils/form-validator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -235,6 +236,8 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
     }
   }, [isCreate])
 
+  const schema = isCreate ? createItemSchema : updateItemSchema
+
   const form = useForm({
     defaultValues: isCreate
       ? {
@@ -254,6 +257,9 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
           level: defaultValues?.level ?? 0,
           parentId: defaultValues?.parentId ?? null,
         },
+    validators: {
+      onSubmit: getFormValidator(schema),
+    },
     onSubmit: async ({ value }) => {
       await onSubmit(value as CreateItemFormData)
     },
@@ -275,13 +281,7 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
       <form.Field
         name="name"
         validators={{
-          onBlur: ({ value }) => {
-            if (isCreate) {
-              const result = createItemSchema.shape.name.safeParse(value)
-              if (!result.success) return result.error.issues[0]?.message
-            }
-            return undefined
-          },
+          onBlur: getFieldValidator(schema.shape.name),
         }}
       >
         {(field) => (
@@ -308,11 +308,7 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
         <form.Field
           name="type"
           validators={{
-            onBlur: ({ value }) => {
-              const result = createItemSchema.shape.type.safeParse(value)
-              if (!result.success) return result.error.issues[0]?.message
-              return undefined
-            },
+            onBlur: getFieldValidator(createItemSchema.shape.type),
           }}
         >
           {(field) => (
@@ -341,7 +337,12 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
         </form.Field>
       )}
 
-      <form.Field name="logo">
+      <form.Field
+        name="logo"
+        validators={{
+          onBlur: getFieldValidator(schema.shape.logo),
+        }}
+      >
         {(field) => (
           <div className="flex flex-col gap-1.5">
             <Label htmlFor={field.name}>Logo URL</Label>
@@ -351,12 +352,21 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
               placeholder="https://example.com/logo.jpg"
               value={field.state.value as string}
               onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
             />
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
+            )}
           </div>
         )}
       </form.Field>
 
-      <form.Field name="description">
+      <form.Field
+        name="description"
+        validators={{
+          onBlur: getFieldValidator(schema.shape.description),
+        }}
+      >
         {(field) => (
           <div className="flex flex-col gap-1.5">
             <Label htmlFor={field.name}>Mô tả</Label>
@@ -365,8 +375,12 @@ export function ItemForm({ mode, defaultValues, onSubmit, isLoading }: ItemFormP
               placeholder="Mô tả về player/team/tournament..."
               value={field.state.value as string}
               onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
               rows={4}
             />
+            {field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
+            )}
           </div>
         )}
       </form.Field>
