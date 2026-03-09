@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as SplatRouteImport } from './routes/$'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedPickemEventsIndexRouteImport } from './routes/_authenticated/pickem-events/index'
@@ -33,6 +34,11 @@ const LoginRoute = LoginRouteImport.update({
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SplatRoute = SplatRouteImport.update({
+  id: '/$',
+  path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
@@ -116,6 +122,7 @@ const AuthenticatedItemsItemIdEditRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/$': typeof SplatRoute
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
   '/items/new': typeof AuthenticatedItemsNewRoute
@@ -133,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/users/$userId/': typeof AuthenticatedUsersUserIdIndexRoute
 }
 export interface FileRoutesByTo {
+  '/$': typeof SplatRoute
   '/login': typeof LoginRoute
   '/': typeof AuthenticatedIndexRoute
   '/items/new': typeof AuthenticatedItemsNewRoute
@@ -151,6 +159,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/$': typeof SplatRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -171,6 +180,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/$'
     | '/'
     | '/login'
     | '/items/new'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/users/$userId/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/$'
     | '/login'
     | '/'
     | '/items/new'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/users/$userId'
   id:
     | '__root__'
+    | '/$'
     | '/_authenticated'
     | '/login'
     | '/_authenticated/'
@@ -224,6 +236,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  SplatRoute: typeof SplatRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
@@ -242,6 +255,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$': {
+      id: '/$'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/': {
@@ -386,6 +406,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  SplatRoute: SplatRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
 }
