@@ -6,6 +6,7 @@ import { pointTransactions } from './point-transactions'
 import { userStats } from './user-stats'
 import { itemEvents } from './events/item-events'
 import { pickemEvents, pickemEventOptions, pickemEventPicks } from './events/pickem-events'
+import { media } from './media'
 
 export { 
     users, 
@@ -17,7 +18,8 @@ export {
     itemEvents, 
     pickemEvents, 
     pickemEventOptions, 
-    pickemEventPicks 
+    pickemEventPicks,
+    media 
 }
 
 export const schema = {
@@ -31,4 +33,5 @@ export const schema = {
     pickemEvents,
     pickemEventOptions,
     pickemEventPicks,
+    media,
 }
