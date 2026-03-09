@@ -1,13 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-interface User {
-  name: string;
-  email?: string;
-}
+import { useUser, useLoginGoogle, useLogout } from '@/lib/api/auth';
+import { useAuthStore, useUIStore } from '@/stores';
 
 interface HeaderProps {
   logo?: string;
@@ -27,41 +24,92 @@ export function Header({
   logo = 'PlaySoft',
   logoIcon = '🎮',
   googleClientId = 'YOUR_GOOGLE_CLIENT_ID',
-  apiUrl = 'http://localhost:8787',
 }: HeaderProps) {
   const pathname = usePathname();
-  const [user, setUser] = useState<User | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const googleButtonRendered = useRef(false);
+
+  const { data: user, isLoading } = useUser();
+  const loginGoogle = useLoginGoogle();
+  const logout = useLogout();
+
+  const setUser = useAuthStore((s) => s.setUser);
+  const { isLoginModalOpen, openLoginModal, closeLoginModal } = useUIStore();
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/';
     return pathname.startsWith(href);
   };
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem('gamexamxi_access_token');
-      if (!token) return;
-      try {
-        const res = await fetch(`${apiUrl}/api/v1/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error();
-        const data = await res.json();
-        setUser(data.data);
-      } catch {
-        localStorage.removeItem('gamexamxi_access_token');
-      }
-    };
-    fetchUser();
-  }, [apiUrl]);
+  React.useEffect(() => {
+    if (user) setUser(user);
+  }, [user, setUser]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('gamexamxi_access_token');
+  React.useEffect(() => {
+    if (!isLoginModalOpen || !googleClientId || googleButtonRendered.current) return;
+
+    const renderGoogleButton = () => {
+      if (!(window as unknown as { google?: { accounts?: { id?: { renderButton?: (el: HTMLElement, options: unknown) => void } } } }).google?.accounts?.id) return;
+      
+      googleButtonRendered.current = true;
+      (window as unknown as { google: { accounts: { id: { renderButton: (el: HTMLElement, options: unknown) => void } } } }).google.accounts.id.renderButton(
+        document.getElementById('google-signin-button')!,
+        {
+          theme: 'outline',
+          size: 'large',
+          width: '100%',
+          text: 'signin_with',
+          shape: 'rectangular',
+        }
+      );
+    };
+
+    const loadGoogleSDK = () => {
+      if (document.getElementById('google-sdk')) {
+        renderGoogleButton();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.id = 'google-sdk';
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        (window as unknown as { google: { accounts: { id: { initialize: (config: unknown) => void; renderButton: (el: HTMLElement, options: unknown) => void } } } }).google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: handleCredentialResponse,
+          auto_select: false,
+          cancel_on_tap_outside: false,
+        });
+        renderGoogleButton();
+      };
+      document.head.appendChild(script);
+    };
+
+    loadGoogleSDK();
+  }, [isLoginModalOpen, googleClientId]);
+
+  const handleCredentialResponse = async (response: { credential?: string }) => {
+    if (!response.credential) return;
+    
+    setIsLoggingIn(true);
+    try {
+      await loginGoogle.mutateAsync(response.credential);
+      closeLoginModal();
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } } };
+      alert(err.response?.data?.error || 'Đăng nhập thất bại');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await logout.mutateAsync();
     setUser(null);
     setShowDropdown(false);
-    alert('Đăng xuất thành công!');
   };
 
   const userInitial = user?.name?.charAt(0).toUpperCase() || '';
@@ -94,7 +142,7 @@ export function Header({
           </nav>
 
           <div className="flex items-center gap-3">
-            {user ? (
+            {isLoading ? null : user ? (
               <div className="relative">
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
@@ -139,7 +187,7 @@ export function Header({
               </div>
             ) : (
               <button
-                onClick={() => setShowModal(true)}
+                onClick={openLoginModal}
                 className="font-bold px-5 py-2 bg-cream border-2 border-[var(--color-border)] rounded-[30px] shadow-[var(--shadow-sm)] cursor-pointer"
               >
                 Đăng nhập
@@ -153,17 +201,17 @@ export function Header({
         </div>
       </header>
 
-      {showModal && (
+      {isLoginModalOpen && (
         <div
           className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000]"
-          onClick={() => setShowModal(false)}
+          onClick={closeLoginModal}
         >
           <div
             className="bg-cream border-[3px] border-[var(--color-border)] p-[30px] rounded-[20px] w-full max-w-[380px] relative shadow-[8px_8px_0_#000]"
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              onClick={() => setShowModal(false)}
+              onClick={closeLoginModal}
               className="absolute top-[15px] right-[15px] text-2xl border-none bg-transparent cursor-pointer"
             >
               ×
@@ -177,40 +225,9 @@ export function Header({
               </p>
             </div>
             <div id="google-signin-button" className="mb-5" />
-            <div className="text-center text-[var(--color-muted)] text-sm mb-5 relative">
-              <div className="absolute top-1/2 left-0 right-0 h-px bg-gray-300" />
-              <span className="bg-cream px-2 relative z-10">hoặc</span>
-            </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setShowModal(false);
-              }}
-              className="flex flex-col gap-4"
-            >
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-semibold">Email</label>
-                <input
-                  type="email"
-                  placeholder="email@example.com"
-                  className="w-full p-3 border-2 border-[var(--color-border)] rounded-lg outline-none"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-semibold">Mật khẩu</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  className="w-full p-3 border-2 border-[var(--color-border)] rounded-lg outline-none"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full p-3 bg-butter border-2 border-[var(--color-border)] rounded-lg font-extrabold shadow-[var(--shadow-sm)] cursor-pointer hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[var(--shadow-md)] transition-all"
-              >
-                Đăng nhập
-              </button>
-            </form>
+            {isLoggingIn && (
+              <p className="text-center text-sm text-muted">Đang đăng nhập...</p>
+            )}
           </div>
         </div>
       )}

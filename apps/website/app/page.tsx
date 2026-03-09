@@ -13,7 +13,10 @@ const games = [
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col relative" style={{ background: 'var(--color-cream)' }}>
-      <Header />
+      <Header 
+        googleClientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+        apiUrl={process.env.NEXT_PUBLIC_API_URL}
+      />
       
       <main className="flex-1 px-5 max-w-6xl mx-auto w-full">
         <Hero />
