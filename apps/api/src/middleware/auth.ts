@@ -1,25 +1,26 @@
 import { createMiddleware } from 'hono/factory'
 import { verify } from 'hono/jwt'
+import { getCookie } from 'hono/cookie'
 import type { Bindings, Variables } from '../types'
 import { PermissionService } from '../services/permission.service'
 
 /**
  * JWT authentication middleware.
- * Extracts Bearer token from Authorization header, verifies it,
+ * Extracts token from Authorization header or access_token cookie, verifies it,
  * and sets userId + role on the context.
  */
 export const authMiddleware = createMiddleware<{
   Bindings: Bindings
   Variables: Variables
 }>(async (c, next) => {
-  const header = c.req.header('Authorization')
-  if (!header) {
-    return c.json({ error: 'Thiếu header Authorization' }, 401)
-  }
-
-  const token = header.replace('Bearer ', '')
+  let token = c.req.header('Authorization')?.replace('Bearer ', '')
+  
   if (!token) {
-    return c.json({ error: 'Không có quyền truy cập' }, 401)
+    token = getCookie(c, 'access_token')
+  }
+  
+  if (!token) {
+    return c.json({ error: 'Thiếu token xác thực' }, 401)
   }
 
   try {

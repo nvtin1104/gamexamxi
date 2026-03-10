@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { verify } from 'hono/jwt'
+import { setCookie, getCookie } from 'hono/cookie'
 import { OAuth2Client } from 'google-auth-library'
 import { rateLimiter } from '../middleware/rate-limit'
 import { authMiddleware } from '../middleware/auth'
@@ -19,9 +20,22 @@ function stripSensitive(user: typeof users.$inferSelect) {
 
 function setAuthCookies(c: any, accessToken: string, refreshToken: string) {
   const isLocal = c.req.header('host')?.includes('localhost')
-  const cookieOptions = `HttpOnly; ${!isLocal ? 'Secure; ' : ''}SameSite=lax; Path=/`
-  c.header('Set-Cookie', `access_token=${accessToken}; Max-Age=${60 * 60}; ${cookieOptions}`)
-  c.header('Set-Cookie', `refresh_token=${refreshToken}; Max-Age=${60 * 60 * 24 * 7}; ${cookieOptions}`)
+  
+  setCookie(c, 'access_token', accessToken, {
+    httpOnly: true,
+    secure: !isLocal,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60,
+  })
+  
+  setCookie(c, 'refresh_token', refreshToken, {
+    httpOnly: true,
+    secure: !isLocal,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7,
+  })
 }
 
 const registerSchema = z.object({
@@ -33,10 +47,6 @@ const registerSchema = z.object({
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string(),
-})
-
-const refreshSchema = z.object({
-  refreshToken: z.string(),
 })
 
 const googleSchema = z.object({
@@ -122,9 +132,13 @@ authRoute.post('/login', zValidator('json', loginSchema), async (c) => {
 })
 
 // POST /api/v1/auth/refresh
-authRoute.post('/refresh', zValidator('json', refreshSchema), async (c) => {
+authRoute.post('/refresh', async (c) => {
   try {
-    const { refreshToken } = c.req.valid('json')
+    const refreshToken = getCookie(c, 'refresh_token')
+    if (!refreshToken) {
+      return c.json({ error: 'Refresh token không tìm thấy' }, 401)
+    }
+
     const authService = new AuthService(c.env.JWT_SECRET)
 
     const payload = await verify(refreshToken, c.env.JWT_SECRET, 'HS256')
