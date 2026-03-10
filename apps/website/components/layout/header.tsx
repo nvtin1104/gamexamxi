@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useUser, useLoginGoogle, useLogout } from '@/lib/api/auth';
 import { useAuthStore, useUIStore } from '@/stores';
 import { User, ShoppingBag, LogOut, Menu, X, Home, Trophy, Play } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/sonner';
 
 interface HeaderProps {
   logo?: string;
@@ -34,21 +33,17 @@ export function Header({
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const googleButtonRendered = useRef(false);
 
-  const { data: user, isLoading } = useUser();
-  const loginGoogle = useLoginGoogle();
-  const logout = useLogout();
-
-  const setUser = useAuthStore((s) => s.setUser);
+  const { user, isLoading, fetchUser, loginGoogle, logout } = useAuthStore();
   const { isLoginModalOpen, openLoginModal, closeLoginModal } = useUIStore();
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/';
     return pathname.startsWith(href);
   };
-
-  React.useEffect(() => {
-    if (user) setUser(user);
-  }, [user, setUser]);
 
   React.useEffect(() => {
     if (!isLoginModalOpen || !googleClientId || googleButtonRendered.current) return;
@@ -100,7 +95,7 @@ export function Header({
     
     setIsLoggingIn(true);
     try {
-      await loginGoogle.mutateAsync(response.credential);
+      await loginGoogle(response.credential);
       closeLoginModal();
       toast.success('Đăng nhập thành công!');
     } catch (error: unknown) {
@@ -112,8 +107,7 @@ export function Header({
   };
 
   const handleLogout = async () => {
-    await logout.mutateAsync();
-    setUser(null);
+    await logout();
     setShowDropdown(false);
     setMobileMenuOpen(false);
     toast.success('Đăng xuất thành công!');
