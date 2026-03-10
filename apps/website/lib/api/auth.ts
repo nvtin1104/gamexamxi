@@ -17,8 +17,8 @@ export const useUser = () => {
   return useQuery({
     queryKey: authKeys.me,
     queryFn: async () => {
-      const res = await api.get<{ data: User }>('/auth/me');
-      return res.data.data;
+      const res = await api.get<User>('/auth/me');
+      return res.data;
     },
     retry: false,
     staleTime: 1000 * 60 * 5,
@@ -30,11 +30,11 @@ export const useLoginGoogle = () => {
 
   return useMutation({
     mutationFn: async (idToken: string) => {
-      const res = await api.post<{ data: { user: User } }>('/auth/google', { idToken });
-      return res.data.data;
+      const res = await api.post<User>('/auth/google', { idToken });
+      return res.data;
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(authKeys.me, data.user);
+      queryClient.setQueryData(authKeys.me, data);
     },
   });
 };

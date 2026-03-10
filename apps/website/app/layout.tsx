@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Be_Vietnam_Pro, DM_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { Toaster } from "@/components/ui/sonner";
 
 const beVietnamPro = Be_Vietnam_Pro({
   variable: "--font-body",
@@ -32,6 +33,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
+          <Toaster position="top-center" />
         </Providers>
       </body>
     </html>
