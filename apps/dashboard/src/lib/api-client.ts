@@ -1,7 +1,6 @@
 import type { ApiError } from '@gamexamxi/shared'
 import {
   getAccessToken,
-  getRefreshToken,
   clearAuth,
 } from './auth'
 import { isZodError, mapZodError } from './utils/zod-error'
@@ -12,14 +11,9 @@ let isRefreshing = false
 let refreshPromise: Promise<boolean> | null = null
 
 async function refreshAccessToken(): Promise<boolean> {
-  const refreshToken = getRefreshToken()
-  if (!refreshToken) return false
-
   try {
     const res = await fetch(`${API_BASE}/auth/refresh`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken }),
       credentials: 'include',
     })
 
@@ -41,7 +35,7 @@ async function request<T>(
   if (accessToken) {
     headers.set('Authorization', `Bearer ${accessToken}`)
   }
-  if (!headers.has('Content-Type') && options.body) {
+  if (!headers.has('Content-Type') && options.body && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json')
   }
 
@@ -51,7 +45,7 @@ async function request<T>(
     credentials: 'include',
   })
 
-  if (res.status === 401 && getRefreshToken()) {
+  if (res.status === 401) {
     if (!isRefreshing) {
       isRefreshing = true
       refreshPromise = refreshAccessToken().finally(() => {

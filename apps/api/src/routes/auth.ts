@@ -118,11 +118,7 @@ authRoute.post('/login', zValidator('json', loginSchema), async (c) => {
       expirationTtl: 60 * 60 * 24 * 7,
     })
 
-    const isLocal = c.req.header('host')?.includes('localhost')
-    const cookieOptions = `HttpOnly; ${!isLocal ? 'Secure; ' : ''}SameSite=lax; Path=/`
-
-    c.header('Set-Cookie', `access_token=${accessToken}; Max-Age=${60 * 60}; ${cookieOptions}`)
-    c.header('Set-Cookie', `refresh_token=${refreshToken}; Max-Age=${60 * 60 * 24 * 7}; ${cookieOptions}`)
+    setAuthCookies(c, accessToken, refreshToken)
 
     return c.json(stripSensitive(user))
   } catch (err) {

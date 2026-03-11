@@ -3,7 +3,7 @@ import { eq, desc, count } from 'drizzle-orm'
 import { getDb } from '../db'
 import { media } from '../db/schemas'
 
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] as const
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'] as const
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 import type { R2Bucket } from '@cloudflare/workers-types'
 

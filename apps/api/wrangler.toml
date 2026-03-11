@@ -25,15 +25,17 @@ migrations_dir = "./drizzle"
 [[kv_namespaces]]
 binding = "CACHE"
 id = "82eafd2ca8df40cb9b984cabc2e7e12f"
+preview_id = "82eafd2ca8df40cb9b984cabc2e7e12f"
 
 [[kv_namespaces]]
 binding = "SESSIONS"
 id = "2401b7c9c8394a21bb906f89270cbe23"
+preview_id = "2401b7c9c8394a21bb906f89270cbe23"
 
 [[r2_buckets]]
 binding = "STORAGE"
 bucket_name = "gamexamxi-storage"
-preview_bucket_name = "gamexamxi-storage-preview"
+preview_bucket_name = "gamexamxi-storage-dev"
 
 # Dev-only R2 (sử dụng khi dev --remote)
 # [[r2_buckets]]
