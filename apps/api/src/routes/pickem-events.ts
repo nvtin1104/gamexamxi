@@ -20,22 +20,22 @@ const listQuerySchema = z.object({
 })
 
 const createPickemEventSchema = z.object({
-  title: z.string().min(2).max(200),
-  thumbnail: z.string().url().optional().or(z.literal('')),
-  description: z.string().max(2000).optional().or(z.literal('')),
+  title: z.string().min(2, 'Tiêu đề tối thiểu 2 ký tự').max(200, 'Tiêu đề tối đa 200 ký tự'),
+  thumbnail: z.string().url('URL thumbnail không hợp lệ').optional().or(z.literal('')),
+  description: z.string().max(2000, 'Mô tả tối đa 2000 ký tự').optional().or(z.literal('')),
   winPoints: z.number().int().min(0).default(0),
   pickPoints: z.number().int().min(0).default(0),
   winExp: z.number().int().min(0).default(0),
   pickExp: z.number().int().min(0).default(0),
-  eventDate: z.string().min(1),
-  closePicksAt: z.string().min(1),
+  eventDate: z.string().min(1, 'Ngày sự kiện là bắt buộc'),
+  closePicksAt: z.string().min(1, 'Ngày đóng dự đoán là bắt buộc'),
   maxPickItems: z.number().int().min(1).max(10).default(1),
 })
 
 const updatePickemEventSchema = z.object({
-  title: z.string().min(2).max(200).optional(),
-  thumbnail: z.string().url().optional().or(z.literal('')),
-  description: z.string().max(2000).optional().or(z.literal('')),
+  title: z.string().min(2, 'Tiêu đề tối thiểu 2 ký tự').max(200, 'Tiêu đề tối đa 200 ký tự').optional(),
+  thumbnail: z.string().url('URL thumbnail không hợp lệ').optional().or(z.literal('')),
+  description: z.string().max(2000, 'Mô tả tối đa 2000 ký tự').optional().or(z.literal('')),
   winPoints: z.number().int().min(0).optional(),
   pickPoints: z.number().int().min(0).optional(),
   winExp: z.number().int().min(0).optional(),

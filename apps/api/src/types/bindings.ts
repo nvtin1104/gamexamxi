@@ -16,11 +16,14 @@ export type Bindings = {
   ALLOWED_ORIGINS: string
   /** Google OAuth Client ID */
   GOOGLE_CLIENT_ID: string
+  /** R2 Public URL for serving files */
+  R2_PUBLIC_URL?: string
 }
 
 /** Context variables set by middleware */
 export type Variables = {
   userId: string
   role: string
+  accountRole: string
   permissions?: string[]
 }

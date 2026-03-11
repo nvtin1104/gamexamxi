@@ -4,35 +4,51 @@ compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
-ALLOWED_ORIGINS = "http://localhost:4321,http://localhost:5173,http://127.0.0.1:4321,http://127.0.0.1:5173"
+ALLOWED_ORIGINS = "http://localhost:3000,http://localhost:8787,http://127.0.0.1:3000,http://127.0.0.1:8787"
 JWT_SECRET = "dev_jwt_secret_change_me"
 GOOGLE_CLIENT_ID = ""
+R2_PUBLIC_URL="https://pub-04d55232d6c541cfb9cf169caa8d9604.r2.dev"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "gamexamxi-db"
-database_id = "placeholder-replace-after-creation"
+database_id = "a4affb5a-d73a-41f2-b8b4-672438b45a98"
 migrations_dir = "./drizzle"
+
+# Dev-only database (sử dụng khi dev --remote)
+# [[d1_databases]]
+# binding = "DB_DEV"
+# database_name = "gamexamxi-db-dev"
+# database_id = "a4affb5a-d73a-41f2-b8b4-672438b45a98"
+# remote = true
 
 [[kv_namespaces]]
 binding = "CACHE"
-id = "placeholder-replace-after-creation"
+id = "82eafd2ca8df40cb9b984cabc2e7e12f"
+preview_id = "82eafd2ca8df40cb9b984cabc2e7e12f"
 
 [[kv_namespaces]]
 binding = "SESSIONS"
-id = "placeholder-replace-after-creation"
+id = "2401b7c9c8394a21bb906f89270cbe23"
+preview_id = "2401b7c9c8394a21bb906f89270cbe23"
 
 [[r2_buckets]]
 binding = "STORAGE"
 bucket_name = "gamexamxi-storage"
+preview_bucket_name = "gamexamxi-storage-dev"
 
-[[queues.producers]]
-binding = "JOB_QUEUE"
-queue = "gamexamxi-job-queue"
+# Dev-only R2 (sử dụng khi dev --remote)
+# [[r2_buckets]]
+# binding = "STORAGE_DEV"
+# bucket_name = "gamexamxi-storage-dev"
 
-[[queues.consumers]]
-queue = "gamexamxi-job-queue"
-max_batch_size = 10
+# [[queues.producers]]
+# binding = "JOB_QUEUE"
+# queue = "gamexamxi-job-queue"
+
+# [[queues.consumers]]
+# queue = "gamexamxi-job-queue"
+# max_batch_size = 10
 
 [triggers]
 crons = ["0 * * * *"]

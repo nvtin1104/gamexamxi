@@ -24,20 +24,20 @@ const listQuerySchema = z.object({
 })
 
 const createUserSchema = z.object({
-  email:       z.string().email(),
-  name:        z.string().min(2).max(100),
+  email:       z.string().email('Email không hợp lệ'),
+  name:        z.string().min(2, 'Tên tối thiểu 2 ký tự').max(100, 'Tên tối đa 100 ký tự'),
   accountRole: z.enum(['admin', 'user']).default('user'),
   role:        z.enum(['root', 'staff', 'kol', 'mod', 'user']).default('user'),
-  password:    z.string().min(8),
+  password:    z.string().min(8, 'Mật khẩu tối thiểu 8 ký tự'),
 })
 
 const updateUserSchema = z.object({
-  name:           z.string().min(2).max(100).optional(),
-  email:          z.string().email().optional(),
+  name:           z.string().min(2, 'Tên tối thiểu 2 ký tự').max(100, 'Tên tối đa 100 ký tự').optional(),
+  email:          z.string().email('Email không hợp lệ').optional(),
   accountRole:    z.enum(['admin', 'user']).optional(),
   role:           z.enum(['root', 'staff', 'kol', 'mod', 'user']).optional(),
   status:         z.enum(['active', 'banned', 'block']).optional(),
-  avatar:         z.string().url().optional(),
+  avatar:         z.string().url('URL avatar không hợp lệ').optional(),
   phone:          z.string().max(20).optional(),
   address:        z.string().max(255).optional(),
   birthdate:      z.coerce.date().optional(),

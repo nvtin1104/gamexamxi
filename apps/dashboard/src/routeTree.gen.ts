@@ -11,10 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as SplatRouteImport } from './routes/$'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedPickemEventsIndexRouteImport } from './routes/_authenticated/pickem-events/index'
 import { Route as AuthenticatedPermissionsIndexRouteImport } from './routes/_authenticated/permissions/index'
+import { Route as AuthenticatedMediaIndexRouteImport } from './routes/_authenticated/media/index'
 import { Route as AuthenticatedItemsIndexRouteImport } from './routes/_authenticated/items/index'
 import { Route as AuthenticatedUsersNewRouteImport } from './routes/_authenticated/users/new'
 import { Route as AuthenticatedPickemEventsNewRouteImport } from './routes/_authenticated/pickem-events/new'
@@ -33,6 +35,11 @@ const LoginRoute = LoginRouteImport.update({
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SplatRoute = SplatRouteImport.update({
+  id: '/$',
+  path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
@@ -57,6 +64,11 @@ const AuthenticatedPermissionsIndexRoute =
     path: '/permissions/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedMediaIndexRoute = AuthenticatedMediaIndexRouteImport.update({
+  id: '/media/',
+  path: '/media/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedItemsIndexRoute = AuthenticatedItemsIndexRouteImport.update({
   id: '/items/',
   path: '/items/',
@@ -116,12 +128,14 @@ const AuthenticatedItemsItemIdEditRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/$': typeof SplatRoute
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
   '/items/new': typeof AuthenticatedItemsNewRoute
   '/pickem-events/new': typeof AuthenticatedPickemEventsNewRoute
   '/users/new': typeof AuthenticatedUsersNewRoute
   '/items/': typeof AuthenticatedItemsIndexRoute
+  '/media/': typeof AuthenticatedMediaIndexRoute
   '/permissions/': typeof AuthenticatedPermissionsIndexRoute
   '/pickem-events/': typeof AuthenticatedPickemEventsIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
@@ -133,12 +147,14 @@ export interface FileRoutesByFullPath {
   '/users/$userId/': typeof AuthenticatedUsersUserIdIndexRoute
 }
 export interface FileRoutesByTo {
+  '/$': typeof SplatRoute
   '/login': typeof LoginRoute
   '/': typeof AuthenticatedIndexRoute
   '/items/new': typeof AuthenticatedItemsNewRoute
   '/pickem-events/new': typeof AuthenticatedPickemEventsNewRoute
   '/users/new': typeof AuthenticatedUsersNewRoute
   '/items': typeof AuthenticatedItemsIndexRoute
+  '/media': typeof AuthenticatedMediaIndexRoute
   '/permissions': typeof AuthenticatedPermissionsIndexRoute
   '/pickem-events': typeof AuthenticatedPickemEventsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
@@ -151,6 +167,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/$': typeof SplatRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -158,6 +175,7 @@ export interface FileRoutesById {
   '/_authenticated/pickem-events/new': typeof AuthenticatedPickemEventsNewRoute
   '/_authenticated/users/new': typeof AuthenticatedUsersNewRoute
   '/_authenticated/items/': typeof AuthenticatedItemsIndexRoute
+  '/_authenticated/media/': typeof AuthenticatedMediaIndexRoute
   '/_authenticated/permissions/': typeof AuthenticatedPermissionsIndexRoute
   '/_authenticated/pickem-events/': typeof AuthenticatedPickemEventsIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
@@ -171,12 +189,14 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/$'
     | '/'
     | '/login'
     | '/items/new'
     | '/pickem-events/new'
     | '/users/new'
     | '/items/'
+    | '/media/'
     | '/permissions/'
     | '/pickem-events/'
     | '/users/'
@@ -188,12 +208,14 @@ export interface FileRouteTypes {
     | '/users/$userId/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/$'
     | '/login'
     | '/'
     | '/items/new'
     | '/pickem-events/new'
     | '/users/new'
     | '/items'
+    | '/media'
     | '/permissions'
     | '/pickem-events'
     | '/users'
@@ -205,6 +227,7 @@ export interface FileRouteTypes {
     | '/users/$userId'
   id:
     | '__root__'
+    | '/$'
     | '/_authenticated'
     | '/login'
     | '/_authenticated/'
@@ -212,6 +235,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pickem-events/new'
     | '/_authenticated/users/new'
     | '/_authenticated/items/'
+    | '/_authenticated/media/'
     | '/_authenticated/permissions/'
     | '/_authenticated/pickem-events/'
     | '/_authenticated/users/'
@@ -224,6 +248,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  SplatRoute: typeof SplatRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
@@ -242,6 +267,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$': {
+      id: '/$'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/': {
@@ -270,6 +302,13 @@ declare module '@tanstack/react-router' {
       path: '/permissions'
       fullPath: '/permissions/'
       preLoaderRoute: typeof AuthenticatedPermissionsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/media/': {
+      id: '/_authenticated/media/'
+      path: '/media'
+      fullPath: '/media/'
+      preLoaderRoute: typeof AuthenticatedMediaIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/items/': {
@@ -351,6 +390,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPickemEventsNewRoute: typeof AuthenticatedPickemEventsNewRoute
   AuthenticatedUsersNewRoute: typeof AuthenticatedUsersNewRoute
   AuthenticatedItemsIndexRoute: typeof AuthenticatedItemsIndexRoute
+  AuthenticatedMediaIndexRoute: typeof AuthenticatedMediaIndexRoute
   AuthenticatedPermissionsIndexRoute: typeof AuthenticatedPermissionsIndexRoute
   AuthenticatedPickemEventsIndexRoute: typeof AuthenticatedPickemEventsIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
@@ -368,6 +408,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPickemEventsNewRoute: AuthenticatedPickemEventsNewRoute,
   AuthenticatedUsersNewRoute: AuthenticatedUsersNewRoute,
   AuthenticatedItemsIndexRoute: AuthenticatedItemsIndexRoute,
+  AuthenticatedMediaIndexRoute: AuthenticatedMediaIndexRoute,
   AuthenticatedPermissionsIndexRoute: AuthenticatedPermissionsIndexRoute,
   AuthenticatedPickemEventsIndexRoute: AuthenticatedPickemEventsIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
@@ -386,6 +427,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  SplatRoute: SplatRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
 }

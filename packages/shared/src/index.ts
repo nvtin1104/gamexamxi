@@ -6,6 +6,7 @@ export type { UserPoints, PointTransaction, PointTransactionType } from './types
 export type { UserStats, LevelUpResult } from './types/xp'
 export type { ItemEvent, ItemEventType, LinkSocial, ItemEventWithChildren } from './types/item'
 export type { PickemEvent, PickemEventOption, PickemEventPick, PickemEventWithOptions, PickemEventOptionWithItem } from './types/pickem-event'
+export type { Media, MediaWithUploader } from './types/media'
 
 export { loginSchema, type LoginFormData } from './schemas/auth'
 export {
@@ -33,6 +34,14 @@ export {
   type CreatePickemEventOptionFormData,
   type UpdatePickemEventOptionFormData,
 } from './schemas/pickem-event'
+export {
+  mediaUploadSchema,
+  mediaListQuerySchema,
+  ALLOWED_MIME_TYPES,
+  MAX_FILE_SIZE,
+  type MediaUploadInput,
+  type MediaListQuery,
+} from './schemas/media'
 export {
   APP_PERMISSIONS,
   ALL_PERMISSIONS,

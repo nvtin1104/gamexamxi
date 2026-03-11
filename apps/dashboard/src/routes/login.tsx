@@ -1,7 +1,7 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useForm } from '@tanstack/react-form'
+import { useEffect } from 'react'
 import { loginSchema } from '@gamexamxi/shared'
-import { isAuthenticated } from '@/lib/auth'
 import { useAuth } from '@/contexts/auth-context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,16 +17,18 @@ import { toast } from 'sonner'
 import { LoaderCircleIcon } from 'lucide-react'
 
 export const Route = createFileRoute('/login')({
-  beforeLoad: () => {
-    if (isAuthenticated()) {
-      throw redirect({ to: '/' })
-    }
-  },
   component: LoginPage,
 })
 
 function LoginPage() {
-  const { login } = useAuth()
+  const { login, isAuthenticated } = useAuth()
+  const navigate = Route.useNavigate()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate({ to: '/' })
+    }
+  }, [isAuthenticated, navigate])
 
   const form = useForm({
     defaultValues: {
