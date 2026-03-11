@@ -7,7 +7,7 @@ compatibility_flags = ["nodejs_compat"]
 ALLOWED_ORIGINS = "http://localhost:3000,http://localhost:8787,http://127.0.0.1:3000,http://127.0.0.1:8787"
 JWT_SECRET = "dev_jwt_secret_change_me"
 GOOGLE_CLIENT_ID = ""
-R2_PUBLIC_URL="cdn.gamexamxi.com"
+R2_PUBLIC_URL="https://pub-04d55232d6c541cfb9cf169caa8d9604.r2.dev"
 
 [[d1_databases]]
 binding = "DB"
