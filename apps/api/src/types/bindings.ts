@@ -8,8 +8,18 @@ export type Bindings = {
   SESSIONS: KVNamespace
   /** R2 Bucket for file storage */
   STORAGE: R2Bucket
-  /** Queue for async jobs */
-  JOB_QUEUE: Queue
+  /** Queue for point transactions (async) */
+  POINTS_QUEUE: Queue
+  /** Queue for achievement unlocks (async) */
+  ACHIEVEMENTS_QUEUE: Queue
+  /** Queue for notifications (async) */
+  NOTIFICATIONS_QUEUE: Queue
+  /** Durable Object stub for game room (per-event) */
+  GAME_ROOM: DurableObjectStub
+  /** Durable Object stub for group room (per-group) */
+  GROUP_ROOM: DurableObjectStub
+  /** Durable Object stub for points ledger (per-user) */
+  POINTS_LEDGER: DurableObjectStub
   /** JWT secret key */
   JWT_SECRET: string
   /** Allowed CORS origins */

@@ -42,16 +42,26 @@ pointsRoute.post(
   zValidator('json', grantSchema),
   async (c) => {
     const { userId, amount, description } = c.req.valid('json')
-    const svc = new PointService(c.env.DB)
-    const result = await svc.executeTransaction(
+    const svc = new PointService(c.env.DB, c.env.POINTS_QUEUE)
+
+    // Queue for async processing
+    const queued = await svc.queueTransaction(
       userId,
       amount,
       'admin_grant',
       description
     )
-    if (!result.success) {
-      return c.json({ error: result.error }, 400)
+
+    if (!queued) {
+      return c.json({ error: 'Failed to queue point transaction' }, 500)
     }
-    return c.json({ data: { userId, newBalance: result.newBalance } })
+
+    return c.json({
+      data: {
+        userId,
+        status: 'queued',
+        message: 'Points will be processed asynchronously',
+      },
+    })
   }
 )

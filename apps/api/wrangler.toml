@@ -42,13 +42,44 @@ preview_bucket_name = "gamexamxi-storage-dev"
 # binding = "STORAGE_DEV"
 # bucket_name = "gamexamxi-storage-dev"
 
-# [[queues.producers]]
-# binding = "JOB_QUEUE"
-# queue = "gamexamxi-job-queue"
+[[queues.producers]]
+binding = "POINTS_QUEUE"
+queue = "gamexamxi-points-queue"
 
-# [[queues.consumers]]
-# queue = "gamexamxi-job-queue"
-# max_batch_size = 10
+[[queues.producers]]
+binding = "ACHIEVEMENTS_QUEUE"
+queue = "gamexamxi-achievements-queue"
+
+[[queues.producers]]
+binding = "NOTIFICATIONS_QUEUE"
+queue = "gamexamxi-notifications-queue"
+
+[[queues.consumers]]
+queue = "gamexamxi-points-queue"
+max_batch_size = 10
+
+[[queues.consumers]]
+queue = "gamexamxi-achievements-queue"
+max_batch_size = 5
+
+[[queues.consumers]]
+queue = "gamexamxi-notifications-queue"
+max_batch_size = 20
+
+[[durable_objects.bindings]]
+name = "GAME_ROOM"
+class_name = "GameRoom"
+script_name = "gamexamxi-api"
+
+[[durable_objects.bindings]]
+name = "GROUP_ROOM"
+class_name = "GroupRoom"
+script_name = "gamexamxi-api"
+
+[[durable_objects.bindings]]
+name = "POINTS_LEDGER"
+class_name = "PointsLedger"
+script_name = "gamexamxi-api"
 
 [triggers]
 crons = ["0 * * * *"]
