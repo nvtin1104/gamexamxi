@@ -1,0 +1,98 @@
+{
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "success": "Thành công",
+    "cancel": "Hủy",
+    "submit": "Gửi",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "close": "Đóng",
+    "back": "Quay lại"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "register": "Đăng ký",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "signIn": "Đăng nhập",
+    "signUp": "Đăng ký",
+    "rememberMe": "Ghi nhớ tôi",
+    "errors": {
+      "invalidEmail": "Vui lòng nhập địa chỉ email hợp lệ",
+      "passwordTooShort": "Mật khẩu phải dài ít nhất 8 ký tự",
+      "passwordsDoNotMatch": "Mật khẩu không khớp",
+      "emailAlreadyExists": "Email đã được đăng ký",
+      "invalidCredentials": "Email hoặc mật khẩu không hợp lệ",
+      "sessionExpired": "Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại",
+      "tokenInvalid": "Token xác thực không hợp lệ hoặc đã hết hạn",
+      "unauthorized": "Bạn không được phép thực hiện hành động này",
+      "tooManyAttempts": "Quá nhiều lần đăng nhập thất bại. Vui lòng thử lại sau",
+      "accountLocked": "Tài khoản của bạn đã bị khóa. Liên hệ hỗ trợ",
+      "accountNotFound": "Tài khoản không tồn tại",
+      "networkError": "Lỗi mạng. Vui lòng kiểm tra kết nối và thử lại",
+      "serverError": "Lỗi máy chủ. Vui lòng thử lại sau"
+    }
+  },
+  "rateLimit": {
+    "tooManyRequests": "Quá nhiều yêu cầu. Vui lòng thử lại trong {{seconds}} giây",
+    "rateLimitExceeded": "Vượt quá giới hạn tỷ lệ yêu cầu",
+    "tryAgainLater": "Vui lòng thử lại sau"
+  },
+  "gameRoom": {
+    "title": "Phòng Chơi",
+    "picksMade": "lượt chọn",
+    "totalPicks": "Tổng lượt chọn",
+    "picksClosed": "Các lượt chọn đã đóng cho sự kiện này",
+    "offlineMode": "Sử dụng chế độ ngoại tuyến. Thay đổi sẽ được đồng bộ khi kết nối",
+    "submittingPick": "Đang gửi lượt chọn...",
+    "updatesLive": "Cập nhật đang diễn ra trực tiếp",
+    "updatesWillSync": "Cập nhật sẽ được đồng bộ khi kết nối",
+    "openEvent": "Mở",
+    "closedEvent": "Đóng",
+    "yourPick": "Lựa chọn của bạn"
+  },
+  "leaderboard": {
+    "title": "Bảng xếp hạng",
+    "members": "thành viên",
+    "rank": "Hạng",
+    "player": "Người chơi",
+    "points": "Điểm",
+    "level": "Cấp độ",
+    "picks": "Lượt chọn",
+    "wins": "Chiến thắng",
+    "you": "Bạn",
+    "updated": "Cập nhật",
+    "cachedData": "Hiển thị dữ liệu được lưu trong bộ nhớ đệm. Cập nhật trực tiếp sẽ tiếp tục khi kết nối"
+  },
+  "websocket": {
+    "connected": "✓ Trực tiếp",
+    "connecting": "↻ Đang kết nối...",
+    "disconnected": "✕ Ngoại tuyến",
+    "error": "⚠ Lỗi kết nối",
+    "live": "Cập nhật trực tiếp hoạt động",
+    "reconnecting": "Đang kết nối lại...",
+    "offline": "Chế độ ngoại tuyến"
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "invalidFormat": "Định dạng không hợp lệ",
+    "tooLong": "Giá trị quá dài",
+    "tooShort": "Giá trị quá ngắn",
+    "mustBeNumber": "Phải là một số"
+  },
+  "dashboard": {
+    "overview": "Tổng quan",
+    "users": "Người dùng",
+    "events": "Sự kiện",
+    "groups": "Nhóm",
+    "transactions": "Giao dịch",
+    "settings": "Cài đặt",
+    "theme": "Chủ đề",
+    "language": "Ngôn ngữ"
+  }
+}
