@@ -3,6 +3,7 @@ import { verify } from 'hono/jwt'
 import { getCookie } from 'hono/cookie'
 import type { Bindings, Variables } from '../types'
 import { PermissionService } from '../services/permission.service'
+import { TokenRevocationService } from '../services/token-revocation.service'
 
 /**
  * JWT authentication middleware.
@@ -25,6 +26,23 @@ export const authMiddleware = createMiddleware<{
 
   try {
     const payload = await verify(token, c.env.JWT_SECRET, 'HS256')
+
+    // Check if token is revoked
+    const revocationService = new TokenRevocationService(c.env.CACHE, c.env.DB)
+    const isRevoked = await revocationService.isTokenRevoked(token)
+    if (isRevoked) {
+      return c.json({ error: 'Token đã bị thu hồi' }, 401)
+    }
+
+    // Check if user has revoked all tokens (e.g., password change, logout)
+    const userRevoked = await revocationService.areUserTokensRevoked(
+      payload.sub as string,
+      Math.floor((payload.iat as number) * 1000)
+    )
+    if (userRevoked) {
+      return c.json({ error: 'Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại' }, 401)
+    }
+
     c.set('userId', payload.sub as string)
     c.set('role', payload.role as string)
     c.set('accountRole', payload.accountRole as string)
