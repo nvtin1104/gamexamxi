@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect, type React
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { User, LoginFormData } from '@gamexamxi/shared'
 import { getMeApi, loginApi, logoutApi } from '@/lib/api/auth'
-import { clearAuth } from '@/lib/auth'
+import { clearAuth, getAccessToken, getRefreshToken } from '@/lib/auth'
 import { useNavigate } from '@tanstack/react-router'
 
 interface AuthContextValue {
@@ -26,8 +26,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await getMeApi()
       return res
     },
+    enabled: !!getAccessToken() || !!getRefreshToken(),
     retry: false,
     retryOnMount: false,
+    staleTime: 1000 * 60 * 5, // Cache user data for 5 minutes
   })
 
   useEffect(() => {

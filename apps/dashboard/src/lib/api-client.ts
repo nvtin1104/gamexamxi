@@ -45,7 +45,9 @@ async function request<T>(
     credentials: 'include',
   })
 
-  if (res.status === 401) {
+  const isAuthPath = path.includes('/auth/login') || path.includes('/auth/register') || path.includes('/auth/refresh')
+
+  if (res.status === 401 && !isAuthPath) {
     if (!isRefreshing) {
       isRefreshing = true
       refreshPromise = refreshAccessToken().finally(() => {
@@ -68,7 +70,10 @@ async function request<T>(
       })
     } else {
       clearAuth()
-      window.location.href = '/login'
+      // Only redirect if not already on the login page to avoid infinite loops
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
       throw new Error('Phiên đăng nhập đã hết hạn')
     }
   }

@@ -12,16 +12,16 @@ DELETE FROM users;
 -- Users
 -- ==================
 INSERT INTO users (id, email, name, account_role, role, password_hash, created_at, updated_at) VALUES
-  ('seed_admin_001', 'admin@example.com', 'Dev Admin', 'admin', 'root',  'daafedf5ed5d31d62ca824fb17077c14:1c4149ce64192e5dddf343552398fc5f0cbfcbd589171591b51d5238b522388c', 1772808478077, 1772808478077),
-  ('seed_mod_001',   'mod@example.com',   'Dev Mod',   'user',  'mod',   'b36f8d3b1dc87fc2f7423ae8fe58648b:61fc4d260a6aaad6cc10c4bdf370ac2244335737b4bc5706fcff335ccf66f391',   1772808478077, 1772808478077),
-  ('seed_user_001',  'user@example.com',  'Dev User',  'user',  'user',  'c94c0a90c85b9319c56f4a58e606ee61:3ca857ed68ac58a1123d5fa8c06beab14c23f1feeaff93fa2b1c4ed9c5366e5e',  1772808478077, 1772808478077);
+  ('seed_admin_001', 'admin@example.com', 'Dev Admin', 'admin', 'root',  '4c4cefa7070a7f4981c35d233dbeb152:fc3fd5d4319edfa52193c9511e1cfd542cd42a25005e8d4f962336cebe50d093', 1774921565775, 1774921565775),
+  ('seed_mod_001',   'mod@example.com',   'Dev Mod',   'user',  'mod',   'b4fac1d6985e871047355a1a298b72f1:2805ff0a50c785dbd9a619ec7c7892781f0ef3cc70794fcc4401c68c9de8c6f2',   1774921565775, 1774921565775),
+  ('seed_user_001',  'user@example.com',  'Dev User',  'user',  'user',  '73b401d3d380412566173746e4a39522:9d0fe943316885a06b7559500041cb5235d6d6a6b0f9cb997d5e1b64d19899ab',  1774921565775, 1774921565775);
 
 -- ==================
 -- Permission Groups
 -- ==================
 INSERT INTO permission_groups (id, name, permissions, created_at) VALUES
-  ('seed_grp_creator',  'Standard Creator', '["game:create","game:edit"]', 1772808478077),
-  ('seed_grp_supermod', 'Super Mod',        '["game:all","user:moderate","points:grant","xp:grant"]', 1772808478077);
+  ('seed_grp_creator',  'Standard Creator', '["game:create","game:edit","item:create","item:view","item:edit"]', 1774921565775),
+  ('seed_grp_supermod', 'Super Mod',        '["game:all","user:moderate","points:grant","xp:grant","item:create","item:edit","item:delete","item:view","pickem:create","pickem:edit","pickem:delete","pickem:view"]', 1774921565775);
 
 -- ==================
 -- User ↔ Group assignments
@@ -33,3 +33,11 @@ INSERT INTO user_to_groups (user_id, group_id) VALUES
 -- Regular user gets Standard Creator group
 INSERT INTO user_to_groups (user_id, group_id) VALUES
   ('seed_user_001', 'seed_grp_creator');
+
+-- ==================
+-- Item Events (Players, Teams, Tournaments)
+-- ==================
+INSERT INTO item_events (id, name, logo, description, link_social, level, parent_id, type, created_by, created_at, updated_at) VALUES
+  ('seed_player_001', 'Faker', 'https://example.com/faker.jpg', 'Lee Sang-hyeok - Professional gamer from South Korea', '{"type":"twitter","url":"https://twitter.com/faker","handle":"@faker","isPublic":true}', 100, NULL, 'player', 'seed_admin_001', 1774921565775, 1774921565775),
+  ('seed_team_001', 'T1', 'https://example.com/t1.jpg', 'T1 Esports Organization', '{"type":"twitter","url":"https://twitter.com/T1","handle":"@T1","isPublic":true}', 50, NULL, 'team', 'seed_admin_001', 1774921565775, 1774921565775),
+  ('seed_tournament_001', 'Worlds 2024', 'https://example.com/worlds2024.jpg', 'League of Legends World Championship 2024', '{"type":"youtube","url":"https://youtube.com/lol","handle":"@lol","isPublic":true}', 0, NULL, 'tournament', 'seed_admin_001', 1774921565775, 1774921565775);

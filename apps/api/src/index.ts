@@ -22,6 +22,17 @@ import type { QueueMessage } from './types/queue-messages'
 const app = new Hono<{ Bindings: Bindings }>()
 
 // ── Global Middleware ────────────────────────────────
+app.use('*', async (c, next) => {
+  const originalJson = c.json.bind(c)
+  c.json = (data: any, status?: any, headers?: any) => {
+    if (data && typeof data === 'object' && 'error' in data && !('path' in data)) {
+      data = { ...data, path: c.req.path }
+    }
+    return originalJson(data, status, headers)
+  }
+  await next()
+})
+
 app.use('*', logger())
 app.use('*', secureHeaders())
 app.use('*', prettyJSON())
@@ -58,12 +69,19 @@ app.route('/api/v1/media', mediaRoute)
 app.route('/api/v1/durable-objects', doRoute)
 
 // ── 404 Handler ──────────────────────────────────────
-app.notFound((c) => c.json({ error: 'Not found' }, 404))
+app.notFound((c) => c.json({ error: 'Not found', path: c.req.path }, 404))
 
 // ── Global Error Handler ─────────────────────────────
 app.onError((err, c) => {
   console.error('Unhandled error:', err)
-  return c.json({ error: 'Internal server error' }, 500)
+  return c.json(
+    {
+      error: 'Internal server error',
+      message: err instanceof Error ? err.message : String(err),
+      path: c.req.path,
+    },
+    500
+  )
 })
 
 export default app
