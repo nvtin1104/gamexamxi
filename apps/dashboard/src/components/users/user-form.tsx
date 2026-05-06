@@ -1,6 +1,9 @@
+import { useRef, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
+import { useMutation } from '@tanstack/react-query'
 import { createUserSchema, updateUserSchema } from '@gamexamxi/shared'
 import type { CreateUserFormData, UpdateUserFormData } from '@gamexamxi/shared'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,7 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { LoaderCircleIcon } from 'lucide-react'
+import { uploadMedia } from '@/lib/api/media'
+import { ImageIcon, Loader2Icon, LoaderCircleIcon, UploadIcon } from 'lucide-react'
 
 interface CreateModeProps {
   mode: 'create'
@@ -29,6 +33,104 @@ interface EditModeProps {
 }
 
 type UserFormProps = CreateModeProps | EditModeProps
+
+function AvatarPicker({
+  value,
+  onChange,
+  error,
+}: {
+  value: string
+  onChange: (value: string) => void
+  error?: string
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [preview, setPreview] = useState<string>(value)
+  const [fileName, setFileName] = useState('')
+
+  const uploadMutation = useMutation({
+    mutationFn: uploadMedia,
+    onSuccess: (media) => {
+      onChange(media.fileUrl)
+      setPreview(media.fileUrl)
+      toast.success('Upload avatar thành công')
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : 'Upload avatar thất bại')
+    },
+  })
+
+  const handleSelectFile = async (file?: File) => {
+    if (!file) return
+    setFileName(file.name)
+    setPreview(URL.createObjectURL(file))
+    uploadMutation.mutate({ file, alt: 'avatar-user' })
+  }
+
+  const showingPreview = value || preview
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-3">
+        <div className="size-16 overflow-hidden rounded-md border bg-muted">
+          {showingPreview ? (
+            <img src={showingPreview} alt="Avatar preview" className="size-full object-cover" />
+          ) : (
+            <div className="flex size-full items-center justify-center text-muted-foreground">
+              <ImageIcon className="size-5" />
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" variant="outline" onClick={() => inputRef.current?.click()}>
+            <UploadIcon className="mr-2 size-4" />
+            Chọn ảnh từ máy
+          </Button>
+          {value && (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                onChange('')
+                setPreview('')
+                setFileName('')
+              }}
+            >
+              Xóa ảnh
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <Input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => void handleSelectFile(e.target.files?.[0])}
+      />
+
+      {fileName && (
+        <p className="text-xs text-muted-foreground">
+          File local: {fileName}
+        </p>
+      )}
+
+      {value && !uploadMutation.isPending && (
+        <p className="text-xs text-muted-foreground break-all">
+          URL avatar: {value}
+        </p>
+      )}
+      {uploadMutation.isPending && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Loader2Icon className="size-3 animate-spin" />
+          Đang upload ảnh...
+        </div>
+      )}
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </div>
+  )
+}
 
 export function UserForm({ mode, defaultValues, onSubmit, isLoading }: UserFormProps) {
   const isCreate = mode === 'create'
@@ -176,73 +278,77 @@ export function UserForm({ mode, defaultValues, onSubmit, isLoading }: UserFormP
         </form.Field>
       )}
 
-      {/* Account Role */}
-      <form.Field name="accountRole">
-        {(field) => (
-          <div className="flex flex-col gap-1.5">
-            <Label>Quyền tài khoản</Label>
-            <Select
-              value={(field.state.value as string) ?? 'user'}
-              onValueChange={(val) => field.handleChange(val as 'admin' | 'user')}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn quyền tài khoản" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="user">Người dùng</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        )}
-      </form.Field>
-
-      {/* Community Role */}
-      <form.Field name="role">
-        {(field) => (
-          <div className="flex flex-col gap-1.5">
-            <Label>Vai trò cộng đồng</Label>
-            <Select
-              value={(field.state.value as string) ?? 'user'}
-              onValueChange={(val) => field.handleChange(val as 'root' | 'staff' | 'kol' | 'mod' | 'user')}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn vai trò" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="user">Người dùng</SelectItem>
-                <SelectItem value="mod">Mod</SelectItem>
-                <SelectItem value="kol">KOL</SelectItem>
-                <SelectItem value="staff">Staff</SelectItem>
-                <SelectItem value="root">Root</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        )}
-      </form.Field>
-
-      {/* Status (edit mode only) */}
-      {!isCreate && (
-        <form.Field name="status">
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Account Role */}
+        <form.Field name="accountRole">
           {(field) => (
             <div className="flex flex-col gap-1.5">
-              <Label>Trạng thái</Label>
+              <Label>Quyền tài khoản</Label>
               <Select
-                value={(field.state.value as string) ?? 'active'}
-                onValueChange={(val) => field.handleChange(val as 'active' | 'banned' | 'block')}
+                value={(field.state.value as string) ?? 'user'}
+                onValueChange={(val) => field.handleChange(val as 'admin' | 'user')}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn trạng thái" />
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Chọn quyền tài khoản" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Hoạt động</SelectItem>
-                  <SelectItem value="banned">Bị cấm</SelectItem>
-                  <SelectItem value="block">Bị khóa</SelectItem>
+                  <SelectItem value="user">Người dùng</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           )}
         </form.Field>
+
+        {/* Community Role */}
+        <form.Field name="role">
+          {(field) => (
+            <div className="flex flex-col gap-1.5">
+              <Label>Vai trò cộng đồng</Label>
+              <Select
+                value={(field.state.value as string) ?? 'user'}
+                onValueChange={(val) => field.handleChange(val as 'root' | 'staff' | 'kol' | 'mod' | 'user')}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Chọn vai trò" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">Người dùng</SelectItem>
+                  <SelectItem value="mod">Mod</SelectItem>
+                  <SelectItem value="kol">KOL</SelectItem>
+                  <SelectItem value="staff">Staff</SelectItem>
+                  <SelectItem value="root">Root</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </form.Field>
+      </div>
+
+      {/* Status (edit mode only) */}
+      {!isCreate && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <form.Field name="status">
+            {(field) => (
+              <div className="flex flex-col gap-1.5">
+                <Label>Trạng thái</Label>
+                <Select
+                  value={(field.state.value as string) ?? 'active'}
+                  onValueChange={(val) => field.handleChange(val as 'active' | 'banned' | 'block')}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Chọn trạng thái" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Hoạt động</SelectItem>
+                    <SelectItem value="banned">Bị cấm</SelectItem>
+                    <SelectItem value="block">Bị khóa</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </form.Field>
+        </div>
       )}
 
       {/* Avatar URL (edit mode only) */}
@@ -260,18 +366,12 @@ export function UserForm({ mode, defaultValues, onSubmit, isLoading }: UserFormP
         >
           {(field) => (
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor={field.name}>URL Avatar</Label>
-              <Input
-                id={field.name}
-                type="url"
-                placeholder="https://example.com/avatar.jpg"
-                value={field.state.value as string}
-                onChange={(e) => field.handleChange(e.target.value)}
-                onBlur={field.handleBlur}
+              <Label htmlFor={field.name}>Avatar</Label>
+              <AvatarPicker
+                value={(field.state.value as string) ?? ''}
+                onChange={(nextValue) => field.handleChange(nextValue)}
+                error={field.state.meta.errors[0] as string | undefined}
               />
-              {field.state.meta.errors.length > 0 && (
-                <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
-              )}
             </div>
           )}
         </form.Field>
