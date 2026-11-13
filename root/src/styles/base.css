@@ -68,6 +68,79 @@ canvas {
   border-radius: 6px;
 }
 
+/* ── Scrollbar — Soft Neo-Brutalism ───────────────────────────
+   Chromium/Safari dùng ::-webkit-scrollbar (cho phép viền + bo góc).
+   Lưu ý: nếu đặt `scrollbar-color` thì Chromium bỏ qua ::-webkit-scrollbar,
+   nên thuộc tính chuẩn chỉ áp dụng cho trình duyệt không hỗ trợ selector này (Firefox). */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-sand);
+  border-left: var(--border);
+}
+
+::-webkit-scrollbar-track:horizontal {
+  border-left: 0;
+  border-top: var(--border);
+}
+
+::-webkit-scrollbar-thumb {
+  min-height: 48px;
+  border: var(--bw) solid var(--ink);
+  border-radius: var(--radius-pill);
+  background: var(--sage);
+  /* viền trong suốt bên ngoài tạo khoảng hở với track */
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--butter);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--coral);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--surface-sand);
+}
+
+/* Thanh cuộn mảnh cho vùng cuộn nhỏ bên trong (tab, modal, textarea) */
+.tabs::-webkit-scrollbar,
+.modal::-webkit-scrollbar,
+textarea::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.tabs::-webkit-scrollbar-track,
+.modal::-webkit-scrollbar-track,
+textarea::-webkit-scrollbar-track {
+  border: 0;
+  background: transparent;
+}
+
+.tabs::-webkit-scrollbar-thumb,
+.modal::-webkit-scrollbar-thumb,
+textarea::-webkit-scrollbar-thumb {
+  min-height: 24px;
+  border-width: 1.5px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-color: var(--ink) var(--surface-sand);
+  }
+  .tabs,
+  .modal,
+  textarea {
+    scrollbar-width: thin;
+  }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
