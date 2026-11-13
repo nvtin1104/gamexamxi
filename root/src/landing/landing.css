@@ -492,10 +492,39 @@
   white-space: normal;
 }
 
+/* Số cột cố định theo bề rộng: thẻ luôn lấp đầy hàng trên màn hình rộng
+   và giữ cùng kích thước khi bộ lọc chỉ còn ít game */
 .catalog__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--gap);
+}
+
+@media (min-width: 600px) {
+  .catalog__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .catalog__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1240px) {
+  .catalog__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1240px) {
+  .catalog__grid .game-card__thumb {
+    height: clamp(150px, 11vw, 220px);
+  }
+  .catalog__grid .game-card__emoji {
+    font-size: clamp(4rem, 4.2vw, 5.5rem);
+  }
 }
 
 .catalog__empty {
