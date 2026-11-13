@@ -1,66 +1,20 @@
 # Project Guidelines — Gamexamxi
 
-## Architecture
+Hub game tĩnh cho học sinh trên Cloudflare Pages. Hướng dẫn đầy đủ nằm trong `AGENTS.md` ở thư mục gốc — luôn đọc file đó trước.
 
-Monorepo (pnpm workspaces + Turborepo) with three packages:
+## Tóm tắt
 
-| Package | Stack | Location |
-|---------|-------|----------|
-| `@gamexamxi/api` | Hono on Cloudflare Workers, D1 (SQLite) via Drizzle ORM | `apps/api/` |
-| `dashboard` | React 19 SPA, Vite 7, Tailwind v4, shadcn/ui | `apps/dashboard/` |
-| `@gamexamxi/shared` | Pure TypeScript types (no runtime code) | `packages/shared/` |
+- App chính: `root/` (Vite 7 + React 19 + TypeScript strict + CSS tokens + three.js). Không có backend.
+- Lệnh (trong `root/`): `npm run dev`, `npm run build`, `npm run lint`.
+- Danh sách game: `root/src/landing/game-registry.ts` (`internal` = mini-game lazy-load tại `/play/<id>`, `external-web` = web game độc lập trên subdomain).
+- Mini-game: `root/src/mini-games/<id>/index.tsx`, `export default` component nhận `MiniGameProps`, chạy trong `GameShell`.
+- Web game độc lập: dùng `standalone-games/_template/hub-bridge.js`.
 
-Cloudflare bindings: `DB` (D1), `CACHE` (KV), `SESSIONS` (KV), `STORAGE` (R2), `JOB_QUEUE` (Queue).
+## Quy tắc
 
-## Build and Test
-
-```bash
-pnpm dev              # All apps in parallel (Turbo)
-pnpm dev:api          # API only on :8787
-pnpm dev:dashboard    # Dashboard only
-pnpm build            # Build all packages
-pnpm lint             # Lint all packages
-pnpm db:generate      # Drizzle migration generation
-pnpm db:migrate       # Apply migrations to local D1
-pnpm db:migrate:prod  # Apply migrations to remote D1
-```
-
-Dashboard deploys to Cloudflare Pages (`wrangler pages deploy dist/`). API deploys via `wrangler deploy`.
-
-## Code Style
-
-- **Language:** TypeScript strict mode (`noUncheckedIndexedAccess`, `noUnusedLocals`)
-- **Target:** ES2022, ESNext modules, `bundler` module resolution
-- **UI language:** Vietnamese — all user-facing text (labels, errors, messages) must be in Vietnamese
-- **Path alias:** `@/` → `./src/` in the dashboard app
-
-## Project Conventions
-
-### API (`apps/api/`)
-
-- **Routes:** Each file in `src/routes/` exports a `Hono` sub-app, mounted under `/api/v1/`. Use `zValidator('json', schema)` or `zValidator('query', schema)` for validation. See [`routes/users.ts`](apps/api/src/routes/users.ts).
-- **Services:** Class-based, constructor takes `D1Database`, instantiates Drizzle via `getDb()`. Methods: `findAll()`, `findById()`, `create()`, `update()`, `delete()`. See [`services/user.service.ts`](apps/api/src/services/user.service.ts).
-- **Schemas:** `sqliteTable()` with CUID2 `$defaultFn` for IDs, `integer({ mode: 'timestamp' })` for dates, string-literal enums. See [`db/schemas/users.ts`](apps/api/src/db/schemas/users.ts).
-- **Responses:** Success: `{ data: T }` or `{ data: T[], total, page, pageSize }`. Error: `{ error: string }`.
-- **IDs:** CUID2 everywhere (collision-resistant, URL-safe).
-
-### Dashboard (`apps/dashboard/`)
-
-- **Components:** shadcn/ui (Radix + CVA + tailwind-merge). Add via `npx shadcn@latest add <component>`.
-- **Tables:** `@tanstack/react-table` with server-side pagination/sort/filter pattern.
-- **Entry flow:** `main.tsx` → `App.tsx` → `page.tsx` (no client router yet).
-- **Charts:** Recharts. **Icons:** Lucide React. **Toasts:** Sonner.
-- **Layout width:** Never add `max-w-*` classes to page containers or layout wrappers. Content must use full available width. Exception: shadcn/ui internal components (Dialog, AlertDialog, Tooltip, etc.) may keep their built-in `max-w` defaults.
-
-### Shared (`packages/shared/`)
-
-Types only — `User`, `UserProfile`, `ApiResponse<T>`, `PaginatedResponse<T>`, `AuthTokens`, `PermissionGroup`, etc. Import as `@gamexamxi/shared`.
-
-## Security
-
-- **Auth:** JWT HS256 via `hono/jwt`. Access tokens: 1h. Refresh tokens: 7d (stored in KV).
-- **Passwords:** PBKDF2 SHA-256, 100k iterations, 16-byte random salt (Web Crypto API).
-- **Middleware chain:** `authMiddleware` → `requireRole()` → `requirePermission()`. Admin bypasses permission checks.
-- **Sensitive fields:** `stripSensitive()` removes `passwordHash`; `lastLoginIp` only visible to admin.
-- **CORS:** `ALLOWED_ORIGINS` env var. **Rate limiting:** middleware at `middleware/rate-limit.ts`.
-- **JWT_SECRET:** `wrangler secret put` in production; dev fallback in `wrangler.toml`.
+- Text giao diện bằng tiếng Việt.
+- File kebab-case, import alias `@/`, named export (trừ component mini-game).
+- Không đặt `max-width` cố định cho layout trang.
+- Dùng design tokens Soft Neo-Brutalism trong `root/src/styles/tokens.css`; không dùng `#000`.
+- localStorage qua `root/src/lib/storage.ts`.
+- Game WebGL phải `dispose()` toàn bộ geometry/material/renderer khi unmount.

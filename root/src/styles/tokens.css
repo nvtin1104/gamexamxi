@@ -1,0 +1,46 @@
+/* ─────────────────────────────────────────────────────────────
+   Soft Neo-Brutalism — design tokens
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --bg: #faf6f0; /* Warm Oat Paper */
+  --surface: #ffffff; /* Pure Cream */
+  --surface-sand: #f2ece1; /* Muted Sand */
+  --ink: #1e1e24; /* Deep Charcoal — viền, bóng, chữ */
+  --muted: #5c5a63; /* chữ phụ, AA trên nền oat */
+  --line-soft: rgba(30, 30, 36, 0.12);
+
+  /* Soft pastel accents */
+  --sage: #a8e6cf; /* CTA chính & game học tập */
+  --butter: #ffe599; /* Featured & điểm số */
+  --sky: #b5c7eb; /* Game mô phỏng 3D */
+  --coral: #ffaaa5; /* Cảnh báo & nút thoát */
+  --lavender: #dcd3ff; /* Web game độc lập */
+
+  /* Neo-brutalist tokens */
+  --bw: 2px;
+  --border: var(--bw) solid var(--ink);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-pill: 999px;
+  --shadow-sm: 2px 2px 0 var(--ink);
+  --shadow: 4px 4px 0 var(--ink);
+  --shadow-lg: 6px 6px 0 var(--ink);
+
+  /* Typography */
+  --font: 'Be Vietnam Pro', 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
+  --fs-hero: clamp(2rem, 1.2rem + 3.4vw, 3.75rem);
+
+  /* Spacing & layout */
+  --gutter: clamp(16px, 4vw, 56px);
+  --gap: clamp(12px, 1.6vw, 20px);
+  --nav-h: 68px;
+
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --t-fast: 140ms;
+}

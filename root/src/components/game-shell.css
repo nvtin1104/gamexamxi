@@ -1,0 +1,126 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.shell__bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px var(--gutter);
+  background: rgba(250, 246, 240, 0.94);
+  backdrop-filter: blur(8px);
+  border-bottom: var(--border);
+}
+
+.shell__title {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.05rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.shell__stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .shell__back-label,
+  .shell__best {
+    display: none;
+  }
+  .shell__back {
+    width: 44px;
+    padding: 0;
+  }
+}
+
+.shell__stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: clamp(12px, 2.5vw, 28px) var(--gutter);
+}
+
+.shell__steps {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shell__steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border: var(--border);
+  border-radius: 12px;
+  background: var(--surface-sand);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+
+.shell__step-icon {
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.shell__result {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 18px;
+  border: var(--border);
+  border-radius: 14px;
+  background: var(--butter);
+  text-align: center;
+}
+
+.shell__result-score {
+  font-size: clamp(2.6rem, 8vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.shell__result-label {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: var(--fs-xs);
+}
+
+.shell__result-summary {
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.shell__result-best {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+/* Trạng thái tải game (Suspense) */
+.shell-loading {
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  min-height: 60vh;
+  font-weight: 700;
+}
+
+.shell-loading__ufo {
+  font-size: 3rem;
+  animation: float 1.6s ease-in-out infinite;
+}

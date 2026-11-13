@@ -1,8 +1,0 @@
-export { usersRoute } from './users'
-export { authRoute } from './auth'
-export { permissionsRoute } from './permissions'
-export { pointsRoute } from './points'
-export { xpRoute } from './xp'
-export { itemsRoute } from './item-events'
-export { pickemEventsRoute } from './pickem-events'
-export { mediaRoute } from './media'

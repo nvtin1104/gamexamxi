@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game độc lập mẫu — Gamexamxi</title>
+    <style>
+      :root {
+        --bg: #faf6f0;
+        --ink: #1e1e24;
+        --lavender: #dcd3ff;
+        --butter: #ffe599;
+      }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      .card {
+        display: grid;
+        gap: 14px;
+        justify-items: center;
+        padding: 32px;
+        margin: 16px;
+        border: 2px solid var(--ink);
+        border-radius: 16px;
+        box-shadow: 4px 4px 0 var(--ink);
+        background: var(--lavender);
+        text-align: center;
+      }
+      button {
+        font: inherit;
+        font-weight: 700;
+        padding: 12px 22px;
+        border: 2px solid var(--ink);
+        border-radius: 10px;
+        background: var(--butter);
+        box-shadow: 4px 4px 0 var(--ink);
+        cursor: pointer;
+      }
+      button:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--ink);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>🏰 Game độc lập mẫu</h1>
+      <p>Bấm nút để cộng điểm, rồi bấm "← Về Hub Chính" để mang điểm về hub.</p>
+      <p>Điểm: <strong id="score">0</strong></p>
+      <button id="play" type="button">+100 điểm</button>
+    </main>
+
+    <!-- Đổi data-game-id cho khớp id trong root/src/landing/game-registry.ts -->
+    <script
+      src="./hub-bridge.js"
+      data-game-id="hoc-vien-phieu-luu"
+      data-hub-origins="https://gamexamxi.com,http://localhost:5173"
+    ></script>
+    <script>
+      var score = 0
+      document.getElementById('play').addEventListener('click', function () {
+        score += 100
+        document.getElementById('score').textContent = score
+        window.GxHub && window.GxHub.reportScore(score)
+      })
+    </script>
+  </body>
+</html>

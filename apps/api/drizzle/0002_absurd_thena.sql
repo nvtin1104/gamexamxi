@@ -1,1 +1,0 @@
-ALTER TABLE `users` ADD `account_role` text DEFAULT 'user' NOT NULL;
