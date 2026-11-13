@@ -1,0 +1,9 @@
+# Cloudflare Pages redirects — https://developers.cloudflare.com/pages/configuration/redirects/
+# Lưu ý: Pages chỉ proxy (status 200) tới đường dẫn nội bộ; sang domain khác chỉ redirect 301/302.
+
+# Short link tới các web game độc lập (bỏ comment khi game lên sóng)
+# /go/hoc-vien-phieu-luu  https://rpg.gamexamxi.com/?ref=hub  302
+# /go/thanh-pho-toan-hoc  https://math.gamexamxi.com/?ref=hub 302
+
+# SPA fallback — luôn để ở dòng cuối
+/*  /index.html  200

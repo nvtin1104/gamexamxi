@@ -2,312 +2,89 @@
 
 ## Overview
 
-This is a monorepo using pnpm workspaces + Turborepo with three packages:
-- `@gamexamxi/api` — Hono on Cloudflare Workers, D1 (SQLite) via Drizzle ORM
-- `dashboard` — React 19 SPA, Vite 7, Tailwind v4, shadcn/ui, TanStack Router
-- `@gamexamxi/shared` — Pure TypeScript types and Zod schemas
+Gamexamxi là **hub game tĩnh cho học sinh**, deploy trên **Cloudflare Pages**. Không có backend/API.
+
+```
+gamexamxi/
+├── root/               # Cloudflare Pages project chính: landing page + mini-game tích hợp
+├── standalone-games/   # Template & hướng dẫn cho web game độc lập (mỗi game = 1 Pages project riêng)
+└── docs/               # Hướng dẫn deploy
+```
+
+- `root/` — Vite 7 + React 19 + TypeScript (strict), CSS thuần với design tokens, `three` cho game 3D.
+- Game lớn **không** đặt trong `root/`: tạo web project riêng, deploy lên subdomain, rồi khai báo trong registry.
 
 ---
 
-## Build / Lint / Test Commands
-
-### Root Commands (run from project root)
+## Commands (chạy trong `root/`, dùng npm)
 
 ```bash
-pnpm dev              # All apps in parallel (Turbo)
-pnpm dev:api          # API only on :8787
-pnpm dev:dashboard    # Dashboard only on :5173
-pnpm build            # Build all packages
-pnpm lint             # Lint all packages
-pnpm db:generate      # Drizzle migration generation
-pnpm db:migrate       # Apply migrations to local D1
-pnpm db:migrate:prod  # Apply migrations to remote D1
+npm install
+npm run dev           # Vite dev server :5173
+npm run build         # tsc --noEmit && vite build → dist/
+npm run lint          # tsc --noEmit
+npm run preview       # Xem bản build
+npm run pages:dev     # Build + wrangler pages dev (thử _redirects/_headers)
+npm run pages:deploy  # Build + wrangler pages deploy dist
 ```
 
-### API Commands (apps/api/)
+Chưa có test framework. Nếu thêm: Vitest (`npx vitest run <file>`).
 
-```bash
-pnpm dev              # wrangler dev on :8787
-pnpm build            # wrangler deploy --dry-run
-pnpm deploy           # wrangler deploy to Cloudflare
-pnpm lint             # tsc --noEmit
-pnpm db:generate      # drizzle-kit generate
-pnpm db:migrate       # Apply local migrations
-pnpm db:seed          # Seed local database
-```
-
-### Dashboard Commands (apps/dashboard/)
-
-```bash
-pnpm dev              # Vite dev server on :5173
-pnpm build            # tsc -b && vite build
-pnpm lint             # eslint .
-pnpm preview          # vite preview
-```
-
-### Shared Package Commands (packages/shared/)
-
-```bash
-pnpm build            # tsc
-pnpm lint             # tsc --noEmit
-```
-
-### Running a Single Test
-
-**There are currently no test frameworks configured.** If tests are added:
-- Vitest: `pnpm vitest run <file>` or `pnpm vitest <file> -w` for watch mode
-- Jest: `pnpm jest <file>`
+Cloudflare Pages: **Root directory = `root`**, **Build command = `npm run build`**, **Output = `dist`**. Chi tiết: `docs/deploy-cloudflare-pages.md`.
 
 ---
 
-## Code Style Guidelines
+## Kiến trúc `root/src/`
 
-### TypeScript Configuration
+| Đường dẫn | Vai trò |
+|-----------|---------|
+| `landing/game-registry.ts` | Nguồn sự thật duy nhất cho danh sách game (`internal` / `external-web`) |
+| `landing/sections/*` | Các section landing: nav-bar, hero, catalog, game-card, about, contact, footer |
+| `landing/contact-service.ts` | Validate + gửi form liên hệ (hiện là `mailto:`/client-only) |
+| `components/game-shell.tsx` | Khung chung cho mini-game: nút quay lại, điểm live, modal hướng dẫn & kết quả |
+| `components/ui/*` | Modal (focus trap), Toast |
+| `router/router.tsx` | Router History API tối giản (`/`, `/play/:id`) |
+| `lib/scores.ts` | Kỷ lục từng game + tổng điểm (localStorage, `useSyncExternalStore`) |
+| `lib/hub-bridge.ts` | Nhận điểm từ web game độc lập (query `gx_game/gx_score` + `postMessage`) |
+| `mini-games/<id>/index.tsx` | Mỗi mini-game, `export default` component nhận `MiniGameProps` |
+| `styles/tokens.css` | Design tokens Soft Neo-Brutalism |
 
-```json
-{
-  "target": "ES2022",
-  "module": "ESNext",
-  "moduleResolution": "bundler",
-  "strict": true,
-  "noUncheckedIndexedAccess": true,
-  "noUnusedLocals": true,
-  "noUnusedParameters": true
-}
-```
+### Thêm một mini-game tích hợp
 
-### Import Conventions
+1. Tạo `root/src/mini-games/<id>/index.tsx`, `export default function X(props: MiniGameProps)`.
+2. Gọi `props.onScore(n)` khi điểm đổi, `props.onGameOver({ score, summary })` khi hết ván, dừng đồng hồ khi `props.paused`.
+3. Khai báo entry `type: 'internal'` trong `game-registry.ts` với `load: () => import('@/mini-games/<id>')` — Vite tự tách chunk.
+4. Game dùng WebGL/Canvas phải giải phóng toàn bộ tài nguyên khi unmount (xem `ufo-abduction-3d/engine/dispose.ts`).
 
-- **Absolute imports** in dashboard: use `@/` alias → `./src/`
-- **Relative imports** for local files
-- **Group imports** by: external libs → internal packages → local utils/types
-- **Named exports** preferred; default exports only when single export per file
+### Thêm một web game độc lập
 
-```typescript
-// Good
-import { Hono } from 'hono'
-import { zValidator } from '@hono/zod-validator'
-import { z } from 'zod'
-import { authMiddleware, requireRole } from '../middleware/auth'
-import type { Bindings, Variables } from '../types'
-
-// Bad
-import Hono, { someFunc } from 'hono'
-```
-
-### Naming Conventions
-
-| Element | Convention | Example |
-|---------|------------|---------|
-| Files (components) | kebab-case | `user-form.tsx` |
-| Files (utilities) | kebab-case | `api-client.ts` |
-| Files (services) | kebab-case | `user.service.ts` |
-| Files (routes) | kebab-case | `users.ts` |
-| Types/Interfaces | PascalCase | `UserProfile` |
-| Enums | PascalCase (members too) | `UserRole` |
-| Functions | camelCase | `stripSensitive()` |
-| Components | PascalCase | `UserForm` |
-| Constants | SCREAMING_SNAKE | `MAX_PAGE_SIZE` |
-| Database columns | snake_case | `created_at` |
-
-### File Organization
-
-```
-apps/
-├── api/
-│   ├── src/
-│   │   ├── routes/      # Hono sub-apps (one file per route)
-│   │   ├── services/    # Class-based business logic
-│   │   ├── db/schemas/  # Drizzle table definitions
-│   │   ├── middleware/  # Auth, rate-limiting
-│   │   ├── types/       # Bindings, variables
-│   │   └── utils/       # Helper functions
-│   └── wrangler.toml
-
-packages/
-└── shared/
-    └── src/
-        ├── types/       # Pure TypeScript interfaces
-        ├── schemas/     # Zod schemas for validation
-        └── constants/   # Permission constants
-```
-
-### UI/Component Guidelines
-
-- **Vietnamese language** for all user-facing text (labels, errors, messages)
-- **shadcn/ui components** — add via `npx shadcn@latest add <component>`
-- **Layout**: Never add `max-w-*` classes to page containers or layout wrappers. Content must use full available width. Exception: shadcn/ui internal components (Dialog, AlertDialog, Tooltip, etc.) may keep built-in `max-w`.
-- **Tailwind v4**: Use utility classes; avoid custom CSS unless necessary
-- **Icons**: Lucide React
-- **Toasts**: Sonner
-- **Tables**: TanStack React Table with server-side pagination/sort/filter
-- **Charts**: Recharts
-
-### API Patterns
-
-**Routes** (`apps/api/src/routes/`):
-- Each file exports a Hono sub-app mounted under `/api/v1/`
-- Use `zValidator('json', schema)` or `zValidator('query', schema)` for validation
-- Response format: `{ data: T }` or `{ data: T[], total, page, pageSize }`
-- Error format: `{ error: string }`
-
-**Services**:
-- Class-based with constructor taking `D1Database`
-- Instantiate Drizzle via `getDb()`
-- Methods: `findAll()`, `findById()`, `create()`, `update()`, `delete()`
-
-**Database Schemas**:
-- Use `sqliteTable()` with CUID2 `$defaultFn` for IDs
-- Use `integer({ mode: 'timestamp' })` for dates
-- Use string-literal enums for fixed sets
-
-**IDs**: CUID2 everywhere (collision-resistant, URL-safe)
-
-### Error Handling
-
-- **API routes**: Use try/catch with `console.error()` and return `{ error: ' Vietnamese message' }` with appropriate status code
-- **Frontend**: Display Vietnamese error messages to users via toast notifications
-- **Never expose** internal error details to clients in production
-
-### Security Guidelines
-
-- **Auth**: JWT HS256 via `hono/jwt`. Access tokens: 1h. Refresh tokens: 7d (stored in KV)
-- **Passwords**: PBKDF2 SHA-256, 100k iterations, 16-byte random salt (Web Crypto API)
-- **Middleware chain**: `authMiddleware` → `requireRole()` → `requirePermission()`. Admin bypasses permission checks
-- **Sensitive fields**: Use `stripSensitive()` to remove `passwordHash`; `lastLoginIp` only visible to admin
-- **CORS**: Use `ALLOWED_ORIGINS` env var
-- **Rate limiting**: Use middleware at `middleware/rate-limit.ts`
-- **JWT_SECRET**: Store via `wrangler secret put` in production; dev fallback in `wrangler.toml`
-
-### Cloudflare Bindings
-
-Environment variables available in API:
-- `DB` — D1 (SQLite)
-- `CACHE` — KV
-- `SESSIONS` — KV
-- `STORAGE` — R2
-- `JOB_QUEUE` — Queue
-
-### Google OAuth (Login with Google)
-
-**Setup Google Cloud Project:**
-1. Go to https://console.cloud.google.com/
-2. Create a new project or select existing
-3. Go to **APIs & Services** → **Credentials**
-4. Click **Create Credentials** → **OAuth client ID**
-5. Choose **Web application**
-6. Add authorized JavaScript origins:
-   - `http://localhost:8787` (dev)
-   - `https://your-domain.com` (prod)
-7. Copy the **Client ID**
-
-**Configure in Cloudflare:**
-```bash
-cd apps/api
-wrangler secret put GOOGLE_CLIENT_ID
-# Paste your Google OAuth Client ID when prompted
-```
-
-**API Endpoint:**
-```
-POST /api/v1/auth/google
-Content-Type: application/json
-
-{
-  "idToken": "<Google ID token from client>"
-}
-```
-
-**Response:**
-```json
-{
-  "data": {
-    "user": {
-      "id": "...",
-      "email": "user@gmail.com",
-      "name": "Full Name",
-      "accountRole": "user",
-      "role": "user"
-    },
-    "accessToken": "...",
-    "refreshToken": "..."
-  }
-}
-```
-
-**Cookie Settings:**
-- Access token: HttpOnly cookie, 1 hour expiry
-- Refresh token: HttpOnly cookie, 7 days expiry
-
-**Client Implementation:**
-- Use Google Identity Services SDK (`google.accounts.id.initialize` + `requestIdToken`)
-- Send `idToken` to `/api/v1/auth/google`
-- For cross-origin requests, set `credentials: 'include'` in fetch options
+Xem `standalone-games/README.md`.
 
 ---
 
-## Existing Copilot Rules
+## Code Style
 
-This project has `.github/copilot-instructions.md` which contains additional guidance. Always follow those rules in addition to this AGENTS.md.
+- TypeScript strict, `noUncheckedIndexedAccess`, `noUnusedLocals/Parameters`.
+- Import tuyệt đối bằng alias `@/` → `root/src/`; nhóm import: thư viện → nội bộ → file cùng thư mục.
+- Named export; `export default` chỉ cho component mini-game (để lazy-load).
+- File kebab-case (`game-card.tsx`), component PascalCase, hằng số SCREAMING_SNAKE.
+- **Toàn bộ text hiển thị bằng tiếng Việt.**
+- **Không** giới hạn bề rộng container trang (`max-width` cố định cho layout); dùng padding `var(--gutter)`. Ngoại lệ: modal/toast.
+- Icon: `lucide-react`. Không thêm thư viện UI/CSS-in-JS — dùng class trong `styles/components.css`.
+- localStorage luôn qua `lib/storage.ts` (bọc try/catch).
 
----
+## Design System — Soft Neo-Brutalism
 
-## Development Workflow
+Tokens trong `root/src/styles/tokens.css`:
 
-1. **Start development**: `pnpm dev` (runs all apps)
-2. **Make changes** following the code style above
-3. **Type check**: Run `pnpm lint` before committing
-4. **Build**: Run `pnpm build` to verify compilation
-5. **Database changes**: Run `pnpm db:generate` then `pnpm db:migrate`
+- Nền `--bg #FAF6F0`, thẻ `--surface #FFFFFF` / `--surface-sand #F2ECE1`, mực `--ink #1E1E24` (không dùng `#000`).
+- Accent: `--sage` (CTA, học tập), `--butter` (nổi bật, điểm), `--sky` (3D), `--coral` (thoát/cảnh báo), `--lavender` (web game độc lập).
+- Viền `2px solid var(--ink)`, bo `16px`, bóng `4px 4px 0`; hover `translate(-2px,-2px)` + bóng 6px; active `translate(2px,2px)` + bóng 2px (`.nb-press`, `.btn`).
+- Font Be Vietnam Pro. Tôn trọng `prefers-reduced-motion`.
 
----
+## Security
 
-## Dashboard Deployment
-
-```bash
-cd apps/dashboard
-pnpm build
-wrangler pages deploy dist/
-```
-
-## API Deployment
-
-```bash
-cd apps/api
-pnpm deploy
-```
-
-## Client App (Astro)
-
-### Google OAuth Configuration
-
-Tạo file `.env` trong `apps/client/`:
-
-```bash
-# Google OAuth Client ID (public, không cần bí mật)
-PUBLIC_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-
-# API URL
-PUBLIC_API_URL=http://localhost:8787
-```
-
-### Login Modal
-
-Client sử dụng Google Identity Services SDK để hiển thị nút đăng nhập Google trong modal.
-
-**Flow:**
-1. User click "Đăng nhập" trong header
-2. Modal hiện ra với Google Sign-In button + form email/password
-3. Khi đăng nhập bằng Google:
-   - Google trả về `idToken`
-   - Client gửi `idToken` lên `/api/v1/auth/google`
-   - API trả về user + tokens + set cookies
-4. Tokens được lưu vào localStorage + cookies (HttpOnly)
-
-### Running Client
-
-```bash
-cd apps/client
-pnpm dev     # Astro dev server
-pnpm build   # Build for production
-```
+- Trang tĩnh: CSP và header bảo mật trong `root/public/_headers`.
+- Điểm từ web game ngoài chỉ được nhận khi `gameId` có trong registry; `postMessage` kiểm tra `event.origin` khớp origin của game.
+- Template `hub-bridge.js` chỉ chấp nhận URL quay về thuộc allowlist (chống open redirect), `postMessage` luôn có `targetOrigin` cụ thể.
+- Điểm lưu ở trình duyệt người chơi → chỉ mang tính giải trí.

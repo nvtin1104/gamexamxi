@@ -1,0 +1,165 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--nav-h) + 16px);
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font);
+  font-size: var(--fs-md);
+  line-height: 1.6;
+  color: var(--ink);
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, rgba(30, 30, 36, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ── Scrollbar — Soft Neo-Brutalism ───────────────────────────
+   Chromium/Safari dùng ::-webkit-scrollbar (cho phép viền + bo góc).
+   Lưu ý: nếu đặt `scrollbar-color` thì Chromium bỏ qua ::-webkit-scrollbar,
+   nên thuộc tính chuẩn chỉ áp dụng cho trình duyệt không hỗ trợ selector này (Firefox). */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-sand);
+  border-left: var(--border);
+}
+
+::-webkit-scrollbar-track:horizontal {
+  border-left: 0;
+  border-top: var(--border);
+}
+
+::-webkit-scrollbar-thumb {
+  min-height: 48px;
+  border: var(--bw) solid var(--ink);
+  border-radius: var(--radius-pill);
+  background: var(--sage);
+  /* viền trong suốt bên ngoài tạo khoảng hở với track */
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--butter);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--coral);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--surface-sand);
+}
+
+/* Thanh cuộn mảnh cho vùng cuộn nhỏ bên trong (tab, modal, textarea) */
+.tabs::-webkit-scrollbar,
+.modal::-webkit-scrollbar,
+textarea::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.tabs::-webkit-scrollbar-track,
+.modal::-webkit-scrollbar-track,
+textarea::-webkit-scrollbar-track {
+  border: 0;
+  background: transparent;
+}
+
+.tabs::-webkit-scrollbar-thumb,
+.modal::-webkit-scrollbar-thumb,
+textarea::-webkit-scrollbar-thumb {
+  min-height: 24px;
+  border-width: 1.5px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-color: var(--ink) var(--surface-sand);
+  }
+  .tabs,
+  .modal,
+  textarea {
+    scrollbar-width: thin;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

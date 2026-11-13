@@ -1,10 +1,10 @@
 node_modules/
 dist/
-.astro/
 .wrangler/
-.turbo/
 .env
 .env.local
-.opencode/
 .dev.vars
 *.log
+.DS_Store
+.opencode/
+*.tsbuildinfo
